@@ -26,5 +26,16 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 
 ## TODO
 
+- [ ] abstract init
+  - [ ] upgrade childs first
+- [ ] shadowDom (closed by default : constructor option)
+  - [ ] (content) Elements not compatible with shadow...
+- [ ] listen attribute AFTER init : list in LISS() second argument
+- [ ] get slots + pseudo slots for non-shadow
+
 - [ ] In `connectedCallback()` optionnal verification of data structure.
 - [ ] Creade a `LISS.initElement()`, a `LISS.createElement()` on steroid (set attributes, data, childs, class, + with upgrade argument).
+- [ ] Prefill WebComponent from a Template/string + with basic interpolation.
+- [ ] Ressources : finalize+destroy
+- [ ] API TS type to remove HTMLElement suggestions in editors.
+- [ ] LISS parameter Custom Element (mutation observer + event parentS)
