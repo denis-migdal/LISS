@@ -40,19 +40,19 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 - Accessing to the HTML attributes in order to get their values is costly. Even more when we want to gather all values to validate them altogether.<br/>
 ***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
 - With TS, when using the WebComponent, all properties of `HTMLElement` are listed.<br/>
-***Solution:*** With LISS, `this.API` will get you all non-HTMLElement attributes.
+***Solution:*** With LISS, `this.API` will remove from suggestions all HTMLElement attributes.
 
 ## TODO
 
-- [ ] API TS type to remove HTMLElement suggestions in editors.
-
-- [ ] Ressources : finalize+destroy
+- [ ] add slots by default + pseudo slots events for non-shadow.
 - [ ] Prefill WebComponent from a Template/string/queryselector + with basic interpolation.
 
-- [ ] get slots + pseudo slots for non-shadow
 - [ ] LISS parameter Custom Element (mutation observer + event parents)
-
 - [ ] In `connectedCallback()` optionnal verification of data structure.
+
+- [ ] Ressources : finalize+destroy
+	- [ ] declare ressource
+
 
 - [ ] npm package
 - [ ] Test
