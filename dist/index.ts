@@ -119,3 +119,13 @@ LISS.whenDefined = async function<T extends CustomElementConstructor = CustomEle
 
 	return cstr;
 }
+
+
+LISS.whenAllDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagnames: readonly string[], callback?: () => void ) : Promise<void> {
+
+	await Promise.all( tagnames.map( t => customElements.whenDefined(t) as Promise<T>) )
+
+	if( callback !== undefined)
+		callback();
+
+}

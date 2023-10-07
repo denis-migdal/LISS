@@ -79,8 +79,7 @@ LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } =
 };
 LISS.createElement = function (tagname, ...args) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield customElements.whenDefined(tagname);
-        let CustomClass = customElements.get(tagname);
+        let CustomClass = yield customElements.whenDefined(tagname);
         //if(CustomClass === undefined)
         //	throw new Error(`Tag "${tagname}" is not defined (yet)!`)
         return new CustomClass(...args);
@@ -92,5 +91,12 @@ LISS.whenDefined = function (tagname, callback) {
         if (callback !== undefined)
             callback(cstr);
         return cstr;
+    });
+};
+LISS.whenAllDefined = function (tagnames, callback) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield Promise.all(tagnames.map(t => customElements.whenDefined(t)));
+        if (callback !== undefined)
+            callback();
     });
 };
