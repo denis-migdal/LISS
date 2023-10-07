@@ -21,12 +21,20 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 - For some reasons, some of your Web Components might be requires some other Web Components to be defined.<br/>
 ***Solution :*** The third parameter of `LISS()` and `LISS.define()` allow you to define a list of dependancies when defining a component.
 - `document.createElement()` doesn't allow you to pass parameters to your Web Component ([more info](https://github.com/WICG/webcomponents/issues/605))<br/>
-***Solution :*** `LISS.createElement()` enables you to give parameters to your WebComponent, and `LISS.define()` third argument to set values to be given to the WebComponent constructor.  
+***Solution :*** `LISS.createElement()` enables you to give parameters to your WebComponent, and `LISS.define()` third argument to set values to be given to the WebComponent constructor.
+- WebComponent's DOM should not be accessed/modified until the first call of `connectedCallback()`.<br/>
+***Solution 1:*** Use `this.self` (protected) instead of `this` to access the WebComponent attribute/children. Throws an exception if the Web Component still hasn't be initialized.
+***Solution 2:*** Use `this.content` (protected) to access the Web Component's content. 
+***Solution 3:*** You may also use `this.assertInit()` (protected) at the start of your methods, to throw an exception if called while the WebComponent still hasn't be initialized.
+- WebComponent should be initialized at the first call of `connectedCallback()` (can be called several times).<br/>
+**Solution:**
+Redefine `this.init()` (protected) to initialize your Web Component. LISS will call it only once, at the first call of `connectedCallback()`.
+- Web Component's children might not be yet upgraded when `connectedCallback()` is called. Then, `customElements.upgrade(this)` need to be called.<br/>
+***Solution:*** LISS automatically calls it before calling `this.init()`.
 
 
 ## TODO
 
-- [ ] abstract init
   - [ ] upgrade childs first
 - [ ] shadowDom (closed by default : constructor option)
   - [ ] (content) Elements not compatible with shadow...

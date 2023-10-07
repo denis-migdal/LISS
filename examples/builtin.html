@@ -8,7 +8,9 @@
 		import LISS from '../dist/index.js';
 
 		class MyComponent extends LISS(HTMLDivElement) {
-
+			init() {
+				this.content.append('Hello World ;)');
+			}
 		}
 
 		LISS.define('my-component', MyComponent);
@@ -19,6 +21,7 @@
 	<style type="text/css">
 		:root {
 			background-color: black;
+			color:white;
 		}
 	</style>
 	<div is='my-component'></div>

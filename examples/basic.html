@@ -9,6 +9,9 @@
 
 		class MyComponent extends LISS() {
 
+			init() {
+				this.content.append('Hello World ;)');
+			}
 		}
 
 		LISS.define('my-component', MyComponent);
@@ -19,6 +22,7 @@
 	<style type="text/css">
 		:root {
 			background-color: black;
+			color:white;
 		}
 	</style>
 	<my-component></my-component>

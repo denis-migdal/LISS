@@ -9,11 +9,52 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 	//@ts-ignore cf https://github.com/microsoft/TypeScript/issues/37142
 	class ImplLISS extends inherit {
 
+		#content: Element|null = null;
+
+		protected get content() {
+
+			if(this.#content === null)
+				throw new Error('Access to content before initialization !');
+
+			return this.#content;
+		}
+
+		protected get self() {
+
+			if(this.#content === null)
+				throw new Error('Access to self before initialization !');
+
+			return this;
+		}
+
+		protected assertInit() {
+			if(this.#content === null)
+				throw new Error('Web Component is not initialized !');
+
+		}
 
 		static dependancies() {
 			return dependancies;
 		}
+
+		connectedCallback() {
+			if(this.#content === null)
+				this.#init();
+		}
+
+		#init() {
+			customElements.upgrade(this);
+			
+			this.#content = this; //TODO: shadow
+
+			this.init();
+		}
+
+		protected init(){}
 	}
+
+
+
 
 	return ImplLISS;
 }
@@ -75,9 +116,9 @@ LISS.define = function(tagname: string,
 
 	Class = Object.getPrototypeOf(Class);
 
-	let htmltag = undefined;
+	let htmltag: string|undefined = undefined;
 	if( Class !== HTMLElement ) {
-		let htmltag = HTMLCLASS_REGEX.exec(Class.name)![1];
+		htmltag = HTMLCLASS_REGEX.exec(Class.name)![1];
 		htmltag = elementNameLookupTable[htmltag] ?? htmltag.toLowerCase()
 	}
 
@@ -90,7 +131,6 @@ LISS.define = function(tagname: string,
 
          CustomClass = WithCstrParams;
 	}
-
 
 	let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.dependancies()]] as const;
 

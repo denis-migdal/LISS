@@ -11,18 +11,23 @@
 
 			constructor(foo) {
 				super();
-				console.log(foo);
+				
+				this.foo = foo;
+			}
+
+			init() {
+				this.content.append(`value: ${this.foo}`);
 			}
 		}
 
 		LISS.define('my-component-a', MyComponent, {
-			withCstrParams: [24]
+			withCstrParams: ['A']
 		});
 		LISS.define('my-component-b', MyComponent);
 
 		(async () => {
 
-			let myelement = await LISS.createElement('my-component-b', 42);
+			let myelement = await LISS.createElement('my-component-b', 'B');
 
 			document.body.append( myelement );
 
@@ -34,6 +39,7 @@
 	<style type="text/css">
 		:root {
 			background-color: black;
+			color: white;
 		}
 	</style>
 	<my-component-a></my-component-a>

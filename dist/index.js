@@ -7,15 +7,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
 export default function LISS(inherit = null, _ = null, dependancies = []) {
+    var _ImplLISS_instances, _ImplLISS_content, _ImplLISS_init;
     if (inherit === null)
         inherit = HTMLElement;
     //@ts-ignore cf https://github.com/microsoft/TypeScript/issues/37142
     class ImplLISS extends inherit {
+        constructor() {
+            super(...arguments);
+            _ImplLISS_instances.add(this);
+            _ImplLISS_content.set(this, null);
+        }
+        get content() {
+            if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
+                throw new Error('Access to content before initialization !');
+            return __classPrivateFieldGet(this, _ImplLISS_content, "f");
+        }
+        get self() {
+            if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
+                throw new Error('Access to self before initialization !');
+            return this;
+        }
+        assertInit() {
+            if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
+                throw new Error('Web Component is not initialized !');
+        }
         static dependancies() {
             return dependancies;
         }
+        connectedCallback() {
+            if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
+                __classPrivateFieldGet(this, _ImplLISS_instances, "m", _ImplLISS_init).call(this);
+        }
+        init() { }
     }
+    _ImplLISS_content = new WeakMap(), _ImplLISS_instances = new WeakSet(), _ImplLISS_init = function _ImplLISS_init() {
+        customElements.upgrade(this);
+        __classPrivateFieldSet(this, _ImplLISS_content, this, "f"); //TODO: shadow
+        this.init();
+    };
     return ImplLISS;
 }
 let TO_DEFINE = [];
@@ -60,7 +101,7 @@ LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } =
     Class = Object.getPrototypeOf(Class);
     let htmltag = undefined;
     if (Class !== HTMLElement) {
-        let htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
+        htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
         htmltag = (_a = elementNameLookupTable[htmltag]) !== null && _a !== void 0 ? _a : htmltag.toLowerCase();
     }
     if (withCstrParams !== undefined) {
