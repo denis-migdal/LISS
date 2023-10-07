@@ -13,5 +13,5 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 
 ## List of issues solved by LISS
 
-- `ccustomElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)).
+- `ccustomElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)).<br/>
 ***Solution :*** We provide `LISS.define()`, that take cares of the third argument for you.
