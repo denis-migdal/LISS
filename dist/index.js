@@ -3,6 +3,12 @@ export default function LISS(inherit = HTMLElement) {
     }
     return ImplLISS;
 }
+let TO_DEFINE = [];
+document.addEventListener('DOMContentLoaded', () => {
+    for (let args of TO_DEFINE) {
+        customElements.define(args[0], args[1], { extends: args[2] });
+    }
+});
 const HTMLCLASS_REGEX = /HTML(\w+)Element/;
 // from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
 const elementNameLookupTable = {
@@ -34,5 +40,8 @@ LISS.define = function (tagname, CustomClass) {
         let htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
         htmltag = (_a = elementNameLookupTable[htmltag]) !== null && _a !== void 0 ? _a : htmltag.toLowerCase();
     }
-    customElements.define(tagname, CustomClass, { extends: htmltag });
+    if (document.readyState === "interactive")
+        customElements.define(tagname, CustomClass, { extends: htmltag });
+    else
+        TO_DEFINE.push([tagname, CustomClass, htmltag]);
 };

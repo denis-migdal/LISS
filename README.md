@@ -16,3 +16,5 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 
 - `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)).<br/>
 ***Solution :*** We provide `LISS.define()`, that takes care of the third argument for you.
+- `customElements.define()` should be called only once the DOM has finished to load in order to prevent issues of childs not being present when custom elements are being initialized.<br/>
+***Solution :*** `LISS.define()`, takes care of that for you, calling `customElements.define()` once the DOM is loaded or immediately if the DOM is already loaded.
