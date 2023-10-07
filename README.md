@@ -39,3 +39,5 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 - [ ] Ressources : finalize+destroy
 - [ ] API TS type to remove HTMLElement suggestions in editors.
 - [ ] LISS parameter Custom Element (mutation observer + event parentS)
+
+- [ ] Test
