@@ -24,8 +24,8 @@ const CAN_HAVE_SHADOW = [
     'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
     'nav', 'p', 'section', 'span'
 ];
-export default function LISS(inherit = null, _ = null, dependancies = []) {
-    var _ImplLISS_instances, _ImplLISS_isShadowOpen, _ImplLISS_content, _ImplLISS_init;
+export default function LISS(inherit = null, observedAttributes = [], dependancies = []) {
+    var _ImplLISS_instances, _ImplLISS_isShadowOpen, _ImplLISS_isInit, _ImplLISS_content, _ImplLISS_init;
     if (inherit === null)
         inherit = HTMLElement;
     let hasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inherit));
@@ -35,6 +35,7 @@ export default function LISS(inherit = null, _ = null, dependancies = []) {
             super();
             _ImplLISS_instances.add(this);
             _ImplLISS_isShadowOpen.set(this, void 0);
+            _ImplLISS_isInit.set(this, false);
             _ImplLISS_content.set(this, null);
             __classPrivateFieldSet(this, _ImplLISS_isShadowOpen, isShadowOpen, "f");
         }
@@ -52,7 +53,7 @@ export default function LISS(inherit = null, _ = null, dependancies = []) {
             return this;
         }
         assertInit() {
-            if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
+            if (__classPrivateFieldGet(this, _ImplLISS_isInit, "f"))
                 throw new Error('Web Component is not initialized !');
         }
         static dependancies() {
@@ -63,14 +64,23 @@ export default function LISS(inherit = null, _ = null, dependancies = []) {
                 __classPrivateFieldGet(this, _ImplLISS_instances, "m", _ImplLISS_init).call(this);
         }
         init() { }
+        attributeChangedCallback(name, oldValue, newValue) {
+            if (!__classPrivateFieldGet(this, _ImplLISS_isInit, "f"))
+                return;
+            this.onAttrChanged(name, oldValue, newValue);
+        }
+        onAttrChanged(_name, _oldValue, _newValue) {
+        }
     }
-    _ImplLISS_isShadowOpen = new WeakMap(), _ImplLISS_content = new WeakMap(), _ImplLISS_instances = new WeakSet(), _ImplLISS_init = function _ImplLISS_init() {
+    _ImplLISS_isShadowOpen = new WeakMap(), _ImplLISS_isInit = new WeakMap(), _ImplLISS_content = new WeakMap(), _ImplLISS_instances = new WeakSet(), _ImplLISS_init = function _ImplLISS_init() {
         customElements.upgrade(this);
         __classPrivateFieldSet(this, _ImplLISS_content, this, "f");
         if (hasShadow)
             __classPrivateFieldSet(this, _ImplLISS_content, this.attachShadow({ mode: __classPrivateFieldGet(this, _ImplLISS_isShadowOpen, "f") ? 'open' : 'closed' }), "f");
         this.init();
+        __classPrivateFieldSet(this, _ImplLISS_isInit, true, "f");
     };
+    ImplLISS.observedAttributes = observedAttributes;
     return ImplLISS;
 }
 let TO_DEFINE = [];

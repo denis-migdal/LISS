@@ -8,7 +8,7 @@ const CAN_HAVE_SHADOW = [
 
 export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 							inherit: T|null = null,
-							 _:null = null,
+							 observedAttributes: readonly string[] = [],
 							 dependancies: readonly string[] = []): T {
 
 	if(inherit === null)
@@ -21,6 +21,7 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 	class ImplLISS extends inherit {
 
 		#isShadowOpen: boolean;
+		#isInit = false;
 
 		constructor(isShadowOpen: boolean = false) {
 			super();
@@ -50,7 +51,7 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 		}
 
 		protected assertInit() {
-			if(this.#content === null)
+			if(this.#isInit)
 				throw new Error('Web Component is not initialized !');
 
 		}
@@ -72,11 +73,28 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 				this.#content = this.attachShadow({mode: this.#isShadowOpen ? 'open' : 'closed'})
 
 			this.init();
+
+			this.#isInit = true;
 		}
 
 		protected init(){}
-	}
 
+		static observedAttributes = observedAttributes;
+
+		attributeChangedCallback(name: string,
+								 oldValue: string,
+								 newValue: string) {
+			if( ! this.#isInit )
+				return;
+			this.onAttrChanged(name, oldValue, newValue);
+		}
+
+		onAttrChanged(	_name: string,
+						_oldValue: string,
+						_newValue: string) {
+
+		}
+	}
 
 
 

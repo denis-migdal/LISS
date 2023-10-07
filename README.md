@@ -33,17 +33,24 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 ***Solution:*** LISS automatically calls it before calling `this.init()`.
 - Web Components should use `ShadowRoot` for its content. However some custom elements inheriting builtin elements doesn't support having one. ([more info](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow)).<br/>
 ***Solution:*** Use `this.content` to set the Web Component content. LISS attaches a `ShadowRoot` if supported, else `this` is used. In your webcomponent, use `super(true/false)` to indicate whether you want the `ShadowRoot` to be open (true) or closed (false).
+- `attributeChangedCallback()` is called each time an attribute is modified, even when the Web Component hasn't been initialized yet !<br/>
+***Solution:*** Use `onAttrChanged()` instead, it won't be called if an attribute is modified before the Web Component has finished its initialization. Set the list of listened attributes in the second argument of `LISS()`.
 
 ## TODO
 
-- [ ] listen attribute AFTER init : list in LISS() second argument
+- [ ] cache attributes
+
+- [ ] Creade a `LISS.buildElement()`, a `LISS.createElement()` on steroid (set attributes, data, childs, class, + with upgrade argument).
+
+- [ ] API TS type to remove HTMLElement suggestions in editors.
+- [ ] Ressources : finalize+destroy
+- [ ] Prefill WebComponent from a Template/string/queryselector + with basic interpolation.
+
+- [ ] LISS parameter Custom Element (mutation observer + event parentS)
 - [ ] get slots + pseudo slots for non-shadow
 
 - [ ] In `connectedCallback()` optionnal verification of data structure.
-- [ ] Creade a `LISS.initElement()`, a `LISS.createElement()` on steroid (set attributes, data, childs, class, + with upgrade argument).
-- [ ] Prefill WebComponent from a Template/string/queryselector + with basic interpolation.
-- [ ] Ressources : finalize+destroy
-- [ ] API TS type to remove HTMLElement suggestions in editors.
-- [ ] LISS parameter Custom Element (mutation observer + event parentS)
 
+- [ ] npm package
 - [ ] Test
+  - [ ] test with TR element
