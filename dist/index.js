@@ -24,10 +24,20 @@ const CAN_HAVE_SHADOW = [
     'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
     'nav', 'p', 'section', 'span'
 ];
-export default function LISS(inherit = null, observedAttributes = [], dependancies = []) {
+export default function LISS(inherit = null, { observedAttributes, dependancies, template } = {}) {
     var _ImplLISS_instances, _ImplLISS_isShadowOpen, _ImplLISS_isInit, _ImplLISS_attributes, _ImplLISS_content, _ImplLISS_init;
-    if (inherit === null)
-        inherit = HTMLElement;
+    inherit !== null && inherit !== void 0 ? inherit : (inherit = HTMLElement);
+    observedAttributes !== null && observedAttributes !== void 0 ? observedAttributes : (observedAttributes = []);
+    dependancies !== null && dependancies !== void 0 ? dependancies : (dependancies = []);
+    if (template !== undefined) {
+        if (typeof template === 'string' && template[0] === '#')
+            template = document.querySelector(template);
+        if (template instanceof HTMLTemplateElement)
+            template = template.innerHTML;
+        template = template.trim(); // Never return a text node of whitespace as the result
+        if (template === '')
+            template = undefined;
+    }
     let hasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inherit));
     //@ts-ignore cf https://github.com/microsoft/TypeScript/issues/37142
     class ImplLISS extends inherit {
@@ -89,6 +99,12 @@ export default function LISS(inherit = null, observedAttributes = [], dependanci
             __classPrivateFieldSet(this, _ImplLISS_content, this.attachShadow({ mode: __classPrivateFieldGet(this, _ImplLISS_isShadowOpen, "f") ? 'open' : 'closed' }), "f");
         for (let obs of observedAttributes)
             __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[obs] = this.getAttribute(obs);
+        if (template !== undefined) {
+            let template_elem = document.createElement('template');
+            let str = template.replace(/\$\{(.+?)\}/g, (_, match) => { var _a; return (_a = __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[match]) !== null && _a !== void 0 ? _a : ''; });
+            template_elem.innerHTML = str;
+            __classPrivateFieldGet(this, _ImplLISS_content, "f").append(...template_elem.content.childNodes);
+        }
         this.init();
         __classPrivateFieldSet(this, _ImplLISS_isInit, true, "f");
     };

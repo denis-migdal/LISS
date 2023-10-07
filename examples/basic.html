@@ -7,10 +7,10 @@
 	<script type="module">
 		import LISS from '../dist/index.js';
 
-		class MyComponent extends LISS() {
+		class MyComponent extends LISS(null, {template: "My text: ${data-text}", observedAttributes:['data-text']}) {
 
 			init() {
-				this.content.append('Hello World ;)');
+				//this.content.append('Hello World ;)');
 			}
 		}
 
@@ -25,6 +25,7 @@
 			color:white;
 		}
 	</style>
-	<my-component></my-component>
+	<my-component data-text="A"></my-component>
+	<my-component data-text="B"></my-component>
 </body>
 </html>

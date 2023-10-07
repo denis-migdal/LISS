@@ -8,7 +8,7 @@ Web Components are simple to use... but **hard to use *correctly***, due to a mu
 
 ## Install LISS
 
-To rebuild the JS files, use : `tsc $FILE --target es2016`.
+To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
 
 ## Use LISS
 
@@ -41,11 +41,13 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 ***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
 - With TS, when using the WebComponent, all properties of `HTMLElement` are listed.<br/>
 ***Solution:*** With LISS, `this.API` will remove from suggestions all HTMLElement attributes.
+- Filling the Web Component can be cumbersome<br/>
+***Solution:*** `LISS()` accept a string, a HTMLTemplateElement, or an identifer to a HTMLTemplateElement that will be used to fill the Web Component.
 
 ## TODO
 
+- [ ] add CSS rules : from ID ou Style ou string too ?
 - [ ] add slots by default + pseudo slots events for non-shadow.
-- [ ] Prefill WebComponent from a Template/string/queryselector + with basic interpolation.
 
 - [ ] LISS parameter Custom Element (mutation observer + event parents)
 - [ ] In `connectedCallback()` optionnal verification of data structure.
@@ -58,3 +60,4 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 - [ ] Test
   - [ ] test with TR element
   - [ ] a test per issue solved ?
+- [ ] Documentation/usage

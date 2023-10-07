@@ -8,15 +8,34 @@ const CAN_HAVE_SHADOW = [
 
 type API<T, U> = Omit<T, keyof U | "API" | "attributeChangedCallback" | "connectedCallback" | "disconnectedCallback" | "adoptedCallback">
 
+export type LISSOptions = {
+	observedAttributes ?: readonly string[],
+	dependancies?: readonly string[],
+	template?: string|HTMLTemplateElement
+};
+
 type Constructor<T> = new () => T;
 
 export default function LISS<T extends HTMLElement = HTMLElement>(
 							 inherit: Constructor<T>|null = null,
-							 observedAttributes: readonly string[] = [],
-							 dependancies: readonly string[] = []) {
+							{observedAttributes, dependancies, template}: LISSOptions = {}) {
 
-	if(inherit === null)
-		inherit = HTMLElement as Constructor<T>;
+	inherit ??= HTMLElement as Constructor<T>;
+	observedAttributes ??= [];
+	dependancies ??= [];
+
+	if( template !== undefined ) {
+
+		if( typeof template === 'string' && template[0] === '#')
+			template = document.querySelector<HTMLTemplateElement>(template)!;
+
+		if(template instanceof HTMLTemplateElement)
+			template = template.innerHTML;
+
+		template = (template as string).trim(); // Never return a text node of whitespace as the result
+		if(template === '')
+			template = undefined;
+	}
 
 	let hasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inherit) );
 
@@ -89,8 +108,15 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 			if( hasShadow )
 				this.#content = this.attachShadow({mode: this.#isShadowOpen ? 'open' : 'closed'})
 
-			for(let obs of observedAttributes)
+			for(let obs of observedAttributes!)
 				this.#attributes[obs] = this.getAttribute(obs);
+
+			if( template !== undefined ) {
+				let template_elem = document.createElement('template');
+				let str = (template as string).replace(/\$\{(.+?)\}/g, (_, match) => this.#attributes[match]??'')
+	    		template_elem.innerHTML = str;
+	    		this.#content.append(...template_elem.content.childNodes);
+	    	}
 
 			this.init();
 
