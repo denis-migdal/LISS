@@ -1,5 +1,4 @@
-# LISS
-**[IN PROGRESS]** Light, Intuitive, Simplier, and Safer Web Components.
+# **[IN PROGRESS]** Light, Intuitive, Simplier, and Safer Web Components.
 
 ## Why LISS ?
 
