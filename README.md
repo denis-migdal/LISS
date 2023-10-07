@@ -18,3 +18,5 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 ***Solution :*** We provide `LISS.define()`, that takes care of the third argument for you.
 - `customElements.define()` should be called only once the DOM has finished to load in order to prevent issues of childs not being present when custom elements are being initialized.<br/>
 ***Solution :*** `LISS.define()`, takes care of that for you, calling `customElements.define()` once the DOM is loaded or immediately if the DOM is already loaded.
+- For some reasons, some of your Web Components might be requires some other Web Components to be defined.<br/>
+***Solution :*** The third parameter of `LISS()` and `LISS.define()` allow you to define a list of dependancies when defining a component.

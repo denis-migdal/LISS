@@ -1,14 +1,35 @@
-export default function LISS(inherit = HTMLElement) {
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+export default function LISS(inherit = null, _ = null, dependancies = []) {
+    if (inherit === null)
+        inherit = HTMLElement;
+    //@ts-ignore cf https://github.com/microsoft/TypeScript/issues/37142
     class ImplLISS extends inherit {
+        static dependancies() {
+            return dependancies;
+        }
     }
     return ImplLISS;
 }
 let TO_DEFINE = [];
 document.addEventListener('DOMContentLoaded', () => {
-    for (let args of TO_DEFINE) {
-        customElements.define(args[0], args[1], { extends: args[2] });
-    }
+    for (let args of TO_DEFINE)
+        define(...args);
 });
+function define(...args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (let dep of args[3])
+            yield customElements.whenDefined(dep);
+        customElements.define(args[0], args[1], { extends: args[2] });
+    });
+}
 const HTMLCLASS_REGEX = /HTML(\w+)Element/;
 // from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
 const elementNameLookupTable = {
@@ -29,19 +50,21 @@ const elementNameLookupTable = {
     'DList': ['dl'],
     'Anchor': ['a']
 };
-LISS.define = function (tagname, CustomClass) {
+LISS.define = function (tagname, CustomClass, dependancies = []) {
     var _a;
     let Class = CustomClass;
     while (Class.name !== 'ImplLISS')
         Class = Object.getPrototypeOf(Class);
+    let ImplLISSClass = Class;
     Class = Object.getPrototypeOf(Class);
     let htmltag = undefined;
     if (Class !== HTMLElement) {
         let htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
         htmltag = (_a = elementNameLookupTable[htmltag]) !== null && _a !== void 0 ? _a : htmltag.toLowerCase();
     }
+    let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.dependancies()]];
     if (document.readyState === "interactive")
-        customElements.define(tagname, CustomClass, { extends: htmltag });
+        define(...args);
     else
-        TO_DEFINE.push([tagname, CustomClass, htmltag]);
+        TO_DEFINE.push(args);
 };
