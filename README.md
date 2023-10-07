@@ -8,7 +8,7 @@ Web Components are simple to use... but **hard to use *correctly***, due to a mu
 
 ## Install LISS
 
-To rebuild the JS files, use : `tsc $FILE --target es6`.
+To rebuild the JS files, use : `tsc $FILE --target es2016`.
 
 ## Use LISS
 
@@ -31,13 +31,11 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 Redefine `this.init()` (protected) to initialize your Web Component. LISS will call it only once, at the first call of `connectedCallback()`.
 - Web Component's children might not be yet upgraded when `connectedCallback()` is called. Then, `customElements.upgrade(this)` need to be called.<br/>
 ***Solution:*** LISS automatically calls it before calling `this.init()`.
-
+- Web Components should use `ShadowRoot` for its content. However some custom elements inheriting builtin elements doesn't support having one. ([more info](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow)).<br/>
+***Solution:*** Use `this.content` to set the Web Component content. LISS attaches a `ShadowRoot` if supported, else `this` is used. In your webcomponent, use `super(true/false)` to indicate whether you want the `ShadowRoot` to be open (true) or closed (false).
 
 ## TODO
 
-  - [ ] upgrade childs first
-- [ ] shadowDom (closed by default : constructor option)
-  - [ ] (content) Elements not compatible with shadow...
 - [ ] listen attribute AFTER init : list in LISS() second argument
 - [ ] get slots + pseudo slots for non-shadow
 

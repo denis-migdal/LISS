@@ -7,32 +7,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
+const CAN_HAVE_SHADOW = [
+    null, 'article', 'aside', 'blockquote', 'body', 'div',
+    'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
+    'nav', 'p', 'section', 'span'
+];
 export default function LISS(inherit = null, _ = null, dependancies = []) {
-    var _ImplLISS_instances, _ImplLISS_content, _ImplLISS_init;
+    var _ImplLISS_instances, _ImplLISS_isShadowOpen, _ImplLISS_content, _ImplLISS_init;
     if (inherit === null)
         inherit = HTMLElement;
+    let hasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inherit));
     //@ts-ignore cf https://github.com/microsoft/TypeScript/issues/37142
     class ImplLISS extends inherit {
-        constructor() {
-            super(...arguments);
+        constructor(isShadowOpen = false) {
+            super();
             _ImplLISS_instances.add(this);
+            _ImplLISS_isShadowOpen.set(this, void 0);
             _ImplLISS_content.set(this, null);
+            __classPrivateFieldSet(this, _ImplLISS_isShadowOpen, isShadowOpen, "f");
         }
         get content() {
             if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
                 throw new Error('Access to content before initialization !');
             return __classPrivateFieldGet(this, _ImplLISS_content, "f");
+        }
+        get hasShadow() {
+            return hasShadow;
         }
         get self() {
             if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
@@ -52,9 +64,11 @@ export default function LISS(inherit = null, _ = null, dependancies = []) {
         }
         init() { }
     }
-    _ImplLISS_content = new WeakMap(), _ImplLISS_instances = new WeakSet(), _ImplLISS_init = function _ImplLISS_init() {
+    _ImplLISS_isShadowOpen = new WeakMap(), _ImplLISS_content = new WeakMap(), _ImplLISS_instances = new WeakSet(), _ImplLISS_init = function _ImplLISS_init() {
         customElements.upgrade(this);
-        __classPrivateFieldSet(this, _ImplLISS_content, this, "f"); //TODO: shadow
+        __classPrivateFieldSet(this, _ImplLISS_content, this, "f");
+        if (hasShadow)
+            __classPrivateFieldSet(this, _ImplLISS_content, this.attachShadow({ mode: __classPrivateFieldGet(this, _ImplLISS_isShadowOpen, "f") ? 'open' : 'closed' }), "f");
         this.init();
     };
     return ImplLISS;
@@ -91,6 +105,13 @@ const elementNameLookupTable = {
     'DList': ['dl'],
     'Anchor': ['a']
 };
+function element2tagname(Class) {
+    var _a;
+    if (Class === HTMLElement)
+        return null;
+    let htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
+    return (_a = elementNameLookupTable[htmltag]) !== null && _a !== void 0 ? _a : htmltag.toLowerCase();
+}
 LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
     var _a;
     dependancies !== null && dependancies !== void 0 ? dependancies : (dependancies = []);
@@ -99,11 +120,7 @@ LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } =
         Class = Object.getPrototypeOf(Class);
     let ImplLISSClass = Class;
     Class = Object.getPrototypeOf(Class);
-    let htmltag = undefined;
-    if (Class !== HTMLElement) {
-        htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
-        htmltag = (_a = elementNameLookupTable[htmltag]) !== null && _a !== void 0 ? _a : htmltag.toLowerCase();
-    }
+    let htmltag = (_a = element2tagname(Class)) !== null && _a !== void 0 ? _a : undefined;
     if (withCstrParams !== undefined) {
         class WithCstrParams extends CustomClass {
             constructor() {

@@ -1,3 +1,11 @@
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
+const CAN_HAVE_SHADOW = [
+	null, 'article', 'aside', 'blockquote', 'body', 'div',
+	'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
+	'nav', 'p', 'section', 'span'
+	
+];
+
 export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 							inherit: T|null = null,
 							 _:null = null,
@@ -6,10 +14,20 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 	if(inherit === null)
 		inherit = HTMLElement as T;
 
+	let hasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inherit) );
+
+
 	//@ts-ignore cf https://github.com/microsoft/TypeScript/issues/37142
 	class ImplLISS extends inherit {
 
-		#content: Element|null = null;
+		#isShadowOpen: boolean;
+
+		constructor(isShadowOpen: boolean = false) {
+			super();
+			this.#isShadowOpen = isShadowOpen;
+		}
+
+		#content: HTMLElement|ShadowRoot|null = null;
 
 		protected get content() {
 
@@ -17,6 +35,10 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 				throw new Error('Access to content before initialization !');
 
 			return this.#content;
+		}
+
+		protected get hasShadow(): boolean {
+			return hasShadow;
 		}
 
 		protected get self() {
@@ -45,7 +67,9 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 		#init() {
 			customElements.upgrade(this);
 			
-			this.#content = this; //TODO: shadow
+			this.#content = this;
+			if( hasShadow )
+				this.#content = this.attachShadow({mode: this.#isShadowOpen ? 'open' : 'closed'})
 
 			this.init();
 		}
@@ -100,6 +124,15 @@ const elementNameLookupTable = {
     'Anchor': ['a']
   };
 
+function element2tagname(Class: typeof HTMLElement) {
+
+	if( Class === HTMLElement )
+		return null;
+	
+	let htmltag = HTMLCLASS_REGEX.exec(Class.name)![1];
+	return elementNameLookupTable[htmltag] ?? htmltag.toLowerCase()
+}
+
 
 LISS.define = function(tagname: string,
 						CustomClass: CustomElementConstructor,
@@ -116,11 +149,7 @@ LISS.define = function(tagname: string,
 
 	Class = Object.getPrototypeOf(Class);
 
-	let htmltag: string|undefined = undefined;
-	if( Class !== HTMLElement ) {
-		htmltag = HTMLCLASS_REGEX.exec(Class.name)![1];
-		htmltag = elementNameLookupTable[htmltag] ?? htmltag.toLowerCase()
-	}
+	let htmltag = element2tagname(Class)??undefined;
 
 	if( withCstrParams !== undefined) {
 		class WithCstrParams extends CustomClass {
