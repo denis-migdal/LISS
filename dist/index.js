@@ -22,7 +22,7 @@ let TO_DEFINE = [];
 document.addEventListener('DOMContentLoaded', () => {
     for (let args of TO_DEFINE)
         define(...args);
-});
+}, true);
 function define(...args) {
     return __awaiter(this, void 0, void 0, function* () {
         for (let dep of args[3])
@@ -50,8 +50,9 @@ const elementNameLookupTable = {
     'DList': ['dl'],
     'Anchor': ['a']
 };
-LISS.define = function (tagname, CustomClass, dependancies = []) {
+LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
     var _a;
+    dependancies !== null && dependancies !== void 0 ? dependancies : (dependancies = []);
     let Class = CustomClass;
     while (Class.name !== 'ImplLISS')
         Class = Object.getPrototypeOf(Class);
@@ -62,9 +63,34 @@ LISS.define = function (tagname, CustomClass, dependancies = []) {
         let htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
         htmltag = (_a = elementNameLookupTable[htmltag]) !== null && _a !== void 0 ? _a : htmltag.toLowerCase();
     }
+    if (withCstrParams !== undefined) {
+        class WithCstrParams extends CustomClass {
+            constructor() {
+                super(...withCstrParams);
+            }
+        }
+        CustomClass = WithCstrParams;
+    }
     let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.dependancies()]];
     if (document.readyState === "interactive")
         define(...args);
     else
         TO_DEFINE.push(args);
+};
+LISS.createElement = function (tagname, ...args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield customElements.whenDefined(tagname);
+        let CustomClass = customElements.get(tagname);
+        //if(CustomClass === undefined)
+        //	throw new Error(`Tag "${tagname}" is not defined (yet)!`)
+        return new CustomClass(...args);
+    });
+};
+LISS.whenDefined = function (tagname, callback) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let cstr = yield customElements.whenDefined(tagname);
+        if (callback !== undefined)
+            callback(cstr);
+        return cstr;
+    });
 };

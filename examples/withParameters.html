@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>LISS Example (Basic)</title>
+	<script type="module">
+		import LISS from '../dist/index.js';
+
+		class MyComponent extends LISS() {
+
+			constructor(foo) {
+				super();
+				console.log(foo);
+			}
+		}
+
+		LISS.define('my-component-a', MyComponent, {
+			withCstrParams: [24]
+		});
+		LISS.define('my-component-b', MyComponent);
+
+		(async () => {
+
+			let myelement = await LISS.createElement('my-component-b', 42);
+
+			document.body.append( myelement );
+
+		})();
+
+	</script>
+</head>
+<body>
+	<style type="text/css">
+		:root {
+			background-color: black;
+		}
+	</style>
+	<my-component-a></my-component-a>
+</body>
+</html>

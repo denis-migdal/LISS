@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	for(let args of TO_DEFINE)
 		define(...args)
-});
+}, true);
 
 async function define(...args: DEFINE_DATA) {
 
@@ -60,7 +60,12 @@ const elementNameLookupTable = {
   };
 
 
-LISS.define = function(tagname: string, CustomClass: CustomElementConstructor, dependancies: string[] = []) {
+LISS.define = function(tagname: string,
+						CustomClass: CustomElementConstructor,
+						{dependancies, withCstrParams}: {withCstrParams?:any, dependancies?: string[]} = {}) {
+
+	dependancies??=[];
+
 
 	let Class = CustomClass;
 	while( Class.name !== 'ImplLISS' )
@@ -76,6 +81,17 @@ LISS.define = function(tagname: string, CustomClass: CustomElementConstructor, d
 		htmltag = elementNameLookupTable[htmltag] ?? htmltag.toLowerCase()
 	}
 
+	if( withCstrParams !== undefined) {
+		class WithCstrParams extends CustomClass {
+            constructor() {
+                super(...withCstrParams)
+            }
+         }
+
+         CustomClass = WithCstrParams;
+	}
+
+
 	let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.dependancies()]] as const;
 
 	if(document.readyState === "interactive")
@@ -83,3 +99,23 @@ LISS.define = function(tagname: string, CustomClass: CustomElementConstructor, d
 	else
 		TO_DEFINE.push(args);
 };
+
+LISS.createElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, ...args: any[]): Promise<T> {
+			
+	let CustomClass = await customElements.whenDefined(tagname);
+
+	//if(CustomClass === undefined)
+	//	throw new Error(`Tag "${tagname}" is not defined (yet)!`)
+
+	return new CustomClass(...args) as T;	
+}
+
+LISS.whenDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagname: string, callback?: (cstr: T) => void ) : Promise<T> {
+
+	let cstr = await customElements.whenDefined(tagname) as T;
+
+	if( callback !== undefined)
+		callback(cstr);
+
+	return cstr;
+}

@@ -20,3 +20,11 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 ***Solution :*** `LISS.define()`, takes care of that for you, calling `customElements.define()` once the DOM is loaded or immediately if the DOM is already loaded.
 - For some reasons, some of your Web Components might be requires some other Web Components to be defined.<br/>
 ***Solution :*** The third parameter of `LISS()` and `LISS.define()` allow you to define a list of dependancies when defining a component.
+- `document.createElement()` doesn't allow you to pass parameters to your Web Component ([more info](https://github.com/WICG/webcomponents/issues/605))<br/>
+***Solution :*** `LISS.createElement()` enables you to give parameters to your WebComponent, and `LISS.define()` third argument to set values to be given to the WebComponent constructor.  
+
+
+## TODO
+
+- [ ] In `connectedCallback()` optionnal verification of data structure.
+- [ ] Creade a `LISS.initElement()`, a `LISS.createElement()` on steroid (set attributes, data, childs, class, + with upgrade argument).
