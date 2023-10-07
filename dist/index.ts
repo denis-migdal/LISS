@@ -6,13 +6,17 @@ const CAN_HAVE_SHADOW = [
 	
 ];
 
-export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
-							inherit: T|null = null,
+type API<T, U> = Omit<T, keyof U | "API" | "attributeChangedCallback" | "connectedCallback" | "disconnectedCallback" | "adoptedCallback">
+
+type Constructor<T> = new () => T;
+
+export default function LISS<T extends HTMLElement = HTMLElement>(
+							 inherit: Constructor<T>|null = null,
 							 observedAttributes: readonly string[] = [],
-							 dependancies: readonly string[] = []): T {
+							 dependancies: readonly string[] = []) {
 
 	if(inherit === null)
-		inherit = HTMLElement as T;
+		inherit = HTMLElement as Constructor<T>;
 
 	let hasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inherit) );
 
@@ -27,6 +31,10 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 		constructor(isShadowOpen: boolean = false) {
 			super();
 			this.#isShadowOpen = isShadowOpen;
+		}
+
+		get API(): API<ImplLISS, T> {
+			return this;
 		}
 
 		#content: HTMLElement|ShadowRoot|null = null;
@@ -108,8 +116,6 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 
 		}
 	}
-
-
 
 	return ImplLISS;
 }

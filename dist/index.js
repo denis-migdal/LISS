@@ -40,6 +40,9 @@ export default function LISS(inherit = null, observedAttributes = [], dependanci
             _ImplLISS_content.set(this, null);
             __classPrivateFieldSet(this, _ImplLISS_isShadowOpen, isShadowOpen, "f");
         }
+        get API() {
+            return this;
+        }
         get content() {
             if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
                 throw new Error('Access to content before initialization !');

@@ -39,10 +39,11 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 ***Solution:*** Use `LISS.buildElement()` to build a WebComponent, insert attributes, classes, datasets values, children, etc. before its initialization. The option `init` will force the element initialization before returning it.
 - Accessing to the HTML attributes in order to get their values is costly. Even more when we want to gather all values to validate them altogether.<br/>
 ***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
+- With TS, when using the WebComponent, all properties of `HTMLElement` are listed.<br/>
+***Solution:*** With LISS, `this.API` will get you all non-HTMLElement attributes.
 
 ## TODO
 
-- [ ] cache attributes
 - [ ] API TS type to remove HTMLElement suggestions in editors.
 
 - [ ] Ressources : finalize+destroy
