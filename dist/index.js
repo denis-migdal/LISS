@@ -25,7 +25,7 @@ const CAN_HAVE_SHADOW = [
     'nav', 'p', 'section', 'span'
 ];
 export default function LISS(inherit = null, observedAttributes = [], dependancies = []) {
-    var _ImplLISS_instances, _ImplLISS_isShadowOpen, _ImplLISS_isInit, _ImplLISS_content, _ImplLISS_init;
+    var _ImplLISS_instances, _ImplLISS_isShadowOpen, _ImplLISS_isInit, _ImplLISS_attributes, _ImplLISS_content, _ImplLISS_init;
     if (inherit === null)
         inherit = HTMLElement;
     let hasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inherit));
@@ -36,6 +36,7 @@ export default function LISS(inherit = null, observedAttributes = [], dependanci
             _ImplLISS_instances.add(this);
             _ImplLISS_isShadowOpen.set(this, void 0);
             _ImplLISS_isInit.set(this, false);
+            _ImplLISS_attributes.set(this, {});
             _ImplLISS_content.set(this, null);
             __classPrivateFieldSet(this, _ImplLISS_isShadowOpen, isShadowOpen, "f");
         }
@@ -52,6 +53,11 @@ export default function LISS(inherit = null, observedAttributes = [], dependanci
                 throw new Error('Access to self before initialization !');
             return this;
         }
+        get attrs() {
+            if (__classPrivateFieldGet(this, _ImplLISS_attributes, "f") === null)
+                throw new Error('Access to attributes before initialization !');
+            return __classPrivateFieldGet(this, _ImplLISS_attributes, "f");
+        }
         assertInit() {
             if (__classPrivateFieldGet(this, _ImplLISS_isInit, "f"))
                 throw new Error('Web Component is not initialized !');
@@ -67,16 +73,19 @@ export default function LISS(inherit = null, observedAttributes = [], dependanci
         attributeChangedCallback(name, oldValue, newValue) {
             if (!__classPrivateFieldGet(this, _ImplLISS_isInit, "f"))
                 return;
+            __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[name] = newValue;
             this.onAttrChanged(name, oldValue, newValue);
         }
         onAttrChanged(_name, _oldValue, _newValue) {
         }
     }
-    _ImplLISS_isShadowOpen = new WeakMap(), _ImplLISS_isInit = new WeakMap(), _ImplLISS_content = new WeakMap(), _ImplLISS_instances = new WeakSet(), _ImplLISS_init = function _ImplLISS_init() {
+    _ImplLISS_isShadowOpen = new WeakMap(), _ImplLISS_isInit = new WeakMap(), _ImplLISS_attributes = new WeakMap(), _ImplLISS_content = new WeakMap(), _ImplLISS_instances = new WeakSet(), _ImplLISS_init = function _ImplLISS_init() {
         customElements.upgrade(this);
         __classPrivateFieldSet(this, _ImplLISS_content, this, "f");
         if (hasShadow)
             __classPrivateFieldSet(this, _ImplLISS_content, this.attachShadow({ mode: __classPrivateFieldGet(this, _ImplLISS_isShadowOpen, "f") ? 'open' : 'closed' }), "f");
+        for (let obs of observedAttributes)
+            __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[obs] = this.getAttribute(obs);
         this.init();
         __classPrivateFieldSet(this, _ImplLISS_isInit, true, "f");
     };

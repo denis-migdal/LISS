@@ -22,6 +22,7 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 
 		#isShadowOpen: boolean;
 		#isInit = false;
+		#attributes: Record<string, string|null> = {};
 
 		constructor(isShadowOpen: boolean = false) {
 			super();
@@ -50,6 +51,14 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 			return this;
 		}
 
+		protected get attrs(): Readonly<Record<string, string|null>> {
+
+			if(this.#attributes === null)
+				throw new Error('Access to attributes before initialization !');
+
+			return this.#attributes;
+		}
+
 		protected assertInit() {
 			if(this.#isInit)
 				throw new Error('Web Component is not initialized !');
@@ -72,6 +81,9 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 			if( hasShadow )
 				this.#content = this.attachShadow({mode: this.#isShadowOpen ? 'open' : 'closed'})
 
+			for(let obs of observedAttributes)
+				this.#attributes[obs] = this.getAttribute(obs);
+
 			this.init();
 
 			this.#isInit = true;
@@ -86,6 +98,7 @@ export default function LISS<T extends typeof HTMLElement = typeof HTMLElement>(
 								 newValue: string) {
 			if( ! this.#isInit )
 				return;
+			this.#attributes[name] = newValue;
 			this.onAttrChanged(name, oldValue, newValue);
 		}
 

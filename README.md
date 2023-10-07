@@ -37,20 +37,23 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 ***Solution:*** Use `onAttrChanged()` instead, it won't be called if an attribute is modified before the Web Component has finished its initialization. Set the list of listened attributes in the second argument of `LISS()`.
 - building a tag with its attribute, children, etc. takes too many lines.<br/>
 ***Solution:*** Use `LISS.buildElement()` to build a WebComponent, insert attributes, classes, datasets values, children, etc. before its initialization. The option `init` will force the element initialization before returning it.
+- Accessing to the HTML attributes in order to get their values is costly. Even more when we want to gather all values to validate them altogether.<br/>
+***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
 
 ## TODO
 
 - [ ] cache attributes
-
 - [ ] API TS type to remove HTMLElement suggestions in editors.
+
 - [ ] Ressources : finalize+destroy
 - [ ] Prefill WebComponent from a Template/string/queryselector + with basic interpolation.
 
-- [ ] LISS parameter Custom Element (mutation observer + event parentS)
 - [ ] get slots + pseudo slots for non-shadow
+- [ ] LISS parameter Custom Element (mutation observer + event parents)
 
 - [ ] In `connectedCallback()` optionnal verification of data structure.
 
 - [ ] npm package
 - [ ] Test
   - [ ] test with TR element
+  - [ ] a test per issue solved ?
