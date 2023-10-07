@@ -35,7 +35,7 @@ To rebuild the JS files, use : `tsc $FILE --target es6`.
 
 - [ ] In `connectedCallback()` optionnal verification of data structure.
 - [ ] Creade a `LISS.initElement()`, a `LISS.createElement()` on steroid (set attributes, data, childs, class, + with upgrade argument).
-- [ ] Prefill WebComponent from a Template/string + with basic interpolation.
+- [ ] Prefill WebComponent from a Template/string/queryselector + with basic interpolation.
 - [ ] Ressources : finalize+destroy
 - [ ] API TS type to remove HTMLElement suggestions in editors.
 - [ ] LISS parameter Custom Element (mutation observer + event parentS)
