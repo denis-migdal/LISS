@@ -197,6 +197,60 @@ LISS.createElement = async function <T extends HTMLElement = HTMLElement>(tagnam
 	return new CustomClass(...args) as T;	
 }
 
+type BUILD_OPTIONS = {init?: boolean,
+					  withCstrParams?: any[],
+					  attrs?: Record<string, string|boolean>,
+					  content?: string|Node|readonly Node[],
+					  classes?: string[],
+					  data?: Record<string, string|boolean>
+					}
+
+LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, {withCstrParams, init, content, attrs, classes, data}: BUILD_OPTIONS = {}): Promise<T> {
+
+	withCstrParams ??= [];
+	let elem = await LISS.createElement(tagname, ...withCstrParams)
+
+	if(attrs !== undefined)
+		for(let name in attrs) {
+
+			let value = attrs[name];
+			if( typeof value === "boolean")
+				elem.toggleAttribute(name, value);
+			else
+				elem.setAttribute(name, value);
+		}
+
+	if( classes !== undefined )
+		elem.classList.add(...classes);
+
+	if( data !== undefined) {
+
+		for(let name in attrs) {
+
+			let value = attrs[name];
+			if( value === false)
+				delete elem.dataset[name];
+			else if(value === true)
+				elem.dataset[name] = "";
+			else
+				elem.dataset[name] = value;
+		}
+	}
+
+	if(content !== undefined) {
+
+		if( ! Array.isArray(content) )
+			content = [content as any];
+
+		elem.append(...content)
+	}
+
+	if(init)
+		(elem as any).connectedCallback(); //force init ?
+
+	return elem as T;
+}
+
 LISS.whenDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagname: string, callback?: (cstr: T) => void ) : Promise<T> {
 
 	let cstr = await customElements.whenDefined(tagname) as T;

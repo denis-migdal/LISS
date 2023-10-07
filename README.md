@@ -35,12 +35,12 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 ***Solution:*** Use `this.content` to set the Web Component content. LISS attaches a `ShadowRoot` if supported, else `this` is used. In your webcomponent, use `super(true/false)` to indicate whether you want the `ShadowRoot` to be open (true) or closed (false).
 - `attributeChangedCallback()` is called each time an attribute is modified, even when the Web Component hasn't been initialized yet !<br/>
 ***Solution:*** Use `onAttrChanged()` instead, it won't be called if an attribute is modified before the Web Component has finished its initialization. Set the list of listened attributes in the second argument of `LISS()`.
+- building a tag with its attribute, children, etc. takes too many lines.<br/>
+***Solution:*** Use `LISS.buildElement()` to build a WebComponent, insert attributes, classes, datasets values, children, etc. before its initialization. The option `init` will force the element initialization before returning it.
 
 ## TODO
 
 - [ ] cache attributes
-
-- [ ] Creade a `LISS.buildElement()`, a `LISS.createElement()` on steroid (set attributes, data, childs, class, + with upgrade argument).
 
 - [ ] API TS type to remove HTMLElement suggestions in editors.
 - [ ] Ressources : finalize+destroy

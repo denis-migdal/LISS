@@ -153,6 +153,41 @@ LISS.createElement = function (tagname, ...args) {
         return new CustomClass(...args);
     });
 };
+LISS.buildElement = function (tagname, { withCstrParams, init, content, attrs, classes, data } = {}) {
+    return __awaiter(this, void 0, void 0, function* () {
+        withCstrParams !== null && withCstrParams !== void 0 ? withCstrParams : (withCstrParams = []);
+        let elem = yield LISS.createElement(tagname, ...withCstrParams);
+        if (attrs !== undefined)
+            for (let name in attrs) {
+                let value = attrs[name];
+                if (typeof value === "boolean")
+                    elem.toggleAttribute(name, value);
+                else
+                    elem.setAttribute(name, value);
+            }
+        if (classes !== undefined)
+            elem.classList.add(...classes);
+        if (data !== undefined) {
+            for (let name in attrs) {
+                let value = attrs[name];
+                if (value === false)
+                    delete elem.dataset[name];
+                else if (value === true)
+                    elem.dataset[name] = "";
+                else
+                    elem.dataset[name] = value;
+            }
+        }
+        if (content !== undefined) {
+            if (!Array.isArray(content))
+                content = [content];
+            elem.append(...content);
+        }
+        if (init)
+            elem.connectedCallback(); //force init ?
+        return elem;
+    });
+};
 LISS.whenDefined = function (tagname, callback) {
     return __awaiter(this, void 0, void 0, function* () {
         let cstr = yield customElements.whenDefined(tagname);
