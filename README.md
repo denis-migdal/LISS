@@ -1,8 +1,8 @@
-# **[IN PROGRESS]** Light, Intuitive, Simplier, and Safer Web Components.
+# **[IN PROGRESS]** LISS: Light, Intuitive, Simplier, and Safer Web Components.
 
 ## Why LISS ?
 
-Web Components are simple to use... but **hard to use *correctly*** due to a multitude of non-intuitives behaviors and rules. Most of examples and documentation found on the Internet are **unsafe** (cf [List of issues solved by LISS](#list-of-issues-solved-by-liss)).
+Web Components are simple to use... but **hard to use *correctly***, due to a multitude of non-intuitives behaviors and rules. Most of examples and documentation found on the Internet are **unsafe** (cf [List of issues solved by LISS](#list-of-issues-solved-by-liss)).
 
 **LISS enables you to correctly use Web Compoments without worrying about all of that.**
 
