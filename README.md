@@ -50,17 +50,19 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 
 ## TODO
 
-- [ ] add slots by default + pseudo slots events for non-shadow.
-
-- [ ] LISS parameter Custom Element (mutation observer + event parents)
-- [ ] In `connectedCallback()` optionnal verification of data structure.
-
-- [ ] Ressources : finalize+destroy
-	- [ ] declare ressource
-
+- [ ] Slots
+  - [ ] if shadow : add by default : use d-none if don't want it.
+  - [ ] Mutation observer on childs (not including named slots). => child or slot ?
+  - [ ] added/removed (events)
 
 - [ ] npm package
 - [ ] Test
   - [ ] test with TR element
   - [ ] a test per issue solved ?
 - [ ] Documentation/usage
+  - [ ] Validate example.
+
+
+- [ ] LISS parameter Custom Element (mutation observer + event parents)
+- [ ] Ressources : finalize+destroy
+	- [ ] declare ressource
