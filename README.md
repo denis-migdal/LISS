@@ -52,8 +52,10 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 
 - [ ] Slots
   - [ ] if shadow : add by default : use d-none if don't want it.
-  - [ ] Mutation observer on childs (not including named slots). => child or slot ?
-  - [ ] added/removed (events)
+    - [ ] createSlot(name), if no shadow : returns this.#content, if name = throw an exception.
+    - [ ] getSlot(name) : if not found : throws.
+    - [ ] observeSlot(name, options) ? : if not found : throws.
+      - [ ] added/removed (events)
 
 - [ ] npm package
 - [ ] Test
