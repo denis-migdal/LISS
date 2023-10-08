@@ -11,18 +11,22 @@ type API<T, U> = Omit<T, keyof U | "API" | "attributeChangedCallback" | "connect
 export type LISSOptions = {
 	observedAttributes ?: readonly string[],
 	dependancies?: readonly string[],
-	template?: string|HTMLTemplateElement
+	template?: string|HTMLTemplateElement,
+	css?: [string|HTMLStyleElement|CSSStyleSheet]
 };
 
 type Constructor<T> = new () => T;
 
 export default function LISS<T extends HTMLElement = HTMLElement>(
 							 inherit: Constructor<T>|null = null,
-							{observedAttributes, dependancies, template}: LISSOptions = {}) {
+							{observedAttributes, dependancies, template, css}: LISSOptions = {}) {
 
 	inherit ??= HTMLElement as Constructor<T>;
 	observedAttributes ??= [];
 	dependancies ??= [];
+
+	let hasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inherit) );
+
 
 	if( template !== undefined ) {
 
@@ -37,7 +41,35 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 			template = undefined;
 	}
 
-	let hasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inherit) );
+	let shadow_stylesheets: readonly CSSStyleSheet[] = [];
+	if( css !== undefined ) {
+
+		shadow_stylesheets = css.map( c => {
+
+			if(c instanceof CSSStyleSheet)
+				return c;
+
+			if( typeof c === 'string' && c[0] === '#' )
+				c = document.querySelector<HTMLStyleElement>(c)!;
+
+			if( c instanceof HTMLStyleElement)
+				return c.sheet!;
+
+			let style = new CSSStyleSheet()
+			style.replaceSync(c);
+
+			return style;
+		});
+	}
+	let html_stylesheets = "";
+	if( ! hasShadow && css !== undefined) {
+
+		for(let style of shadow_stylesheets)
+			for(let rule of style.cssRules)
+				html_stylesheets += rule.cssText + '\n';
+	}
+
+	let alreadyDeclaredCSS = new Set();
 
 
 	//@ts-ignore cf https://github.com/microsoft/TypeScript/issues/37142
@@ -110,6 +142,27 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 
 			for(let obs of observedAttributes!)
 				this.#attributes[obs] = this.getAttribute(obs);
+
+			if( css !== undefined ) {
+
+				if(hasShadow) {
+					(this.#content as ShadowRoot).adoptedStyleSheets.push(...shadow_stylesheets)
+				} else {
+
+					if( ! alreadyDeclaredCSS.has(this.tagName) ) {					//if not yet inserted :
+						
+						let style = document.createElement('style');
+						style.setAttribute('for', this.tagName);
+
+						style.innerHTML = html_stylesheets.replace(':host', this.tagName);
+
+						document.head.append(style);
+						alreadyDeclaredCSS.add(this.tagName);
+						throw new Error('not yet implemented');
+					}
+				}
+
+			}
 
 			if( template !== undefined ) {
 				let template_elem = document.createElement('template');

@@ -40,13 +40,16 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 - Accessing to the HTML attributes in order to get their values is costly. Even more when we want to gather all values to validate them altogether.<br/>
 ***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
 - With TS, when using the WebComponent, all properties of `HTMLElement` are listed.<br/>
-***Solution:*** With LISS, `this.API` will remove from suggestions all HTMLElement attributes.
+***Solution:*** With LISS, `this.API` will remove all `HTMLElement` members from the suggestions.
 - Filling the Web Component can be cumbersome<br/>
-***Solution:*** `LISS()` accept a string, a HTMLTemplateElement, or an identifer to a HTMLTemplateElement that will be used to fill the Web Component.
+***Solution 1:*** `LISS()` accept a string, a `HTMLTemplateElement`, or an identifer to a `HTMLTemplateElement` that will be used to fill the Web Component.
+***Solution 2:*** `LISS()` accept a string, a `CSSStyleSheet`, a `HTMLStyleElement`, or an identifer to a `HTMLStyleElement` that will be used to fill the Web Component CSS.
+- Depending whether the Web Component uses a ShadowRoot or not, they way to declare and add the CSS rules differs.<br/>
+***Solution:*** If the element doesn't support `ShadowRoot`, LISS creates `HTMLStyleElement` that are appened to the `HTMLHeadElement`. Rules are modified to replace ":host" by the Web Component tagname.
+
 
 ## TODO
 
-- [ ] add CSS rules : from ID ou Style ou string too ?
 - [ ] add slots by default + pseudo slots events for non-shadow.
 
 - [ ] LISS parameter Custom Element (mutation observer + event parents)

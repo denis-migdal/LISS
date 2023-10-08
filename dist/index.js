@@ -24,11 +24,12 @@ const CAN_HAVE_SHADOW = [
     'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
     'nav', 'p', 'section', 'span'
 ];
-export default function LISS(inherit = null, { observedAttributes, dependancies, template } = {}) {
+export default function LISS(inherit = null, { observedAttributes, dependancies, template, css } = {}) {
     var _ImplLISS_instances, _ImplLISS_isShadowOpen, _ImplLISS_isInit, _ImplLISS_attributes, _ImplLISS_content, _ImplLISS_init;
     inherit !== null && inherit !== void 0 ? inherit : (inherit = HTMLElement);
     observedAttributes !== null && observedAttributes !== void 0 ? observedAttributes : (observedAttributes = []);
     dependancies !== null && dependancies !== void 0 ? dependancies : (dependancies = []);
+    let hasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inherit));
     if (template !== undefined) {
         if (typeof template === 'string' && template[0] === '#')
             template = document.querySelector(template);
@@ -38,7 +39,27 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
         if (template === '')
             template = undefined;
     }
-    let hasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inherit));
+    let shadow_stylesheets = [];
+    if (css !== undefined) {
+        shadow_stylesheets = css.map(c => {
+            if (c instanceof CSSStyleSheet)
+                return c;
+            if (typeof c === 'string' && c[0] === '#')
+                c = document.querySelector(c);
+            if (c instanceof HTMLStyleElement)
+                return c.sheet;
+            let style = new CSSStyleSheet();
+            style.replaceSync(c);
+            return style;
+        });
+    }
+    let html_stylesheets = "";
+    if (!hasShadow && css !== undefined) {
+        for (let style of shadow_stylesheets)
+            for (let rule of style.cssRules)
+                html_stylesheets += rule.cssText + '\n';
+    }
+    let alreadyDeclaredCSS = new Set();
     //@ts-ignore cf https://github.com/microsoft/TypeScript/issues/37142
     class ImplLISS extends inherit {
         constructor(isShadowOpen = false) {
@@ -99,6 +120,21 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
             __classPrivateFieldSet(this, _ImplLISS_content, this.attachShadow({ mode: __classPrivateFieldGet(this, _ImplLISS_isShadowOpen, "f") ? 'open' : 'closed' }), "f");
         for (let obs of observedAttributes)
             __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[obs] = this.getAttribute(obs);
+        if (css !== undefined) {
+            if (hasShadow) {
+                __classPrivateFieldGet(this, _ImplLISS_content, "f").adoptedStyleSheets.push(...shadow_stylesheets);
+            }
+            else {
+                if (!alreadyDeclaredCSS.has(this.tagName)) { //if not yet inserted :
+                    let style = document.createElement('style');
+                    style.setAttribute('for', this.tagName);
+                    style.innerHTML = html_stylesheets.replace(':host', this.tagName);
+                    document.head.append(style);
+                    alreadyDeclaredCSS.add(this.tagName);
+                    throw new Error('not yet implemented');
+                }
+            }
+        }
         if (template !== undefined) {
             let template_elem = document.createElement('template');
             let str = template.replace(/\$\{(.+?)\}/g, (_, match) => { var _a; return (_a = __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[match]) !== null && _a !== void 0 ? _a : ''; });
