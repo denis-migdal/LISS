@@ -91,6 +91,11 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 			return this;
 		}
 
+		get CSSSelector() {
+			return this.hasShadow
+					? this.tagName
+					: `${this.tagName}[is="${this.getAttribute("is")}"]`;
+		}
 
 		getPart(name: string) {
 			return this.hasShadow
@@ -164,10 +169,7 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 					(this.#content as ShadowRoot).adoptedStyleSheets.push(...shadow_stylesheets)
 				} else {
 
-					let is = this.getAttribute("is");
-					let cssselector = this.tagName
-					if( is === undefined )
-						cssselector = `${cssselector}[is="${is}"]`;
+					const cssselector = this.CSSSelector;
 
 					// if not yet inserted :
 					if( ! alreadyDeclaredCSS.has(cssselector) ) {

@@ -76,6 +76,11 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
         get API() {
             return this;
         }
+        get CSSSelector() {
+            return this.hasShadow
+                ? this.tagName
+                : `${this.tagName}[is="${this.getAttribute("is")}"]`;
+        }
         getPart(name) {
             var _a, _b;
             return this.hasShadow
@@ -139,10 +144,7 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
                 __classPrivateFieldGet(this, _ImplLISS_content, "f").adoptedStyleSheets.push(...shadow_stylesheets);
             }
             else {
-                let is = this.getAttribute("is");
-                let cssselector = this.tagName;
-                if (is === undefined)
-                    cssselector = `${cssselector}[is="${is}"]`;
+                const cssselector = this.CSSSelector;
                 // if not yet inserted :
                 if (!alreadyDeclaredCSS.has(cssselector)) {
                     let style = document.createElement('style');

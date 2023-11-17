@@ -1,4 +1,4 @@
-# **[IN PROGRESS]** LISS: Light, Intuitive, Simplier, and Safer Web Components.
+# LISS: Light, Intuitive, Simplier, and Safer Web Components.
 
 ## Why LISS ?
 
@@ -380,7 +380,6 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
 
 - [ ] ShadowRoot
-  - [ ] Parts -> a function to get the element ?
   - [ ] Slots
     - [ ] createSlot(name), if no shadow : returns this.#content, if name = throw an exception.
     - [ ] getSlot(name) : if not found : throws.
