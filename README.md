@@ -85,8 +85,8 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 - `document.createElement()` doesn't allow you to pass parameters to your Web Component ([more info](https://github.com/WICG/webcomponents/issues/605))<br/>
 ***Solution :*** `LISS.createElement()` enables you to give parameters to your WebComponent, and `LISS.define()` third argument to set values to be given to the WebComponent constructor.
 - WebComponent's DOM should not be accessed/modified until the first call of `connectedCallback()`.<br/>
-***Solution 1:*** Use `this.self` (protected) instead of `this` to access the WebComponent attribute/children. Throws an exception if the Web Component still hasn't be initialized.
-***Solution 2:*** Use `this.content` (protected) to access the Web Component's content. 
+***Solution 1:*** Use `this.self` (protected) instead of `this` to access the WebComponent attribute/children. Throws an exception if the Web Component still hasn't be initialized.<br/>
+***Solution 2:*** Use `this.content` (protected) to access the Web Component's content.<br/>
 ***Solution 3:*** You may also use `this.assertInit()` (protected) at the start of your methods, to throw an exception if called while the WebComponent still hasn't be initialized.
 - WebComponent should be initialized at the first call of `connectedCallback()` (can be called several times).<br/>
 **Solution:**
@@ -104,7 +104,7 @@ Redefine `this.init()` (protected) to initialize your Web Component. LISS will c
 - With TS, when using the WebComponent, all properties of `HTMLElement` are listed.<br/>
 ***Solution:*** With LISS, `this.API` will remove all `HTMLElement` members from the suggestions.
 - Filling the Web Component can be cumbersome<br/>
-***Solution 1:*** `LISS()` accept a string, a `HTMLTemplateElement`, or an identifer to a `HTMLTemplateElement` that will be used to fill the Web Component.
+***Solution 1:*** `LISS()` accept a string, a `HTMLTemplateElement`, or an identifer to a `HTMLTemplateElement` that will be used to fill the Web Component.<br/>
 ***Solution 2:*** `LISS()` accept a string, a `CSSStyleSheet`, a `HTMLStyleElement`, or an identifer to a `HTMLStyleElement` that will be used to fill the Web Component CSS.
 - Depending whether the Web Component uses a ShadowRoot or not, they way to declare and add the CSS rules differs.<br/>
 ***Solution:*** If the element doesn't support `ShadowRoot`, LISS creates `HTMLStyleElement` that are appened to the `HTMLHeadElement`. Rules are modified to replace ":host" by the Web Component tagname.
