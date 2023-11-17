@@ -42,8 +42,8 @@ To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
 
 You can see all examples inside the [`LISS/examples/` directory](./examples/);
 
-- Inherit a builtin HTML element easily, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).
-  [Learn more about this feature](#easily-inherit-a-builtin-html-element)
+- Inherit a builtin HTML element easily, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).\\
+[📖 Learn more about this feature](#easily-inherit-a-builtin-html-element)
 
 ### Easily inherit a builtin HTML element
 
