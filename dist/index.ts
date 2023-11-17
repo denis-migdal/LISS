@@ -112,7 +112,7 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 
 		protected get attrs(): Readonly<Record<string, string|null>> {
 
-			if(this.#attributes === null)
+			if(this.#content === null)
 				throw new Error('Access to attributes before initialization !');
 
 			return this.#attributes;
@@ -183,9 +183,9 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 		attributeChangedCallback(name: string,
 								 oldValue: string,
 								 newValue: string) {
+			this.#attributes[name] = newValue;
 			if( ! this.#isInit )
 				return;
-			this.#attributes[name] = newValue;
 			this.onAttrChanged(name, oldValue, newValue);
 		}
 

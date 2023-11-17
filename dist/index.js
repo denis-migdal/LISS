@@ -88,7 +88,7 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
             return this;
         }
         get attrs() {
-            if (__classPrivateFieldGet(this, _ImplLISS_attributes, "f") === null)
+            if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
                 throw new Error('Access to attributes before initialization !');
             return __classPrivateFieldGet(this, _ImplLISS_attributes, "f");
         }
@@ -105,9 +105,9 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
         }
         init() { }
         attributeChangedCallback(name, oldValue, newValue) {
+            __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[name] = newValue;
             if (!__classPrivateFieldGet(this, _ImplLISS_isInit, "f"))
                 return;
-            __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[name] = newValue;
             this.onAttrChanged(name, oldValue, newValue);
         }
         onAttrChanged(_name, _oldValue, _newValue) {
