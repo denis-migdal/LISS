@@ -6,12 +6,6 @@ Web Components are simple to use... but **hard to use *correctly***, due to a mu
 
 **LISS enables you to correctly use Web Compoments without worrying about all of that.**
 
-## Install LISS
-
-In order to use LISS in your project, you can also directly copy the `LISS/dist/` directory into your project directory.
-
-To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
-
 ## Use LISS
 
 ```html
@@ -33,6 +27,12 @@ To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
 </script>
 <my-component></my-component>
 ```
+
+## Install LISS
+
+In order to use LISS in your project, you can also directly copy the `LISS/dist/` directory into your project directory.
+
+To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
 
 ## List of issues solved by LISS
 
