@@ -48,7 +48,10 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 [*📖 Learn more about this feature.*](#ensure-initialization-before-use)
 - **Better management of observed attributes**, callback is only called *after* initialization, value of all observed attribute is cached to prevent useless DOM access, also enabling easier data validation.<br/>
 [*📖 Learn more about this feature.*](#observe-attributes)
-
+- **Enable to give parameters to WebComponents' constructors**, because there is not reasons not to ;).<br/>
+[*📖 Learn more about this feature.*](#constructor-parameters)
+- **Provide better interface to dynamically build WebComponents instances.**<br/>
+[*📖 Learn more about this feature.*](#dynamically-build-instances)
 
 ### Easily inherit a builtin HTML element
 
@@ -162,6 +165,80 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
   LISS.define('my-component', MyComponent);
 </script>
 <my-component></my-component>
+```
+
+### Constructor parameters
+
+```html
+<!-- LISS/examples/parameters.html -->
+<script type="module">
+  import LISS from './LISS/dist/index.js';
+
+  class MyComponent extends LISS() {
+
+    constructor({a, b} = {}) {
+      super();
+
+      this.a = a ?? 0;
+      this.b = b ?? 0;
+    }
+
+    init() {
+      this.content.textContent = `${this.a} - ${this.b}`;
+    }
+  }
+
+  LISS.define('my-component-b1', MyComponent, {withCstrParams: {b: 1}});
+  LISS.define('my-component-b2', MyComponent, {withCstrParams: {b: 2}});
+
+  const elem = await LISS.buildElement( 'my-component-b2', {
+                      withCstrParams: {a: 3}
+                    });
+  document.body.append( elem );
+</script>
+<my-component-b1></my-component-b1>
+<my-component-b2></my-component-b2>
+```
+
+### Dynamically build instances
+
+
+```html
+<!-- LISS/examples/dynamic-build.html -->
+<script type="module">
+  import LISS from './LISS/dist/index.js';
+
+  class MyComponent extends LISS() {
+
+    init() {
+      this.content.append('Hello World ;)');
+    }
+  }
+
+  LISS.define('my-component', MyComponent);
+
+
+  const elem = await LISS.buildElement('my-component', {
+    // withCstrParams: {}       // constructor parameters
+    // init: true,            // force initialization of element before insertion.
+    
+    content: "Hello ;)",        // set element children
+    // or
+    content: ["Hello", "World"],
+    parent : document.body,     // add element to the parent
+
+    id     : "myWebComponent",    // set element ID.
+    classes: ["c1", "c2"],      // set element classes
+    cssvars: {"toto": "42"},    // set element CSS variables
+
+    attrs: {attrname: "value"},   // set element attributes
+    data : {name    : "value"},
+
+    listeners: {          // set element listeners
+      "click": () => { console.log('click!') }
+    }
+  });
+</script>
 ```
 
 ## List of issues solved by LISS

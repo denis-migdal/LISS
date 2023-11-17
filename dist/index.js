@@ -197,8 +197,8 @@ LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } =
     let htmltag = (_a = element2tagname(Class)) !== null && _a !== void 0 ? _a : undefined;
     if (withCstrParams !== undefined) {
         class WithCstrParams extends CustomClass {
-            constructor() {
-                super(...withCstrParams);
+            constructor(params = {}) {
+                super(Object.assign({}, withCstrParams, params));
             }
         }
         CustomClass = WithCstrParams;
@@ -209,46 +209,47 @@ LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } =
     else
         TO_DEFINE.push(args);
 };
-LISS.createElement = function (tagname, ...args) {
+LISS.createElement = function (tagname, args) {
     return __awaiter(this, void 0, void 0, function* () {
         let CustomClass = yield customElements.whenDefined(tagname);
         //if(CustomClass === undefined)
         //	throw new Error(`Tag "${tagname}" is not defined (yet)!`)
-        return new CustomClass(...args);
+        return new CustomClass(args);
     });
 };
-LISS.buildElement = function (tagname, { withCstrParams, init, content, attrs, classes, data } = {}) {
+LISS.buildElement = function (tagname, { withCstrParams = {}, init = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
     return __awaiter(this, void 0, void 0, function* () {
-        withCstrParams !== null && withCstrParams !== void 0 ? withCstrParams : (withCstrParams = []);
-        let elem = yield LISS.createElement(tagname, ...withCstrParams);
-        if (attrs !== undefined)
-            for (let name in attrs) {
-                let value = attrs[name];
-                if (typeof value === "boolean")
-                    elem.toggleAttribute(name, value);
-                else
-                    elem.setAttribute(name, value);
-            }
-        if (classes !== undefined)
-            elem.classList.add(...classes);
-        if (data !== undefined) {
-            for (let name in attrs) {
-                let value = attrs[name];
-                if (value === false)
-                    delete elem.dataset[name];
-                else if (value === true)
-                    elem.dataset[name] = "";
-                else
-                    elem.dataset[name] = value;
-            }
+        let elem = yield LISS.createElement(tagname, withCstrParams);
+        if (id !== undefined)
+            elem.id = id;
+        elem.classList.add(...classes);
+        for (let name in cssvars)
+            elem.style.setProperty(`--${name}`, cssvars[name]);
+        for (let name in attrs) {
+            let value = attrs[name];
+            if (typeof value === "boolean")
+                elem.toggleAttribute(name, value);
+            else
+                elem.setAttribute(name, value);
         }
-        if (content !== undefined) {
-            if (!Array.isArray(content))
-                content = [content];
-            elem.append(...content);
+        for (let name in data) {
+            let value = data[name];
+            if (value === false)
+                delete elem.dataset[name];
+            else if (value === true)
+                elem.dataset[name] = "";
+            else
+                elem.dataset[name] = value;
         }
+        if (!Array.isArray(content))
+            content = [content];
+        elem.replaceChildren(...content);
+        for (let name in listeners)
+            elem.addEventListener(name, listeners[name]);
         if (init)
             elem.connectedCallback(); //force init ?
+        if (parent !== undefined)
+            parent.append(elem);
         return elem;
     });
 };

@@ -252,7 +252,7 @@ function element2tagname(Class: typeof HTMLElement) {
 
 LISS.define = function(tagname: string,
 						CustomClass: CustomElementConstructor,
-						{dependancies, withCstrParams}: {withCstrParams?:any, dependancies?: string[]} = {}) {
+						{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: string[]} = {}) {
 
 	dependancies??=[];
 
@@ -269,8 +269,8 @@ LISS.define = function(tagname: string,
 
 	if( withCstrParams !== undefined) {
 		class WithCstrParams extends CustomClass {
-            constructor() {
-                super(...withCstrParams)
+            constructor(params = {}) {
+                super(Object.assign({}, withCstrParams, params) );
             }
          }
 
@@ -285,66 +285,85 @@ LISS.define = function(tagname: string,
 		TO_DEFINE.push(args);
 };
 
-LISS.createElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, ...args: any[]): Promise<T> {
+LISS.createElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, args: Readonly<Record<string, any>>): Promise<T> {
 			
 	let CustomClass = await customElements.whenDefined(tagname);
 
 	//if(CustomClass === undefined)
 	//	throw new Error(`Tag "${tagname}" is not defined (yet)!`)
 
-	return new CustomClass(...args) as T;	
+	return new CustomClass(args) as T;	
 }
 
-type BUILD_OPTIONS = {init?: boolean,
-					  withCstrParams?: any[],
-					  attrs?: Record<string, string|boolean>,
-					  content?: string|Node|readonly Node[],
-					  classes?: string[],
-					  data?: Record<string, string|boolean>
-					}
+type BUILD_OPTIONS = Partial<{
+					  	withCstrParams: Readonly<Record<string, any>>,
+						init 	 : boolean,
+					  	content	 : string|Node|readonly Node[],
+					  	parent   : HTMLElement,
+						id 		 : string,
+					  	classes	 : readonly string[],
+					  	cssvars  : Readonly<Record<string, string>>,
+					  	attrs 	 : Readonly<Record<string, string|boolean>>,
+					  	data 	 : Readonly<Record<string, string|boolean>>,
+					  	listeners: Readonly<Record<string, (ev: Event) => void>>
+					}>;
 
-LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, {withCstrParams, init, content, attrs, classes, data}: BUILD_OPTIONS = {}): Promise<T> {
+LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, {
+		withCstrParams = {},
+		init 	  = true,
+		content   = [],
+		parent    = undefined,
+		id 		  = undefined,
+		classes   = [],
+		cssvars   = {},
+		attrs     = {},
+		data 	  = {},
+		listeners = {}
+	}: BUILD_OPTIONS = {}): Promise<T> {
 
-	withCstrParams ??= [];
-	let elem = await LISS.createElement(tagname, ...withCstrParams)
+	let elem = await LISS.createElement(tagname, withCstrParams)
 
-	if(attrs !== undefined)
-		for(let name in attrs) {
+	if( id !== undefined )
+		elem.id = id;
 
-			let value = attrs[name];
-			if( typeof value === "boolean")
-				elem.toggleAttribute(name, value);
-			else
-				elem.setAttribute(name, value);
-		}
+	elem.classList.add(...classes);
 
-	if( classes !== undefined )
-		elem.classList.add(...classes);
+	for(let name in cssvars)
+		elem.style.setProperty(`--${name}`, cssvars[name]);
 
-	if( data !== undefined) {
+	for(let name in attrs) {
 
-		for(let name in attrs) {
-
-			let value = attrs[name];
-			if( value === false)
-				delete elem.dataset[name];
-			else if(value === true)
-				elem.dataset[name] = "";
-			else
-				elem.dataset[name] = value;
-		}
+		let value = attrs[name];
+		if( typeof value === "boolean")
+			elem.toggleAttribute(name, value);
+		else
+			elem.setAttribute(name, value);
 	}
 
-	if(content !== undefined) {
 
-		if( ! Array.isArray(content) )
-			content = [content as any];
+	for(let name in data) {
 
-		elem.append(...content)
+		let value = data[name];
+		if( value === false)
+			delete elem.dataset[name];
+		else if(value === true)
+			elem.dataset[name] = "";
+		else
+			elem.dataset[name] = value;
 	}
+
+	if( ! Array.isArray(content) )
+		content = [content as any];
+	elem.replaceChildren(...content);
+
+	for(let name in listeners)
+		elem.addEventListener(name, listeners[name]);
 
 	if(init)
 		(elem as any).connectedCallback(); //force init ?
+
+	if( parent !== undefined )
+		parent.append(elem);
 
 	return elem as T;
 }

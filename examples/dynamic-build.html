@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>LISS Example (Basic)</title>
+	<script type="module">
+		import LISS from '../dist/index.js';
+
+		class MyComponent extends LISS() {
+
+			init() {
+				this.content.append('Hello World ;)');
+			}
+		}
+
+		LISS.define('my-component', MyComponent);
+
+
+		const elem = await LISS.buildElement('my-component', {
+			// withCstrParams: {} 		  // constructor parameters
+			// init: true, 		  		  // force initialization of element before insertion.
+			
+			content: "Hello ;)",   		  // set element children
+			// or
+			content: ["Hello", "World"],
+			parent : document.body,		  // add element to the parent
+
+			id 	   : "myWebComponent", 	  // set element ID.
+			classes: ["c1", "c2"],		  // set element classes
+			cssvars: {"toto": "42"},	  // set element CSS variables
+
+			attrs: {attrname: "value"},   // set element attributes
+			data : {name    : "value"},
+
+			listeners: {				  // set element listeners
+				"click": () => { console.log('click!') }
+			}
+		});
+	</script>
+</head>
+<body></body>
+</html>
