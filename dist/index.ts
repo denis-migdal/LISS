@@ -119,7 +119,7 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 		}
 
 		protected assertInit() {
-			if(this.#isInit)
+			if(this.#isInit === false )
 				throw new Error('Web Component is not initialized !');
 
 		}

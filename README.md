@@ -44,6 +44,9 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
 - **Inherit a builtin HTML element easily**, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).<br/>
 [*📖 Learn more about this feature.*](#easily-inherit-a-builtin-html-element)
+- **Ensure the WebComponent is properly initialized before usage**, children are forced upgraded, and `this.content`, `this.self` raise exceptions if called before initialization. `this.assertInit()` can also be used.<br/>
+[*📖 Learn more about this feature.*](#ensure-initialization-before-use)
+
 
 ### Easily inherit a builtin HTML element
 
@@ -73,6 +76,48 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 </table>
 ```
 
+## Ensure initialization before use
+
+```html
+<!-- LISS/examples/ensure-init.html -->
+<script type="module">
+  import LISS from './LISS/dist/index.js';
+
+  class MyComponent extends LISS() {
+
+    constructor() {
+
+      super();
+
+      // WebComponent is not yet initialized.
+      try {
+        this.self; // access the WebComponent attributes and children.
+      } catch(e) { console.error("this.self", e) } 
+
+      try {
+        this.content; // access the WebComponent content.
+      } catch(e) { console.error("this.content", e) } 
+      
+      try {
+        this.assertInit(); // raises an exception if not yet initialized.
+      } catch(e) { console.error("this.assertInit()", e) }
+    }
+
+    init() {
+
+      console.log('Initialized');
+      this.content.append( this.self.dataset.content );
+
+      // initialization isn't over yet.
+      this.assertInit();
+    }
+  }
+
+  // Define your WebComponent
+  LISS.define('my-component', MyComponent);
+</script>
+<my-component data-content="Hello World ;)"></my-component>
+```
 
 ## List of issues solved by LISS
 

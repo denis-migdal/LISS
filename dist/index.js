@@ -93,7 +93,7 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
             return __classPrivateFieldGet(this, _ImplLISS_attributes, "f");
         }
         assertInit() {
-            if (__classPrivateFieldGet(this, _ImplLISS_isInit, "f"))
+            if (__classPrivateFieldGet(this, _ImplLISS_isInit, "f") === false)
                 throw new Error('Web Component is not initialized !');
         }
         static dependancies() {
