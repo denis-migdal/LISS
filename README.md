@@ -46,6 +46,8 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 [*📖 Learn more about this feature.*](#easily-inherit-a-builtin-html-element)
 - **Ensure the WebComponent is properly initialized before usage**, children are forced upgraded, and `this.content`, `this.self` raise exceptions if called before initialization. `this.assertInit()` can also be used.<br/>
 [*📖 Learn more about this feature.*](#ensure-initialization-before-use)
+- **Better management of observed attributes**, callback is only called *after* initialization, value of all observed attribute is cached to prevent useless DOM access, also enabling easier data validation.<br/>
+[*📖 Learn more about this feature.*](#observe-attributes)
 
 
 ### Easily inherit a builtin HTML element
@@ -117,6 +119,49 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
   LISS.define('my-component', MyComponent);
 </script>
 <my-component data-content="Hello World ;)"></my-component>
+```
+
+## Observe Attributes
+
+```html
+<!-- LISS/examples/attributes.html -->
+<script type="module">
+  import LISS from './LISS/dist/index.js';
+
+  const OPTIONS = {
+    // declare the attributes to observe.
+    observedAttributes: ["content"]
+  };
+
+  class MyComponent extends LISS(null, OPTIONS) {
+
+    init() {
+      // this.attrs contains the current values of the observed attributes.
+      console.log("Attributes (init)", this.attrs);
+      // you can validate this.attrs here.
+
+      this.content.textContent = this.attrs.content;
+
+      setInterval( () => {
+
+        this.self.setAttribute("content", +this.attrs.content + 1);
+
+      }, 1000);
+    }
+
+    onAttrChanged(name, oldValue, newValue) {
+      console.log("AttrChanged", name, oldValue, newValue);
+      console.log(this.attrs);
+      // you can validate this.attrs here.
+
+      this.content.textContent = this.attrs.content;
+    }
+  }
+
+  // Define your WebComponent
+  LISS.define('my-component', MyComponent);
+</script>
+<my-component></my-component>
 ```
 
 ## List of issues solved by LISS

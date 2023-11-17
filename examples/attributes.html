@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>LISS Example (Attributes)</title>
+	<script type="module">
+		import LISS from '../dist/index.js';
+
+		const OPTIONS = {
+			// declare the attributes to observe.
+			observedAttributes: ["content"]
+		};
+
+		class MyComponent extends LISS(null, OPTIONS) {
+
+			init() {
+				// this.attrs contains the current values of the observed attributes.
+				console.log("Attributes (init)", this.attrs);
+				// you can validate this.attrs here.
+
+				this.content.textContent = this.attrs.content;
+
+				setInterval( () => {
+
+					this.self.setAttribute("content", +this.attrs.content + 1);
+
+				}, 1000);
+			}
+
+			onAttrChanged(name, oldValue, newValue) {
+				console.log("AttrChanged", name, oldValue, newValue);
+				console.log(this.attrs);
+				// you can validate this.attrs here.
+
+				this.content.textContent = this.attrs.content;
+			}
+		}
+
+		LISS.define('my-component', MyComponent);
+	</script>
+</head>
+<body>
+	<my-component content="0"></my-component>
+</body>
+</html>
