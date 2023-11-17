@@ -8,9 +8,31 @@ Web Components are simple to use... but **hard to use *correctly***, due to a mu
 
 ## Install LISS
 
+In order to use LISS in your project, you can also directly copy the `LISS/dist/` directory into your project directory.
+
 To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
 
 ## Use LISS
+
+```html
+<script type="module">
+  import LISS from './LISS/dist/index.js';
+
+  class MyComponent extends LISS() {
+
+    // Initialize your WebComponent
+    init() {
+      // Use this.content to initialize the content
+      // of your WebComponent
+      this.content.append('Hello World ;)');
+    }
+  }
+
+  // Define your WebComponent
+  LISS.define('my-component', MyComponent);
+</script>
+<my-component></my-component>
+```
 
 ## List of issues solved by LISS
 
