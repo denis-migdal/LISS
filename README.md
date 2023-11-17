@@ -42,20 +42,20 @@ To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
 
 You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
-- **Inherit a builtin HTML element easily**, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).<br/>
-[*📖 Learn more about this feature.*](#easily-inherit-a-builtin-html-element)
-- **Ensure the WebComponent is properly initialized before usage**, children are forced upgraded, and `this.content`, `this.self` raise exceptions if called before initialization. `this.assertInit()` can also be used.<br/>
-[*📖 Learn more about this feature.*](#ensure-initialization-before-use)
-- **Better management of observed attributes**, callback is only called *after* initialization, value of all observed attribute is cached to prevent useless DOM access, also enabling easier data validation.<br/>
-[*📖 Learn more about this feature.*](#observe-attributes)
-- **Enable to give parameters to WebComponents' constructors**, because there is not reasons not to ;).<br/>
-[*📖 Learn more about this feature.*](#constructor-parameters)
-- **Provide better interface to dynamically build WebComponents instances.**<br/>
-[*📖 Learn more about this feature.*](#dynamically-build-instances)
-- **Easily fill the WebComponent from an HTML/CSS string.**<br/>
-[*📖 Learn more about this feature.*](#fill-html-css-from-strings)
-- **Easily get WebComponent's part in a consistant way.**<br/>
-[*📖 Learn more about this feature.*](#parts)
+- **Inherit a builtin HTML element easily**, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).
+  - [*📖 Learn more about this feature.*](#easily-inherit-a-builtin-html-element)
+- **Ensure the WebComponent is properly initialized before usage**, children are forced upgraded, and `this.content`, `this.self` raise exceptions if called before initialization. `this.assertInit()` can also be used.
+  - [*📖 Learn more about this feature.*](#ensure-initialization-before-use)
+- **Better management of observed attributes**, callback is only called *after* initialization, value of all observed attribute is cached to prevent useless DOM access, also enabling easier data validation.
+  - [*📖 Learn more about this feature.*](#observe-attributes)
+- **Enable to give parameters to WebComponents' constructors**, because there is not reasons not to ;).
+  - [*📖 Learn more about this feature.*](#constructor-parameters)
+- **Provide better interface to dynamically build WebComponents instances.**
+  - [*📖 Learn more about this feature.*](#dynamically-build-instances)
+- **Easily fill the WebComponent from an HTML/CSS string.**
+  - [*📖 Learn more about this feature.*](#fill-html-css-from-strings)
+- **Easily get WebComponent's part in a consistant way.**
+  - [*📖 Learn more about this feature.*](#parts)
 
 ### Easily inherit a builtin HTML element
 
