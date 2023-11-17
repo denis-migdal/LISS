@@ -78,7 +78,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 </table>
 ```
 
-## Ensure initialization before use
+### Ensure initialization before use
 
 ```html
 <!-- LISS/examples/ensure-init.html -->
@@ -121,7 +121,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 <my-component data-content="Hello World ;)"></my-component>
 ```
 
-## Observe Attributes
+### Observe Attributes
 
 ```html
 <!-- LISS/examples/attributes.html -->
