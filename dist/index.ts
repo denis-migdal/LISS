@@ -91,6 +91,18 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 			return this;
 		}
 
+
+		getPart(name: string) {
+			return this.hasShadow
+					? this.#content?.querySelector(`::part(${name})`)
+					: this.#content?.querySelector(`[part="${name}"]`);
+		}
+		getParts(name: string) {
+			return this.hasShadow
+					? this.#content?.querySelectorAll(`::part(${name})`)
+					: this.#content?.querySelectorAll(`[part="${name}"]`);
+		}
+
 		#content: HTMLElement|ShadowRoot|null = null;
 
 		protected get content() {

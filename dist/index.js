@@ -76,6 +76,18 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
         get API() {
             return this;
         }
+        getPart(name) {
+            var _a, _b;
+            return this.hasShadow
+                ? (_a = __classPrivateFieldGet(this, _ImplLISS_content, "f")) === null || _a === void 0 ? void 0 : _a.querySelector(`::part(${name})`)
+                : (_b = __classPrivateFieldGet(this, _ImplLISS_content, "f")) === null || _b === void 0 ? void 0 : _b.querySelector(`[part="${name}"]`);
+        }
+        getParts(name) {
+            var _a, _b;
+            return this.hasShadow
+                ? (_a = __classPrivateFieldGet(this, _ImplLISS_content, "f")) === null || _a === void 0 ? void 0 : _a.querySelectorAll(`::part(${name})`)
+                : (_b = __classPrivateFieldGet(this, _ImplLISS_content, "f")) === null || _b === void 0 ? void 0 : _b.querySelectorAll(`[part="${name}"]`);
+        }
         get content() {
             if (__classPrivateFieldGet(this, _ImplLISS_content, "f") === null)
                 throw new Error('Access to content before initialization !');

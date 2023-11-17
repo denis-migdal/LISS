@@ -54,6 +54,8 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 [*📖 Learn more about this feature.*](#dynamically-build-instances)
 - **Easily fill the WebComponent from an HTML/CSS string.**<br/>
 [*📖 Learn more about this feature.*](#fill-html-css-from-strings)
+- **Easily get WebComponent's part in a consistant way.**<br/>
+[*📖 Learn more about this feature.*](#parts)
 
 ### Easily inherit a builtin HTML element
 
@@ -281,6 +283,57 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 <span>C</span>
 ```
 
+### Parts
+
+```html
+<!-- LISS/examples/parts.html -->
+<script type="module">
+  import LISS from './LISS/dist/index.js';
+
+  class MyComponentA extends LISS() {
+
+    constructor() {
+      super(true);
+    }
+
+    init() {
+      const span = document.createElement('span');
+      span.setAttribute('part', 'foo');
+
+      this.content.append(span);
+    }
+  }
+  class MyComponentB extends LISS(HTMLTableRowElement) {
+
+    init() {
+      const td = document.createElement('td');
+      td.setAttribute('part', 'foo');
+
+      this.content.append( td );
+    }
+  }
+
+  LISS.define('my-component-a', MyComponentA);
+  LISS.define('my-component-b', MyComponentB);
+
+  await LISS.whenDefined('my-component-a');
+  let elem = document.querySelector(`my-component-a`);
+  let part = elem.getPart("foo");
+  part.textContent = "Hello";
+  console.log("A", elem.getParts("foo"));
+
+  await LISS.whenDefined('my-component-b');
+  elem = document.querySelector(`tr[is="my-component-b"]`);
+  part = elem.getPart("foo");
+  part.textContent = "World";
+  console.log("B", elem.getParts("foo"));
+</script>
+<my-component-a></my-component-a>
+<table>
+  <tr is="my-component-b"></tr>
+</table>
+```
+
 ## List of issues solved by LISS
 
 - `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)).
@@ -314,7 +367,8 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
   - ***Solution 2:*** `LISS()` accept a string, a `CSSStyleSheet`, a `HTMLStyleElement`, or an identifer to a `HTMLStyleElement` that will be used to fill the Web Component CSS.
 - Depending whether the Web Component uses a ShadowRoot or not, they way to declare and add the CSS rules differs.
   - ***Solution:*** If the element doesn't support `ShadowRoot`, LISS creates `HTMLStyleElement` that are appened to the `HTMLHeadElement`. Rules are modified to replace ":host" by the Web Component tagname.
-
+- `::part()` is chaotic. It can only be used on open `ShadowRoot`.
+  - ***Solution:*** LISS provides `.getPart(name)` and `.getParts(name)` to offer a more consistant usage.
 
 ## TODO
 
