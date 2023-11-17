@@ -105,7 +105,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
     init() {
 
-      console.log('Initialized');
+      console.log('Starting initialization');
       this.content.append( this.self.dataset.content );
 
       // initialization isn't over yet.
