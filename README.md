@@ -286,13 +286,12 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
       - [ ] added/removed (events)
 
 - [ ] npm package
-- [ ] Test
-  - [ ] test with TR element
-  - [ ] a test per issue solved ?
+
 - [ ] Documentation/usage
-  - [ ] Validate example.
+  - [ ] this.API
+  - [ ] ShadowRoot (open/close)
 
 
 - [ ] LISS parameter Custom Element (mutation observer + event parents)
-- [ ] Ressources : finalize+destroy
+- [ ] Ressources : finalize+destroy (?)
 	- [ ] declare ressource
