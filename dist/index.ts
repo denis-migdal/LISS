@@ -12,7 +12,7 @@ export type LISSOptions = {
 	observedAttributes ?: readonly string[],
 	dependancies?: readonly string[],
 	template?: string|HTMLTemplateElement,
-	css?: [string|HTMLStyleElement|CSSStyleSheet]
+	css?: readonly (string|HTMLStyleElement|CSSStyleSheet)[] | (string|HTMLStyleElement|CSSStyleSheet)
 };
 
 type Constructor<T> = new () => T;
@@ -43,6 +43,9 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 
 	let shadow_stylesheets: readonly CSSStyleSheet[] = [];
 	if( css !== undefined ) {
+
+		if( ! Array.isArray(css) )
+			css = [css as any];
 
 		shadow_stylesheets = css.map( c => {
 
@@ -149,16 +152,24 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 					(this.#content as ShadowRoot).adoptedStyleSheets.push(...shadow_stylesheets)
 				} else {
 
-					if( ! alreadyDeclaredCSS.has(this.tagName) ) {					//if not yet inserted :
+					let is = this.getAttribute("is");
+					let cssselector = this.tagName
+					if( is === undefined )
+						cssselector = `${cssselector}[is="${is}"]`;
+
+					// if not yet inserted :
+					if( ! alreadyDeclaredCSS.has(cssselector) ) {
 						
 						let style = document.createElement('style');
-						style.setAttribute('for', this.tagName);
 
-						style.innerHTML = html_stylesheets.replace(':host', this.tagName);
+						style.setAttribute('for', cssselector);
+						style.innerHTML = html_stylesheets.replace(':host', cssselector);
 
 						document.head.append(style);
-						alreadyDeclaredCSS.add(this.tagName);
-						throw new Error('not yet implemented');
+
+
+						alreadyDeclaredCSS.add(cssselector);
+						//throw new Error('not yet implemented');
 					}
 				}
 
@@ -166,7 +177,7 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 
 			if( template !== undefined ) {
 				let template_elem = document.createElement('template');
-				let str = (template as string).replace(/\$\{(.+?)\}/g, (_, match) => this.#attributes[match]??'')
+				let str = (template as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
 	    		template_elem.innerHTML = str;
 	    		this.#content.append(...template_elem.content.childNodes);
 	    	}

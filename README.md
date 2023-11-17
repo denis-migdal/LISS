@@ -52,6 +52,8 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 [*📖 Learn more about this feature.*](#constructor-parameters)
 - **Provide better interface to dynamically build WebComponents instances.**<br/>
 [*📖 Learn more about this feature.*](#dynamically-build-instances)
+- **Easily fill the WebComponent from an HTML/CSS string.**<br/>
+[*📖 Learn more about this feature.*](#fill-html-css-from-strings)
 
 ### Easily inherit a builtin HTML element
 
@@ -239,6 +241,44 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
     }
   });
 </script>
+```
+
+### Fill HTML/CSS from strings
+
+```html
+<!-- LISS/examples/fill-from-strings.html -->
+<script type="module">
+  import LISS from './LISS/dist/index.js';
+
+  // const htmlstr = require(!raw!$FILEPATH) // for WebPack
+  // const htmlstr = await (await fetch($FILEPATH)).text();
+  const htmlstr = "X = <span>${a}</span>";
+  const cssstr  = `
+    :host span {
+      background-color: yellow;
+    }
+  `;
+
+  class MyComponentA extends LISS(null, {
+    template: htmlstr,// accepts string, or HTMLTemplateElement,
+    css   : cssstr  // accepts string, HTMLStyleElement, or CSSStyleSheet or an array of it.
+  }) {}
+
+  const htmlstr2 = "<td>X = <span>${b}</span></td>";
+
+  class MyComponentB extends LISS(HTMLTableRowElement, {
+    template: htmlstr2,// accepts string, or HTMLTemplateElement,
+    css   : cssstr   // accepts string, HTMLStyleElement, or CSSStyleSheet or an array of it.
+  }) {}
+
+  LISS.define('my-component-a', MyComponentA);
+  LISS.define('my-component-b', MyComponentB);
+</script>
+<my-component-a a="A"></my-component-a>
+<table>
+  <tr is="my-component-b" b="B"></tr>
+</table>
+<span>C</span>
 ```
 
 ## List of issues solved by LISS

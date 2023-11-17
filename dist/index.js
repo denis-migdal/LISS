@@ -41,6 +41,8 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
     }
     let shadow_stylesheets = [];
     if (css !== undefined) {
+        if (!Array.isArray(css))
+            css = [css];
         shadow_stylesheets = css.map(c => {
             if (c instanceof CSSStyleSheet)
                 return c;
@@ -125,19 +127,24 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
                 __classPrivateFieldGet(this, _ImplLISS_content, "f").adoptedStyleSheets.push(...shadow_stylesheets);
             }
             else {
-                if (!alreadyDeclaredCSS.has(this.tagName)) { //if not yet inserted :
+                let is = this.getAttribute("is");
+                let cssselector = this.tagName;
+                if (is === undefined)
+                    cssselector = `${cssselector}[is="${is}"]`;
+                // if not yet inserted :
+                if (!alreadyDeclaredCSS.has(cssselector)) {
                     let style = document.createElement('style');
-                    style.setAttribute('for', this.tagName);
-                    style.innerHTML = html_stylesheets.replace(':host', this.tagName);
+                    style.setAttribute('for', cssselector);
+                    style.innerHTML = html_stylesheets.replace(':host', cssselector);
                     document.head.append(style);
-                    alreadyDeclaredCSS.add(this.tagName);
-                    throw new Error('not yet implemented');
+                    alreadyDeclaredCSS.add(cssselector);
+                    //throw new Error('not yet implemented');
                 }
             }
         }
         if (template !== undefined) {
             let template_elem = document.createElement('template');
-            let str = template.replace(/\$\{(.+?)\}/g, (_, match) => { var _a; return (_a = __classPrivateFieldGet(this, _ImplLISS_attributes, "f")[match]) !== null && _a !== void 0 ? _a : ''; });
+            let str = template.replace(/\$\{(.+?)\}/g, (_, match) => { var _a; return (_a = this.getAttribute(match)) !== null && _a !== void 0 ? _a : ''; });
             template_elem.innerHTML = str;
             __classPrivateFieldGet(this, _ImplLISS_content, "f").append(...template_elem.content.childNodes);
         }
