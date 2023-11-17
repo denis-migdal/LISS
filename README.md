@@ -328,7 +328,6 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 - [ ] ShadowRoot
   - [ ] Parts -> a function to get the element ?
   - [ ] Slots
-    - [ ] if shadow : add by default : use d-none if don't want it.
     - [ ] createSlot(name), if no shadow : returns this.#content, if name = throw an exception.
     - [ ] getSlot(name) : if not found : throws.
     - [ ] observeSlot(name, options) ? : if not found : throws.

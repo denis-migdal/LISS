@@ -149,6 +149,8 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
             __classPrivateFieldGet(this, _ImplLISS_content, "f").append(...template_elem.content.childNodes);
         }
         this.init();
+        if (this.hasShadow && __classPrivateFieldGet(this, _ImplLISS_content, "f").childNodes.length === 0)
+            __classPrivateFieldGet(this, _ImplLISS_content, "f").append(document.createElement('slot'));
         __classPrivateFieldSet(this, _ImplLISS_isInit, true, "f");
     };
     ImplLISS.observedAttributes = observedAttributes;

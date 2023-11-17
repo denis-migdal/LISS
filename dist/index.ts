@@ -184,6 +184,9 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 
 			this.init();
 
+			if( this.hasShadow && this.#content.childNodes.length === 0 )
+				this.#content.append( document.createElement('slot') );
+
 			this.#isInit = true;
 		}
 
