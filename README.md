@@ -2,13 +2,14 @@
 
 ## Why LISS ?
 
-Web Components are simple to use... but **hard to use *correctly***, due to a multitude of non-intuitives behaviors and rules. Most of examples and documentation found on the Internet are **unsafe** (cf [List of issues solved by LISS](#list-of-issues-solved-by-liss)).
+Web Components are simple to use... but, due to a multitude of non-intuitives behaviors and rules, **hard to use *correctly***. Most of examples and documentation found on the Internet are **unsafe** (cf [List of issues solved by LISS](#list-of-issues-solved-by-liss)).
 
-**LISS enables you to correctly use Web Compoments without worrying about all of that.**
+**LISS enables you to easily use Web Compoments without worrying about all of that.**
 
 ## Use LISS
 
 ```html
+<!-- LISS/examples/basic.html -->
 <script type="module">
   import LISS from './LISS/dist/index.js';
 
@@ -28,11 +29,50 @@ Web Components are simple to use... but **hard to use *correctly***, due to a mu
 <my-component></my-component>
 ```
 
+[📖 And a lot more features and examples below.](#features)
+
 ## Install LISS
 
 In order to use LISS in your project, you can also directly copy the `LISS/dist/` directory into your project directory.
 
 To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
+
+
+## Features
+
+You can see all examples inside the [`LISS/examples/` directory](./examples/);
+
+- Inherit a builtin HTML element easily, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).
+  [Learn more about this feature](#easily-inherit-a-builtin-html-element)
+
+### Easily inherit a builtin HTML element
+
+```html
+<!-- LISS/examples/inherit.html -->
+<script type="module">
+  import LISS from './LISS/dist/index.js';
+
+  // Give the inherited HTML element as the first parameter of LISS
+  class MyComponent extends LISS(HTMLTableRowElement) {
+
+    // Initialize your WebComponent
+    init() {
+      // Use this.content to initialize the content
+      // of your WebComponent
+      document.createElement('td');
+      td.textContent = 'Hello World ;)';
+      this.content.append(td);
+    }
+  }
+
+  // Define your WebComponent
+  LISS.define('my-component', MyComponent);
+</script>
+<table>
+  <tr is="my-component"></tr>
+</table>
+```
+
 
 ## List of issues solved by LISS
 
