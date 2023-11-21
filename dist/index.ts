@@ -307,7 +307,7 @@ LISS.define = function(tagname: string,
 
 	let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.dependancies()]] as const;
 
-	if(document.readyState === "interactive")
+	if(document.readyState === "interactive" || document.readyState === "complete")
 		define(...args)
 	else
 		TO_DEFINE.push(args);
