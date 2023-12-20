@@ -34,7 +34,7 @@ Web Components are simple to use... but, due to a multitude of non-intuitives be
 <my-component></my-component>
 ```
 
-[📖 And a lot more features and examples below.](#features)
+[📖 And a lot more features and examples below.](#features-and-examples)
 
 ## Install LISS
 
@@ -43,14 +43,12 @@ In order to use LISS in your project, you can also directly copy the `LISS/dist/
 To rebuild the JS files, use : `tsc index.ts --target esnext`.
 
 
-## Features
+## Features and examples
 
 You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
 - **Inherit a builtin HTML element easily**, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).
   - [*📖 Learn more about this feature.*](#easily-inherit-a-builtin-html-element)
-- **Ensure the WebComponent is properly initialized before usage**, children are forced upgraded, and the class instance is only built during upgrade.
-  - [*📖 Learn more about this feature.*](#ensure-initialization-before-use)
 - **Better management of observed attributes**, callback is only called *after* initialization, value of all observed attribute is cached to prevent useless DOM access, also enabling easier data validation.
   - [*📖 Learn more about this feature.*](#observe-attributes)
 - **Enable to give parameters to WebComponents' constructors**, because there is not reasons not to ;).
@@ -92,55 +90,12 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 </table>
 ```
 
-### Ensure initialization before use
-
-```html
-<!-- LISS/examples/ensure-init.html -->
-<script type="module">
-  import LISS from './LISS/dist/index.js';
-
-  class MyComponent extends LISS() {
-
-    constructor() {
-
-      super();
-
-      // WebComponent is not yet initialized.
-      try {
-        this.self; // access the WebComponent attributes and children.
-      } catch(e) { console.error("this.self", e) } 
-
-      try {
-        this.content; // access the WebComponent content.
-      } catch(e) { console.error("this.content", e) } 
-      
-      try {
-        this.assertInit(); // raises an exception if not yet initialized.
-      } catch(e) { console.error("this.assertInit()", e) }
-    }
-
-    init() {
-
-      console.log('Starting initialization');
-      this.content.append( this.self.dataset.content );
-
-      // initialization isn't over yet.
-      this.assertInit();
-    }
-  }
-
-  // Define your WebComponent
-  LISS.define('my-component', MyComponent);
-</script>
-<my-component data-content="Hello World ;)"></my-component>
-```
-
 ### Observe Attributes
 
 ```html
 <!-- LISS/examples/attributes.html -->
 <script type="module">
-  import LISS from './LISS/dist/index.js';
+  import LISS from './LISS/index.js';
 
   const OPTIONS = {
     // declare the attributes to observe.
@@ -149,7 +104,9 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
   class MyComponent extends LISS(null, OPTIONS) {
 
-    init() {
+    constructor(htmltag) {
+      super(htmltag);
+
       // this.attrs contains the current values of the observed attributes.
       console.log("Attributes (init)", this.attrs);
       // you can validate this.attrs here.
@@ -158,7 +115,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
       setInterval( () => {
 
-        this.self.setAttribute("content", +this.attrs.content + 1);
+        this.host.setAttribute("content", +this.attrs.content + 1);
 
       }, 1000);
     }

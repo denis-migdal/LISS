@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>LISS Example (Attributes)</title>
 	<script type="module">
-		import LISS from '../dist/index.js';
+		import LISS from '../index.js';
 
 		const OPTIONS = {
 			// declare the attributes to observe.
@@ -14,7 +14,9 @@
 
 		class MyComponent extends LISS(null, OPTIONS) {
 
-			init() {
+			constructor(htmltag) {
+				super(htmltag);
+
 				// this.attrs contains the current values of the observed attributes.
 				console.log("Attributes (init)", this.attrs);
 				// you can validate this.attrs here.
@@ -23,13 +25,13 @@
 
 				setInterval( () => {
 
-					this.self.setAttribute("content", +this.attrs.content + 1);
+					this.host.setAttribute("content", +this.attrs.content + 1);
 
 				}, 1000);
 			}
 
 			onAttrChanged(name, oldValue, newValue) {
-				console.log("AttrChanged", name, oldValue, newValue);
+				console.log("AttrChanged", name, oldValue, "->", newValue);
 				console.log(this.attrs);
 				// you can validate this.attrs here.
 
