@@ -5,15 +5,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>LISS Example (Parts)</title>
 	<script type="module">
-		import LISS from '../dist/index.js';
+		import LISS from '../index.js';
 
 		class MyComponentA extends LISS() {
 
-			constructor() {
-				super(true);
-			}
+			constructor(htmltag) {
+				super(htmltag)
 
-			init() {
 				const span = document.createElement('span');
 				span.setAttribute('part', 'foo');
 
@@ -22,7 +20,9 @@
 		}
 		class MyComponentB extends LISS(HTMLTableRowElement) {
 
-			init() {
+			constructor(htmltag) {
+				super(htmltag);
+
 				const td = document.createElement('td');
 				td.setAttribute('part', 'foo');
 

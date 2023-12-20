@@ -252,15 +252,14 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 ```html
 <!-- LISS/examples/parts.html -->
 <script type="module">
-  import LISS from './LISS/dist/index.js';
+  import LISS from './LISS/index.js';
 
   class MyComponentA extends LISS() {
 
-    constructor() {
-      super(true);
-    }
+    constructor(htmltag) {
 
-    init() {
+      super(htmltag);
+
       const span = document.createElement('span');
       span.setAttribute('part', 'foo');
 
@@ -269,7 +268,9 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
   }
   class MyComponentB extends LISS(HTMLTableRowElement) {
 
-    init() {
+    constructor(htmltag) {
+      super(htmltag);
+
       const td = document.createElement('td');
       td.setAttribute('part', 'foo');
 
