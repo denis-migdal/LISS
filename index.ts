@@ -327,6 +327,8 @@ LISS.define = function<U extends HTMLElement,
 	let ImplLISSClass: any = CustomClass;
 	let htmltag = element2tagname(Class)??undefined;
 
+	withCstrParams ??= {};
+
 	let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.Parameters.dependancies], withCstrParams] as const;
 
 	if(document.readyState === "interactive" || document.readyState === "complete")

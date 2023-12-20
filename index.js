@@ -221,6 +221,7 @@ LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } =
     const Class = CustomClass.Parameters.tagclass;
     let ImplLISSClass = CustomClass;
     let htmltag = element2tagname(Class) ?? undefined;
+    withCstrParams ??= {};
     let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.Parameters.dependancies], withCstrParams];
     if (document.readyState === "interactive" || document.readyState === "complete")
         define(...args);

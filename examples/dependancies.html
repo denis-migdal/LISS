@@ -5,16 +5,26 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>LISS Example (Builtin)</title>
 	<script type="module">
-		import LISS from '../dist/index.js';
+		import LISS from '../index.js';
 
 		class MyComponentA extends LISS() {
+
+			constructor(htmltag) {
+				super(htmltag);
+
+				console.log("A");
+			}
 
 		}
 
 		class MyComponentB extends LISS(HTMLElement,
-										null,
-										["my-component-a"]) {
+										{dependancies: ["my-component-a"]}) {
 
+			constructor(htmltag) {
+				super(htmltag);
+
+				console.log("B");
+			}
 		}
 
 		LISS.define('my-component-b', MyComponentB);
@@ -23,11 +33,6 @@
 	</script>
 </head>
 <body>
-	<style type="text/css">
-		:root {
-			background-color: black;
-		}
-	</style>
 	<my-component-b></my-component-b>
 	<my-component-a></my-component-a>
 </body>
