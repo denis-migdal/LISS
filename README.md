@@ -178,7 +178,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
     constructor(htmltag) {
       super(htmltag);
-      
+
       this.content.append('Hello World ;)');
     }
   }
@@ -214,7 +214,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 ```html
 <!-- LISS/examples/fill-from-strings.html -->
 <script type="module">
-  import LISS from './LISS/dist/index.js';
+  import LISS from './LISS/index.js';
 
   // const htmlstr = require(!raw!$FILEPATH) // for WebPack
   // const htmlstr = await (await fetch($FILEPATH)).text();
