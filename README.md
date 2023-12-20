@@ -1,8 +1,5 @@
 # LISS: Light, Intuitive, Simplier, and Safer Web Components.
 
-**WARNING: New undocumented (yet) version of LISS in LISS/index.ts.**
-**WARNING: Migration in progress.**
-
 ## Why LISS ?
 
 Web Components are simple to use... but, due to a multitude of non-intuitives behaviors and rules, **hard to use *correctly***. Most of examples and documentation found on the Internet are **unsafe** (cf [List of issues solved by LISS](#list-of-issues-solved-by-liss)).
