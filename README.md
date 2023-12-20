@@ -1,5 +1,8 @@
 # LISS: Light, Intuitive, Simplier, and Safer Web Components.
 
+**WARNING: New undocumented (yet) version of LISS in LISS/index.ts.**
+**WARNING: Migration in progress.**
+
 ## Why LISS ?
 
 Web Components are simple to use... but, due to a multitude of non-intuitives behaviors and rules, **hard to use *correctly***. Most of examples and documentation found on the Internet are **unsafe** (cf [List of issues solved by LISS](#list-of-issues-solved-by-liss)).
@@ -35,7 +38,7 @@ Web Components are simple to use... but, due to a multitude of non-intuitives be
 
 In order to use LISS in your project, you can also directly copy the `LISS/dist/` directory into your project directory.
 
-To rebuild the JS files, use : `tsc dist/index.ts --target es2016`.
+To rebuild the JS files, use : `tsc index.ts --target esnext`.
 
 
 ## Features
@@ -372,12 +375,12 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
 ## TODO
 
-- [ ] npm package
-
+- [ ] whenInit promise.
 - [ ] Documentation/usage
   - [ ] this.API
   - [ ] ShadowRoot (open/close)
 
+- [ ] npm package
 
 - [ ] ShadowRoot
   - [ ] Slots

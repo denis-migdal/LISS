@@ -5,12 +5,16 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>LISS Example (Basic)</title>
 	<script type="module">
-		import LISS from '../dist/index.js';
+		import LISS from '../index.js';
 
 		class MyComponent extends LISS() {
 
-			init() {
+			constructor(htmltag) {
+				super(htmltag);
+
 				this.content.append('Hello World ;)');
+				console.log("Host", this.host);
+				console.log("Observed attributes", this.attrs);
 			}
 		}
 
