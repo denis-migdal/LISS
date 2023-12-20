@@ -94,7 +94,7 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 			return this.#htmltag as unknown as T; // because TS stupid.
 		}
 		protected get content() {
-			return this.#htmltag.content;
+			return this.#htmltag.content!;
 		}
 		protected get attrs() {
 			return this.#htmltag.attrs;
