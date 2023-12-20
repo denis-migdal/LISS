@@ -5,18 +5,16 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>LISS Example (Basic)</title>
 	<script type="module">
-		import LISS from '../dist/index.js';
+		import LISS from '../index.js';
 
 		class MyComponent extends LISS() {
 
-			constructor({a, b} = {}) {
-				super();
+			constructor(htmltag, {a, b} = {}) {
+				super(htmltag);
 
 				this.a = a ?? 0;
 				this.b = b ?? 0;
-			}
 
-			init() {
 				this.content.textContent = `${this.a} - ${this.b}`;
 			}
 		}

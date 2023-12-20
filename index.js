@@ -86,6 +86,11 @@ function buildImplLISSTag(Liss, withCstrParams) {
     const alreadyDeclaredCSS = new Set();
     // @ts-ignore : because TS is stupid.
     class ImplLISSTag extends tagclass {
+        #options;
+        constructor(options) {
+            super();
+            this.#options = options;
+        }
         /*** init ***/
         #API = null;
         connectedCallback() {
@@ -124,7 +129,8 @@ function buildImplLISSTag(Liss, withCstrParams) {
                 this.#content.append(...template_elem.content.childNodes);
             }
             // build
-            this.#API = new Liss(this, withCstrParams);
+            const options = Object.assign({}, withCstrParams, this.#options);
+            this.#API = new Liss(this, options);
             // default slot
             if (this.hasShadow && this.#content.childNodes.length === 0)
                 this.#content.append(document.createElement('slot'));
@@ -181,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function define(...args) {
     for (let dep of args[3])
         await customElements.whenDefined(dep);
-    const LISSclass = buildImplLISSTag(args[1], args[3]);
+    const LISSclass = buildImplLISSTag(args[1], args[4]);
     customElements.define(args[0], LISSclass, { extends: args[2] });
 }
 const HTMLCLASS_REGEX = /HTML(\w+)Element/;

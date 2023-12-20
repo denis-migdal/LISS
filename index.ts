@@ -137,6 +137,12 @@ function buildImplLISSTag<T extends HTMLElement, U extends ILISS<T>>(Liss: U,
 	// @ts-ignore : because TS is stupid.
 	class ImplLISSTag extends tagclass {
 
+		readonly #options?: Readonly<Record<string, any>>;
+		constructor(options?: Readonly<Record<string, any>>) {
+			super();
+			this.#options = options;
+		}
+
 		/*** init ***/
 		#API: InstanceType<U> | null = null;
 
@@ -190,7 +196,8 @@ function buildImplLISSTag<T extends HTMLElement, U extends ILISS<T>>(Liss: U,
 	    	}
 
 	    	// build
-			this.#API = new Liss(this, withCstrParams) as InstanceType<U>;
+	    	const options = Object.assign({}, withCstrParams, this.#options);
+			this.#API = new Liss(this, options) as InstanceType<U>;
 
 			// default slot
 			if( this.hasShadow && this.#content.childNodes.length === 0 )
@@ -271,7 +278,7 @@ async function define(...args: DEFINE_DATA) {
 	for(let dep of args[3])
 		await customElements.whenDefined(dep);
 
-	const LISSclass = buildImplLISSTag(args[1], args[3]);
+	const LISSclass = buildImplLISSTag(args[1], args[4]);
 
 	customElements.define(args[0], LISSclass, {extends: args[2]});
 }

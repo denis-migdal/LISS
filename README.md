@@ -140,7 +140,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 ```html
 <!-- LISS/examples/parameters.html -->
 <script type="module">
-  import LISS from './LISS/dist/index.js';
+  import LISS from './LISS/index.js';
 
   class MyComponent extends LISS() {
 
@@ -149,9 +149,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
       this.a = a ?? 0;
       this.b = b ?? 0;
-    }
 
-    init() {
       this.content.textContent = `${this.a} - ${this.b}`;
     }
   }
