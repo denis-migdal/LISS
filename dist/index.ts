@@ -6,7 +6,10 @@ const CAN_HAVE_SHADOW = [
 	
 ];
 
-type API<T, U> = Omit<T, keyof U | "API" | "attributeChangedCallback" | "connectedCallback" | "disconnectedCallback" | "adoptedCallback">
+export type API<T, U = HTMLElement> = Omit<T, keyof U | "API" | "attributeChangedCallback" | "connectedCallback" | "disconnectedCallback" | "adoptedCallback">
+export type Mutable<T> = {
+    -readonly [P in keyof T]: T[P];
+};
 
 export type LISSOptions = {
 	observedAttributes ?: readonly string[],
@@ -196,7 +199,7 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 	    		this.#content.append(...template_elem.content.childNodes);
 	    	}
 
-			this.init();
+			this.init(this);
 
 			if( this.hasShadow && this.#content.childNodes.length === 0 )
 				this.#content.append( document.createElement('slot') );
@@ -204,7 +207,7 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 			this.#isInit = true;
 		}
 
-		protected init(){}
+		protected init(self: Mutable<ImplLISS>){}
 
 		static observedAttributes = observedAttributes;
 
