@@ -172,11 +172,13 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 ```html
 <!-- LISS/examples/dynamic-build.html -->
 <script type="module">
-  import LISS from './LISS/dist/index.js';
+  import LISS from './LISS/index.js';
 
   class MyComponent extends LISS() {
 
-    init() {
+    constructor(htmltag) {
+      super(htmltag);
+      
       this.content.append('Hello World ;)');
     }
   }
