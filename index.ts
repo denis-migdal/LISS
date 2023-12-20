@@ -120,7 +120,10 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 }
 
 type ILISS<T extends HTMLElement> = ReturnType<typeof LISS<T>>;
-type ILISSTag<T extends HTMLElement, U extends ILISS<T>> = ReturnType<typeof buildImplLISSTag<T,U>>;
+type ILISSTag<T extends HTMLElement, U> = U extends ILISS<T> ? ReturnType<typeof buildImplLISSTag<T,U>> : never;
+
+export type inferILISSHTMLElement<Type>  = Type extends ReturnType<typeof LISS<infer X extends HTMLElement>> ? X : never;
+export type LissHTMLTagOf< Type > = InstanceType< ILISSTag< inferILISSHTMLElement<Type>, Type> >;
 
 function buildImplLISSTag<T extends HTMLElement, U extends ILISS<T>>(Liss: U,
 																	withCstrParams: Readonly<Record<string, any>>) {
@@ -128,6 +131,7 @@ function buildImplLISSTag<T extends HTMLElement, U extends ILISS<T>>(Liss: U,
 	const tagclass 			 = Liss.Parameters.tagclass;
 	const observedAttributes = Liss.Parameters.observedAttributes;
 	const hasShadow			 = Liss.Parameters.hasShadow;
+	const isShadowOpen		 = Liss.Parameters.isShadowOpen;
 	const html_stylesheets	 = Liss.Parameters.html_stylesheets;
 	const shadow_stylesheets = Liss.Parameters.shadow_stylesheets;
 	const template  		 = Liss.Parameters.template;
@@ -158,7 +162,7 @@ function buildImplLISSTag<T extends HTMLElement, U extends ILISS<T>>(Liss: U,
 			// shadow
 			this.#content = this;
 			if( hasShadow )
-				this.#content = this.attachShadow({mode: this.#isShadowOpen ? 'open' : 'closed'})
+				this.#content = this.attachShadow({mode: isShadowOpen ? 'open' : 'closed'})
 
 			// attrs
 			for(let obs of observedAttributes!)
@@ -210,7 +214,6 @@ function buildImplLISSTag<T extends HTMLElement, U extends ILISS<T>>(Liss: U,
 
 		/*** content ***/
 		#content: HTMLElement|ShadowRoot|null = null;
-		#isShadowOpen: boolean;
 
 		get content() {
 			return this.#content;
