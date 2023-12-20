@@ -250,31 +250,31 @@ async function define(...args: DEFINE_DATA) {
 const HTMLCLASS_REGEX =  /HTML(\w+)Element/;
 // from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
 const elementNameLookupTable = {
-    'UList': ['ul'],
-    'TableCaption': ['caption'],
-    'TableCell': ['th', 'td'],
-    'TableCol': ['col', 'colgroup'],
-    'TableRow': ['tr'],
-    'TableSection': ['thead', 'tbody', 'tfoot'],
-    'Quote': ['q'],
-    'Paragraph': ['p'],
-    'OList': ['ol'],
-    'Mod': ['ins', 'del'],
-    'Media': ['video', 'audio'],
-    'Image': ['img'],
-    'Heading': ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-    'Directory': ['dir'],
-    'DList': ['dl'],
-    'Anchor': ['a']
+    'UList': 'ul',
+    'TableCaption': 'caption',
+    'TableCell': 'td', // th
+    'TableCol': 'col',  //'colgroup',
+    'TableRow': 'tr',
+    'TableSection': 'tbody', //['thead', 'tbody', 'tfoot'],
+    'Quote': 'q',
+    'Paragraph': 'p',
+    'OList': 'ol',
+    'Mod': 'ins', //, 'del'],
+    'Media': 'video',// 'audio'],
+    'Image': 'img',
+    'Heading': 'h1', //, 'h2', 'h3', 'h4', 'h5', 'h6'],
+    'Directory': 'dir',
+    'DList': 'dl',
+    'Anchor': 'a'
   };
 
-function element2tagname(Class: typeof HTMLElement) {
+function element2tagname(Class: typeof HTMLElement): string|null {
 
 	if( Class === HTMLElement )
 		return null;
 	
 	let htmltag = HTMLCLASS_REGEX.exec(Class.name)![1];
-	return elementNameLookupTable[htmltag] ?? htmltag.toLowerCase()
+	return elementNameLookupTable[htmltag as keyof typeof elementNameLookupTable] ?? htmltag.toLowerCase()
 }
 
 
