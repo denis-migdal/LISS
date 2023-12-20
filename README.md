@@ -14,12 +14,14 @@ Web Components are simple to use... but, due to a multitude of non-intuitives be
 ```html
 <!-- LISS/examples/basic.html -->
 <script type="module">
-  import LISS from './LISS/dist/index.js';
+  import LISS from './LISS/index.js';
 
   class MyComponent extends LISS() {
 
     // Initialize your WebComponent
-    init() {
+    constructor(htmltag) {
+      super(htmltag);
+
       // Use this.content to initialize the content
       // of your WebComponent
       this.content.append('Hello World ;)');
@@ -47,7 +49,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 
 - **Inherit a builtin HTML element easily**, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).
   - [*📖 Learn more about this feature.*](#easily-inherit-a-builtin-html-element)
-- **Ensure the WebComponent is properly initialized before usage**, children are forced upgraded, and `this.content`, `this.self` raise exceptions if called before initialization. `this.assertInit()` can also be used.
+- **Ensure the WebComponent is properly initialized before usage**, children are forced upgraded, and the class instance is only built during upgrade.
   - [*📖 Learn more about this feature.*](#ensure-initialization-before-use)
 - **Better management of observed attributes**, callback is only called *after* initialization, value of all observed attribute is cached to prevent useless DOM access, also enabling easier data validation.
   - [*📖 Learn more about this feature.*](#observe-attributes)
@@ -65,13 +67,15 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 ```html
 <!-- LISS/examples/inherit.html -->
 <script type="module">
-  import LISS from './LISS/dist/index.js';
+  import LISS from './LISS/index.js';
 
   // Give the inherited HTML element as the first parameter of LISS
   class MyComponent extends LISS(HTMLTableRowElement) {
 
     // Initialize your WebComponent
-    init() {
+    constructor(htmltag) {
+      super(htmltag);
+
       // Use this.content to initialize the content
       // of your WebComponent
       document.createElement('td');
@@ -374,6 +378,8 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
   - ***Solution:*** LISS provides `.getPart(name)` and `.getParts(name)` to offer a more consistant usage.
 
 ## TODO
+
+- [ ] Explain better the principles.
 
 - [ ] whenInit promise.
 - [ ] Documentation/usage

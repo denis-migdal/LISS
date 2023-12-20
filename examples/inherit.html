@@ -5,13 +5,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>LISS Example (Inherit)</title>
 	<script type="module">
-		import LISS from '../dist/index.js';
+		import LISS from '../index.js';
 
 		// Give the inherited HTML element as the first parameter of LISS
 		class MyComponent extends LISS(HTMLTableRowElement) {
 
 			// Initialize your WebComponent
-			init() {
+			constructor(htmltag) {
+				super(htmltag);
+				
 				// Use this.content to initialize the content
 				// of your WebComponent
 				const td = document.createElement('td');
