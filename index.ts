@@ -5,6 +5,8 @@
 // ==> fixes TS "readonly" and unitialized members.
 // => now host...
 
+import { qs, qsa } from "WebUtils/DOM";
+
 // TODO: whenInit promise.
 
 
@@ -119,14 +121,28 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 	return ImplLISS;
 }
 
-type ILISS<T extends HTMLElement> = ReturnType<typeof LISS<T>>;
-type ILISSTag<T extends HTMLElement, U> = U extends ILISS<T> ? ReturnType<typeof buildImplLISSTag<T,U>> : never;
+type LISSClassTypeType<T extends HTMLElement> = ReturnType<typeof LISS<T>>;
+//type LISSClassType    <T extends HTMLElement> = InstanceType<LISSClassTypeType<T>>;
 
-export type inferILISSHTMLElement<Type>  = Type extends ReturnType<typeof LISS<infer X extends HTMLElement>> ? X : never;
-export type LissHTMLTagOf< Type > = InstanceType< ILISSTag< inferILISSHTMLElement<Type>, Type> >;
+//type inferElemFromLISSClass<LISSClass>     = LISSClass extends LISSClassType<infer X extends HTMLElement> ? X : never;
+type inferLISSClassTypeTypeFromLISSClass<LISSClass> = Constructor<LISSClass> & {Parameters: any};
 
-function buildImplLISSTag<T extends HTMLElement, U extends ILISS<T>>(Liss: U,
-																	withCstrParams: Readonly<Record<string, any>>) {
+// i.e. we need to give them "typeof LISS".
+type LISSTagClassTypeType<LISSClassType>  = LISSClassType extends LISSClassTypeType<infer T extends HTMLElement> ? ReturnType<typeof buildImplLISSTag<T, LISSClassType>> : never;
+type LISSTagClassType<LISSClassType>      = InstanceType<LISSTagClassTypeType<LISSClassType>>;
+
+type inferLISSTagClassTypeFROMLISSClass<LISSClass> = LISSTagClassType<inferLISSClassTypeTypeFromLISSClass<LISSClass>>;
+
+
+LISS.qs = function<T>(query: string) {
+	return qs<inferLISSTagClassTypeFROMLISSClass<T>>(query);
+}
+LISS.qsa = function<T>(query: string) {
+	return qsa<inferLISSTagClassTypeFROMLISSClass<T>>(query);
+}
+
+function buildImplLISSTag<T extends HTMLElement, U extends LISSClassTypeType<T>>(Liss: U,
+																			 withCstrParams: Readonly<Record<string, any>> = {}) {
 	
 	const tagclass 			 = Liss.Parameters.tagclass;
 	const observedAttributes = Liss.Parameters.observedAttributes;
@@ -210,6 +226,12 @@ function buildImplLISSTag<T extends HTMLElement, U extends ILISS<T>>(Liss: U,
 
 		get isInit() {
 			return this.#API !== null;
+		}
+
+		get API() {
+			if( ! this.isInit )
+				throw new Error('Accessing API before WebComponent initialization!');
+			return this.#API!;
 		}
 
 		/*** content ***/
