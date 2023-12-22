@@ -335,6 +335,9 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 ## TODO
 
 - [ ] Explain better the principles.
+- [ ] LISS.qs and LISS.qsa for TS.
+- [ ] now inherit and htmlclass.
+- [ ] dataset.delayLISSInit + force_init
 
 - [ ] whenInit promise.
 - [ ] Documentation/usage

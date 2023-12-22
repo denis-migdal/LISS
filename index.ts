@@ -1,15 +1,3 @@
-// A better implementation of LISS, more secure.
-// => Now initialization possible directly in constructor
-// ==> Ensure no access before initialization is possible.
-// ==> API() directly generated.
-// ==> fixes TS "readonly" and unitialized members.
-// => now host...
-
-import { qs, qsa } from "WebUtils/DOM";
-
-// TODO: whenInit promise.
-
-
 // https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
 const CAN_HAVE_SHADOW = [
 	null, 'article', 'aside', 'blockquote', 'body', 'div',
@@ -18,8 +6,10 @@ const CAN_HAVE_SHADOW = [
 	
 ];
 
-export type LISSOptions = {
+export type LISSOptions<T extends HTMLElement, U extends Class> = {
 	observedAttributes ?: readonly string[],
+	htmlclass?: Constructor<T>|null,
+	inherit  ?: Constructor<U>|null,
 	dependancies?: readonly string[],
 	template?: string|HTMLTemplateElement,
 	css?: readonly (string|HTMLStyleElement|CSSStyleSheet)[] | (string|HTMLStyleElement|CSSStyleSheet),
@@ -28,11 +18,20 @@ export type LISSOptions = {
 
 type Constructor<T> = new () => T;
 
-export default function LISS<T extends HTMLElement = HTMLElement>(
-							 inherit: Constructor<T>|null = null,
-							{observedAttributes, dependancies, template, css, shadowOpen}: LISSOptions = {}) {
+interface Class {}
 
-	const inheritClass = inherit ?? HTMLElement as Constructor<T>;
+export default function LISS<T extends HTMLElement = HTMLElement, U extends Class = Class>(
+							{   observedAttributes,
+								htmlclass = null,
+								inherit   = null,
+								dependancies,
+								template,
+								css,
+								shadowOpen}: LISSOptions<T, U> = {}) {
+
+	const inheritClass    = htmlclass ?? HTMLElement as Constructor<T>;
+	const inheritObjClass = inherit   ?? Object      as unknown as Constructor<U>;
+
 	observedAttributes ??= [];
 	dependancies ??= [];
 
@@ -83,13 +82,15 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 				html_stylesheets += rule.cssText + '\n';
 	}
 
-	class ImplLISS {
+	// @ts-ignore
+	class ImplLISS extends inheritObjClass {
 
-		readonly #htmltag: InstanceType<ILISSTag<T, typeof ImplLISS>>;
+		readonly #htmltag: LISSTagClassType<typeof ImplLISS>;
 
-		constructor(htmltag  : InstanceType<ILISSTag<T, typeof ImplLISS>>,
+		constructor(htmltag  :  any,
 					_options?: Readonly<Record<string, any>>) {
-			this.#htmltag = htmltag;
+			super();
+			this.#htmltag = htmltag as LISSTagClassType<typeof ImplLISS>;
 		}
 
 		protected get host(): T {
@@ -121,27 +122,54 @@ export default function LISS<T extends HTMLElement = HTMLElement>(
 	return ImplLISS;
 }
 
-type LISSClassTypeType<T extends HTMLElement> = ReturnType<typeof LISS<T>>;
+type LISSClassTypeType<T extends HTMLElement, SuperClass extends Class> = ReturnType<typeof LISS<T, SuperClass>>;
 //type LISSClassType    <T extends HTMLElement> = InstanceType<LISSClassTypeType<T>>;
 
 //type inferElemFromLISSClass<LISSClass>     = LISSClass extends LISSClassType<infer X extends HTMLElement> ? X : never;
 type inferLISSClassTypeTypeFromLISSClass<LISSClass> = Constructor<LISSClass> & {Parameters: any};
 
 // i.e. we need to give them "typeof LISS".
-type LISSTagClassTypeType<LISSClassType>  = LISSClassType extends LISSClassTypeType<infer T extends HTMLElement> ? ReturnType<typeof buildImplLISSTag<T, LISSClassType>> : never;
+type LISSTagClassTypeType<LISSClassType>  = LISSClassType extends LISSClassTypeType<infer T extends HTMLElement, infer SC extends Class> ? ReturnType<typeof buildImplLISSTag<T, SC, LISSClassType>> : never;
 type LISSTagClassType<LISSClassType>      = InstanceType<LISSTagClassTypeType<LISSClassType>>;
 
 type inferLISSTagClassTypeFROMLISSClass<LISSClass> = LISSTagClassType<inferLISSClassTypeTypeFromLISSClass<LISSClass>>;
 
+/*
 
-LISS.qs = function<T>(query: string) {
-	return qs<inferLISSTagClassTypeFROMLISSClass<T>>(query);
-}
-LISS.qsa = function<T>(query: string) {
-	return qsa<inferLISSTagClassTypeFROMLISSClass<T>>(query);
+	
 }
 
-function buildImplLISSTag<T extends HTMLElement, U extends LISSClassTypeType<T>>(Liss: U,
+export function qsa<T extends Element = HTMLElement>(selector: string, parent: Element|Document|DocumentFragment = document): ROArray1D<T> {
+	
+	if(selector === '')
+		return [];
+
+	return [...parent.querySelectorAll<T>(selector)];
+}
+*/
+LISS.qs = function<T>(	selector: string,
+						parent  : Element|DocumentFragment|Document = document) {
+
+	if(selector === '')
+		return null;
+
+	return parent.querySelector<inferLISSTagClassTypeFROMLISSClass<T>>(selector);
+}
+LISS.qsa = function<T>(	selector: string,
+						parent  : Element|DocumentFragment|Document = document) {
+	
+
+	if(selector === '')
+		return [];
+
+	return [...parent.querySelectorAll<inferLISSTagClassTypeFROMLISSClass<T>>(selector)];
+}
+
+LISS.closest = function<T>(selector:string, currentElement: Element) {
+	return currentElement.closest<inferLISSTagClassTypeFROMLISSClass<T>>(selector);
+}
+
+function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U extends LISSClassTypeType<T, SuperClass>>(Liss: U,
 																			 withCstrParams: Readonly<Record<string, any>> = {}) {
 	
 	const tagclass 			 = Liss.Parameters.tagclass;
@@ -167,11 +195,14 @@ function buildImplLISSTag<T extends HTMLElement, U extends LISSClassTypeType<T>>
 		#API: InstanceType<U> | null = null;
 
 		connectedCallback() {
-			if( ! this.isInit )
-				this.#init();
+			if( ! this.isInit && ! this.hasAttribute('delay-liss-init') )
+				this.force_init();
 		}
 
-		#init() {
+		force_init(options: Readonly<Record<string, any>>|undefined = this.#options) {
+			
+			if( this.isInit )
+				throw new Error('Webcomponent already initialized!');
 
 			customElements.upgrade(this);
 			
@@ -216,7 +247,7 @@ function buildImplLISSTag<T extends HTMLElement, U extends LISSClassTypeType<T>>
 	    	}
 
 	    	// build
-	    	const options = Object.assign({}, withCstrParams, this.#options);
+	    	options = Object.assign({}, options, withCstrParams);
 			this.#API = new Liss(this, options) as InstanceType<U>;
 
 			// default slot
@@ -286,7 +317,7 @@ function buildImplLISSTag<T extends HTMLElement, U extends LISSClassTypeType<T>>
 }
 
 
-type DEFINE_DATA = readonly [string, ILISS<any>,
+type DEFINE_DATA = readonly [string, LISSClassTypeType<any, any>,
 							 string|undefined,
 							 readonly string[],
 							 Readonly<Record<string, any>>];
@@ -342,7 +373,9 @@ function element2tagname(Class: typeof HTMLElement): string|null {
 
 
 LISS.define = function<U extends HTMLElement,
-					   T extends ILISS<U>>(tagname: string,
+					   CL extends Class,
+					   T extends LISSClassTypeType<U, CL>>(
+					   	tagname: string,
 						CustomClass: T,
 						{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: string[]} = {}) {
 
