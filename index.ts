@@ -13,12 +13,18 @@ export type LISSOptions<T extends HTMLElement, U extends Class> = {
 	dependancies?: readonly string[],
 	template?: string|HTMLTemplateElement,
 	css?: readonly (string|HTMLStyleElement|CSSStyleSheet)[] | (string|HTMLStyleElement|CSSStyleSheet),
-	shadowOpen?:  boolean
+	shadow?:  ShadowCfg
 };
 
 type Constructor<T> = new () => T;
 
 interface Class {}
+
+export enum ShadowCfg {
+	NONE = 0,
+	OPEN = 'open', 
+	CLOSE= 'closed'
+};
 
 export default function LISS<T extends HTMLElement = HTMLElement, U extends Class = Class>(
 							{   observedAttributes,
@@ -27,7 +33,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 								dependancies,
 								template,
 								css,
-								shadowOpen}: LISSOptions<T, U> = {}) {
+								shadow}: LISSOptions<T, U> = {}) {
 
 	const inheritClass    = htmlclass ?? HTMLElement as Constructor<T>;
 	const inheritObjClass = inherit   ?? Object      as unknown as Constructor<U>;
@@ -35,8 +41,13 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 	observedAttributes ??= [];
 	dependancies ??= [];
 
-	const hasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inheritClass) );
-	const isShadowOpen = (shadowOpen ?? false) && hasShadow;
+	const canHasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inheritClass) );
+	shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
+
+	if( ! canHasShadow ) {
+		console.warn('This element does not support ShadowRoot');
+		shadow = ShadowCfg.NONE;
+	}
 
 	if( template !== undefined ) {
 
@@ -75,7 +86,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 		});
 	}
 	let html_stylesheets = "";
-	if( ! hasShadow && css !== undefined) {
+	if( ! shadow && css !== undefined) {
 
 		for(let style of shadow_stylesheets)
 			for(let rule of style.cssRules)
@@ -107,8 +118,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 			tagclass: inheritClass,
 			observedAttributes,
 			dependancies,
-			hasShadow,
-			isShadowOpen,
+			shadow,
 			html_stylesheets,
 			shadow_stylesheets,
 			template
@@ -174,8 +184,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 	
 	const tagclass 			 = Liss.Parameters.tagclass;
 	const observedAttributes = Liss.Parameters.observedAttributes;
-	const hasShadow			 = Liss.Parameters.hasShadow;
-	const isShadowOpen		 = Liss.Parameters.isShadowOpen;
+	const shadow			 = Liss.Parameters.shadow;
 	const html_stylesheets	 = Liss.Parameters.html_stylesheets;
 	const shadow_stylesheets = Liss.Parameters.shadow_stylesheets;
 	const template  		 = Liss.Parameters.template;
@@ -208,15 +217,16 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 			
 			// shadow
 			this.#content = this;
-			if( hasShadow )
-				this.#content = this.attachShadow({mode: isShadowOpen ? 'open' : 'closed'})
+			if( shadow ) {
+				this.#content = this.attachShadow({mode: shadow})
+			}
 
 			// attrs
 			for(let obs of observedAttributes!)
 				this.#attributes[obs] = this.getAttribute(obs);
 
 			// css
-			if( hasShadow && shadow_stylesheets.length )
+			if( shadow && shadow_stylesheets.length )
 				(this.#content as ShadowRoot).adoptedStyleSheets.push(...shadow_stylesheets);
 			if( html_stylesheets !== "") {
 
@@ -284,7 +294,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 		}
 
 		protected get hasShadow(): boolean {
-			return hasShadow;
+			return !!shadow;
 		}
 
 		/*** CSS ***/
