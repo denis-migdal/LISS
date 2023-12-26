@@ -339,6 +339,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 - [ ] now inherit and htmlclass.
 - [ ] dataset.delayLISSInit + force_init
 - [ ] new Shadow opts : None.
+- [ ] delayedInit opts.
 
 - [ ] whenInit promise.
 - [ ] Documentation/usage

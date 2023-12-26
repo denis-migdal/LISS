@@ -13,7 +13,8 @@ export type LISSOptions<T extends HTMLElement, U extends Class> = {
 	dependancies?: readonly string[],
 	template?: string|HTMLTemplateElement,
 	css?: readonly (string|HTMLStyleElement|CSSStyleSheet)[] | (string|HTMLStyleElement|CSSStyleSheet),
-	shadow?:  ShadowCfg
+	shadow?:  ShadowCfg,
+	delayedInit?: boolean
 };
 
 type Constructor<T> = new () => T;
@@ -32,6 +33,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 								inherit   = null,
 								dependancies,
 								template,
+								delayedInit = false,
 								css,
 								shadow}: LISSOptions<T, U> = {}) {
 
@@ -121,7 +123,8 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 			shadow,
 			html_stylesheets,
 			shadow_stylesheets,
-			template
+			template,
+			delayedInit,
 		};
 
 		protected onAttrChanged(_name: string,
@@ -144,19 +147,6 @@ type LISSTagClassType<LISSClassType>      = InstanceType<LISSTagClassTypeType<LI
 
 type inferLISSTagClassTypeFROMLISSClass<LISSClass> = LISSTagClassType<inferLISSClassTypeTypeFromLISSClass<LISSClass>>;
 
-/*
-
-	
-}
-
-export function qsa<T extends Element = HTMLElement>(selector: string, parent: Element|Document|DocumentFragment = document): ROArray1D<T> {
-	
-	if(selector === '')
-		return [];
-
-	return [...parent.querySelectorAll<T>(selector)];
-}
-*/
 LISS.qs = function<T>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
@@ -188,6 +178,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 	const html_stylesheets	 = Liss.Parameters.html_stylesheets;
 	const shadow_stylesheets = Liss.Parameters.shadow_stylesheets;
 	const template  		 = Liss.Parameters.template;
+	const delayedInit		 = Liss.Parameters.delayedInit;
 
 	const alreadyDeclaredCSS = new Set();
 
@@ -204,7 +195,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 		#API: InstanceType<U> | null = null;
 
 		connectedCallback() {
-			if( ! this.isInit && ! this.hasAttribute('delay-liss-init') )
+			if( ! this.isInit && ! delayedInit && ! this.hasAttribute('delay-liss-init') )
 				this.force_init();
 		}
 
