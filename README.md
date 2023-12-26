@@ -340,6 +340,7 @@ You can see all examples inside the [`LISS/examples/` directory](./examples/).
 - [ ] dataset.delayLISSInit + force_init
 - [ ] new Shadow opts : None.
 - [ ] delayedInit opts.
+- [ ] qs vs qso
 
 - [ ] whenInit promise.
 - [ ] Documentation/usage

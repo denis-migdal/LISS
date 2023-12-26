@@ -150,6 +150,15 @@ type inferLISSTagClassTypeFROMLISSClass<LISSClass> = LISSTagClassType<inferLISSC
 LISS.qs = function<T>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
+	let result = LISS.qso<T>(selector, parent);
+	if(result === null)
+		throw new Error(`Element ${selector} not found`);
+	return result!
+}
+
+LISS.qso = function<T>(	selector: string,
+						parent  : Element|DocumentFragment|Document = document) {
+
 	if(selector === '')
 		return null;
 
