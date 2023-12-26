@@ -46,7 +46,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 	const canHasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inheritClass) );
 	shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
 
-	if( ! canHasShadow ) {
+	if( ! canHasShadow && shadow !== ShadowCfg.NONE) {
 		console.warn('This element does not support ShadowRoot');
 		shadow = ShadowCfg.NONE;
 	}
@@ -153,6 +153,7 @@ LISS.qs = function<T>(	selector: string,
 	let result = LISS.qso<T>(selector, parent);
 	if(result === null)
 		throw new Error(`Element ${selector} not found`);
+
 	return result!
 }
 
