@@ -106,7 +106,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 			this.#htmltag = htmltag as LISSTagClassType<typeof ImplLISS>;
 		}
 
-		protected get host(): T {
+		public get host(): T {
 			return this.#htmltag as unknown as T; // because TS stupid.
 		}
 		protected get content() {
