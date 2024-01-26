@@ -7,14 +7,18 @@ const CAN_HAVE_SHADOW = [
 ];
 
 export type LISSOptions<T extends HTMLElement, U extends Class> = {
-	observedAttributes ?: readonly string[],
+
 	htmlclass?: Constructor<T>|null,
 	inherit  ?: Constructor<U>|null,
+
 	dependancies?: readonly string[],
-	template?: string|HTMLTemplateElement,
-	css?: readonly (string|HTMLStyleElement|CSSStyleSheet)[] | (string|HTMLStyleElement|CSSStyleSheet),
+	observedAttributes ?: readonly string[],
+
+	content?: string|HTMLTemplateElement,
 	shadow?:  ShadowCfg,
-	delayedInit?: boolean
+	css?: readonly (string|HTMLStyleElement|CSSStyleSheet)[] | (string|HTMLStyleElement|CSSStyleSheet),
+
+	delayedInit?: boolean //TODO is it still used ???
 };
 
 type Constructor<T> = new () => T;
@@ -32,7 +36,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 								htmlclass = null,
 								inherit   = null,
 								dependancies,
-								template,
+								content,
 								delayedInit = false,
 								css,
 								shadow}: LISSOptions<T, U> = {}) {
@@ -51,17 +55,17 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 		shadow = ShadowCfg.NONE;
 	}
 
-	if( template !== undefined ) {
+	if( content !== undefined ) {
 
-		if( typeof template === 'string' && template[0] === '#')
-			template = document.querySelector<HTMLTemplateElement>(template)!;
+		if( typeof content === 'string' && content[0] === '#')
+			content = document.querySelector<HTMLTemplateElement>(content)!;
 
-		if(template instanceof HTMLTemplateElement)
-			template = template.innerHTML;
+		if(content instanceof HTMLTemplateElement)
+			content = content.innerHTML;
 
-		template = (template as string).trim(); // Never return a text node of whitespace as the result
-		if(template === '')
-			template = undefined;
+		content = (content as string).trim(); // Never return a text node of whitespace as the result
+		if(content === '')
+			content = undefined;
 	}
 
 	let shadow_stylesheets: readonly CSSStyleSheet[] = [];
@@ -123,7 +127,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 			shadow,
 			html_stylesheets,
 			shadow_stylesheets,
-			template,
+			content,
 			delayedInit,
 		};
 
@@ -187,7 +191,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 	const shadow			 = Liss.Parameters.shadow;
 	const html_stylesheets	 = Liss.Parameters.html_stylesheets;
 	const shadow_stylesheets = Liss.Parameters.shadow_stylesheets;
-	const template  		 = Liss.Parameters.template;
+	const template  		 = Liss.Parameters.content;
 	const delayedInit		 = Liss.Parameters.delayedInit;
 
 	const alreadyDeclaredCSS = new Set();
@@ -508,3 +512,91 @@ LISS.whenAllDefined = async function<T extends CustomElementConstructor = Custom
 		callback();
 
 }
+
+/**** LISS-auto ****/
+
+class LISS_Auto extends LISS({observedAttributes: ["src"]}) {
+
+	readonly #known_tag = new Set<string>();
+	readonly #directory: string;
+
+	constructor(htmltag: any) {
+		super(htmltag);
+
+		const src = this.attrs.src;
+		if(src === null)
+			throw new Error("src attribute is missing.");
+		this.#directory = src[0] === '.'
+								? `${window.location.pathname}/${src}`
+								: src;
+
+		new MutationObserver( (mutations) => {
+
+			for(let mutation of mutations)
+				for(let addition of mutation.addedNodes)
+					if(addition instanceof Element)
+						this.#addTag(addition.tagName)
+
+		}).observe( document, { childList:true, subtree:true });
+
+
+		for( let elem of document.querySelectorAll("*") )
+			this.#addTag(elem.tagName);
+	}
+
+	async #addTag(tagname: string) {
+
+		tagname = tagname.toLowerCase();
+
+		if( tagname === 'liss-auto' || ! tagname.includes('-') || this.#known_tag.has( tagname ) )
+			return;
+
+		this.#known_tag.add(tagname);
+
+		const results = await Promise.all([
+			_import(`${this.#directory}/${tagname}/index.js`), // current page...
+			_fetchText(`${this.#directory}/${tagname}/index.html`), // TODO better
+			_fetchText(`${this.#directory}/${tagname}/index.css`),
+		]);
+
+		const js	  = results[0];
+		const content = results[1];
+		const css     = results[2];
+
+		if( js === undefined ) { // no JS
+
+			if( content === undefined )
+				throw new Error(`No JS or HTML files found for WebComponent ${tagname}.`);
+
+			class WebComponent extends LISS({
+				content,
+				css
+			}) {}
+
+			return LISS.define(tagname, WebComponent);
+		}
+
+		return LISS.define(tagname, js({content, css}) );
+	}
+}
+
+async function _fetchText(uri: string) {
+
+	const response = await fetch(uri);
+	if(response.status !== 200)
+		return undefined;
+
+	return await response.text()
+}
+
+async function _import(uri: string) {
+
+	try {
+		return (await import(uri)).default;
+	} catch(e) {
+		console.log(e);
+		return undefined;
+	}
+}
+
+LISS.define("liss-auto", LISS_Auto);

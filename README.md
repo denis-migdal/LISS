@@ -6,12 +6,21 @@ Web Components are simple to use... but, due to a multitude of non-intuitives be
 
 **LISS enables you to easily use Web Compoments without worrying about all of that.**
 
-## Use LISS
+## Install LISS
+
+In order to use LISS in your project, copy either the `/index.ts` or `/index.js` file into your project.
+
+💡 If you need to rebuild the JS file, use the command: `tsc index.ts --target esnext --module esnext`.
+
+
+## LISS (standard usage)
+
+To create a new components, simply create a class extending `LISS()` and register it using `LISS.define()`:
 
 ```html
-<!-- LISS/examples/basic.html -->
+<!-- $LISS/examples/basic.html -->
 <script type="module">
-  import LISS from './LISS/index.js';
+  import LISS from '$LISS';
 
   class MyComponent extends LISS() {
 
@@ -26,18 +35,85 @@ Web Components are simple to use... but, due to a multitude of non-intuitives be
   }
 
   // Define your WebComponent
-  LISS.define('my-component', MyComponent);
+  LISS.define('my-component', MyComponent); // define the "my-component" component.
 </script>
-<my-component></my-component>
+<my-component></my-component> <!-- Prints "Hello World ;)" -->
 ```
 
 [📖 And a lot more features and examples below.](#features-and-examples)
 
-## Install LISS
+## LISS (auto mode)
 
-In order to use LISS in your project, you can also directly copy the `LISS/dist/` directory into your project directory.
+LISS can now automatically build and import your components, making them even easier to use.
+This feature is enabled simply by adding a `<liss-auto src='$COMPONENTS_DIR'></liss-auto>` HTML tag into your webpage:
+```html
+<!-- $LISS/examples/liss-auto/ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LISS Auto</title>
+    <script type="module" src='$LISS' defer></script>
+  </head>
+  <body>
+    <liss-auto src="./components/"></liss-auto>
 
-To rebuild the JS files, use : `tsc index.ts --target esnext`.
+    <!-- some components -->
+    <liss-html></liss-html>
+    <liss-css></liss-css>
+    <liss-js></liss-js>
+  </body>
+</html>
+```
+
+In auto-mode, a component `<$name></$name>` must be defined in the `$COMPONENTS_DIR/$name` directory.
+For example, the component `<liss-html></liss-html>` will be defined in the `./components/liss-html/` directory.
+
+The component directory must at least include either an `index.js` or an `index.html` file.
+An optionnal `index.css` file can also be provided.
+
+### LISS auto-mode with an HTML file
+
+Defining a component with only an HTML file is very easy with LISS: simply create a `$COMPONENTS_DIR/$name/index.html` file with the component's HTML content:
+
+```html
+<!-- cf $LISS/examples/liss-auto/components/liss-html/index.html -->
+Hello World
+```
+Will define the component `<liss-html></liss-html>` containing `Hello World`:
+```html
+<liss-html></liss-html> <!-- will print "Hello World" -->
+```
+
+You can also add a CSS file to your component, simple by adding a `$COMPONENTS_DIR/$name/index.css` file containing rules starting with `:host`:
+```css
+:host {
+  color: blue;
+}
+```
+
+### LISS auto-mode with an JS file
+
+You can also define a component with only a JS file, by creating a `$COMPONENTS_DIR/$name/index.js` file default exporting a function returning a class extending `LISS()`:
+```javascript
+// cf $LISS/examples/liss-auto/components/liss-js/index.js
+import LISS from "$LISS";
+
+export default function(options) {
+
+  return class LISSComponent extends LISS(options) {
+
+    constructor(htmltag) {
+      super(htmltag);
+
+      //do stuff here (cf LISS features)
+    }
+  }
+}
+```
+
+You can also add an `index.html` and a `index.css` files to your component. LISS will then automatically use them to define your component's initial content. Their content are given by the `options` parameter.
 
 
 ## Features and examples

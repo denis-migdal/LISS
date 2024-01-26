@@ -1,30 +1,35 @@
-// A better implementation of LISS, more secure.
-// => Now initialization possible directly in constructor
-// ==> Ensure no access before initialization is possible.
-// ==> API() directly generated.
-// ==> fixes TS "readonly" and unitialized members.
-// => now host...
-// TODO: whenInit promise.
 // https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
 const CAN_HAVE_SHADOW = [
     null, 'article', 'aside', 'blockquote', 'body', 'div',
     'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
     'nav', 'p', 'section', 'span'
 ];
-export default function LISS(inherit = null, { observedAttributes, dependancies, template, css, shadowOpen } = {}) {
-    const inheritClass = inherit ?? HTMLElement;
+export var ShadowCfg;
+(function (ShadowCfg) {
+    ShadowCfg[ShadowCfg["NONE"] = 0] = "NONE";
+    ShadowCfg["OPEN"] = "open";
+    ShadowCfg["CLOSE"] = "closed";
+})(ShadowCfg || (ShadowCfg = {}));
+;
+export default function LISS({ observedAttributes, htmlclass = null, inherit = null, dependancies, content, delayedInit = false, css, shadow } = {}) {
+    const inheritClass = htmlclass ?? HTMLElement;
+    const inheritObjClass = inherit ?? Object;
     observedAttributes ??= [];
     dependancies ??= [];
-    const hasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inheritClass));
-    const isShadowOpen = (shadowOpen ?? false) && hasShadow;
-    if (template !== undefined) {
-        if (typeof template === 'string' && template[0] === '#')
-            template = document.querySelector(template);
-        if (template instanceof HTMLTemplateElement)
-            template = template.innerHTML;
-        template = template.trim(); // Never return a text node of whitespace as the result
-        if (template === '')
-            template = undefined;
+    const canHasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inheritClass));
+    shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
+    if (!canHasShadow && shadow !== ShadowCfg.NONE) {
+        console.warn('This element does not support ShadowRoot');
+        shadow = ShadowCfg.NONE;
+    }
+    if (content !== undefined) {
+        if (typeof content === 'string' && content[0] === '#')
+            content = document.querySelector(content);
+        if (content instanceof HTMLTemplateElement)
+            content = content.innerHTML;
+        content = content.trim(); // Never return a text node of whitespace as the result
+        if (content === '')
+            content = undefined;
     }
     let shadow_stylesheets = [];
     if (css !== undefined) {
@@ -43,14 +48,16 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
         });
     }
     let html_stylesheets = "";
-    if (!hasShadow && css !== undefined) {
+    if (!shadow && css !== undefined) {
         for (let style of shadow_stylesheets)
             for (let rule of style.cssRules)
                 html_stylesheets += rule.cssText + '\n';
     }
-    class ImplLISS {
+    // @ts-ignore
+    class ImplLISS extends inheritObjClass {
         #htmltag;
         constructor(htmltag, _options) {
+            super();
             this.#htmltag = htmltag;
         }
         get host() {
@@ -66,23 +73,43 @@ export default function LISS(inherit = null, { observedAttributes, dependancies,
             tagclass: inheritClass,
             observedAttributes,
             dependancies,
-            hasShadow,
-            isShadowOpen,
+            shadow,
             html_stylesheets,
             shadow_stylesheets,
-            template
+            content,
+            delayedInit,
         };
         onAttrChanged(_name, _oldValue, _newValue) { }
     }
     return ImplLISS;
 }
-function buildImplLISSTag(Liss, withCstrParams) {
+LISS.qs = function (selector, parent = document) {
+    let result = LISS.qso(selector, parent);
+    if (result === null)
+        throw new Error(`Element ${selector} not found`);
+    return result;
+};
+LISS.qso = function (selector, parent = document) {
+    if (selector === '')
+        return null;
+    return parent.querySelector(selector);
+};
+LISS.qsa = function (selector, parent = document) {
+    if (selector === '')
+        return [];
+    return [...parent.querySelectorAll(selector)];
+};
+LISS.closest = function (selector, currentElement) {
+    return currentElement.closest(selector);
+};
+function buildImplLISSTag(Liss, withCstrParams = {}) {
     const tagclass = Liss.Parameters.tagclass;
     const observedAttributes = Liss.Parameters.observedAttributes;
-    const hasShadow = Liss.Parameters.hasShadow;
+    const shadow = Liss.Parameters.shadow;
     const html_stylesheets = Liss.Parameters.html_stylesheets;
     const shadow_stylesheets = Liss.Parameters.shadow_stylesheets;
-    const template = Liss.Parameters.template;
+    const template = Liss.Parameters.content;
+    const delayedInit = Liss.Parameters.delayedInit;
     const alreadyDeclaredCSS = new Set();
     // @ts-ignore : because TS is stupid.
     class ImplLISSTag extends tagclass {
@@ -94,20 +121,23 @@ function buildImplLISSTag(Liss, withCstrParams) {
         /*** init ***/
         #API = null;
         connectedCallback() {
-            if (!this.isInit)
-                this.#init();
+            if (!this.isInit && !delayedInit && !this.hasAttribute('delay-liss-init'))
+                this.force_init();
         }
-        #init() {
+        force_init(options = this.#options) {
+            if (this.isInit)
+                throw new Error('Webcomponent already initialized!');
             customElements.upgrade(this);
             // shadow
             this.#content = this;
-            if (hasShadow)
-                this.#content = this.attachShadow({ mode: this.#isShadowOpen ? 'open' : 'closed' });
+            if (shadow) {
+                this.#content = this.attachShadow({ mode: shadow });
+            }
             // attrs
             for (let obs of observedAttributes)
                 this.#attributes[obs] = this.getAttribute(obs);
             // css
-            if (hasShadow && shadow_stylesheets.length)
+            if (shadow && shadow_stylesheets.length)
                 this.#content.adoptedStyleSheets.push(...shadow_stylesheets);
             if (html_stylesheets !== "") {
                 const cssselector = this.CSSSelector;
@@ -129,7 +159,7 @@ function buildImplLISSTag(Liss, withCstrParams) {
                 this.#content.append(...template_elem.content.childNodes);
             }
             // build
-            const options = Object.assign({}, withCstrParams, this.#options);
+            options = Object.assign({}, options, withCstrParams);
             this.#API = new Liss(this, options);
             // default slot
             if (this.hasShadow && this.#content.childNodes.length === 0)
@@ -138,9 +168,13 @@ function buildImplLISSTag(Liss, withCstrParams) {
         get isInit() {
             return this.#API !== null;
         }
+        get API() {
+            if (!this.isInit)
+                throw new Error('Accessing API before WebComponent initialization!');
+            return this.#API;
+        }
         /*** content ***/
         #content = null;
-        #isShadowOpen;
         get content() {
             return this.#content;
         }
@@ -155,7 +189,7 @@ function buildImplLISSTag(Liss, withCstrParams) {
                 : this.#content?.querySelectorAll(`[part="${name}"]`);
         }
         get hasShadow() {
-            return hasShadow;
+            return !!shadow;
         }
         /*** CSS ***/
         get CSSSelector() {
@@ -279,3 +313,66 @@ LISS.whenAllDefined = async function (tagnames, callback) {
     if (callback !== undefined)
         callback();
 };
+/**** LISS-auto ****/
+class LISS_Auto extends LISS({ observedAttributes: ["src"] }) {
+    #known_tag = new Set();
+    #directory;
+    constructor(htmltag) {
+        super(htmltag);
+        const src = this.attrs.src;
+        if (src === null)
+            throw new Error("src attribute is missing.");
+        this.#directory = src[0] === '.'
+            ? `${window.location.pathname}/${src}`
+            : src;
+        new MutationObserver((mutations) => {
+            for (let mutation of mutations)
+                for (let addition of mutation.addedNodes)
+                    if (addition instanceof Element)
+                        this.#addTag(addition.tagName);
+        }).observe(document, { childList: true, subtree: true });
+        for (let elem of document.querySelectorAll("*"))
+            this.#addTag(elem.tagName);
+    }
+    async #addTag(tagname) {
+        tagname = tagname.toLowerCase();
+        if (tagname === 'liss-auto' || !tagname.includes('-') || this.#known_tag.has(tagname))
+            return;
+        this.#known_tag.add(tagname);
+        const results = await Promise.all([
+            _import(`${this.#directory}/${tagname}/index.js`),
+            _fetchText(`${this.#directory}/${tagname}/index.html`),
+            _fetchText(`${this.#directory}/${tagname}/index.css`),
+        ]);
+        const js = results[0];
+        const content = results[1];
+        const css = results[2];
+        if (js === undefined) { // no JS
+            if (content === undefined)
+                throw new Error(`No JS or HTML files found for WebComponent ${tagname}.`);
+            class WebComponent extends LISS({
+                content,
+                css
+            }) {
+            }
+            return LISS.define(tagname, WebComponent);
+        }
+        return LISS.define(tagname, js({ content, css }));
+    }
+}
+async function _fetchText(uri) {
+    const response = await fetch(uri);
+    if (response.status !== 200)
+        return undefined;
+    return await response.text();
+}
+async function _import(uri) {
+    try {
+        return (await import(uri)).default;
+    }
+    catch (e) {
+        console.log(e);
+        return undefined;
+    }
+}
+LISS.define("liss-auto", LISS_Auto);
