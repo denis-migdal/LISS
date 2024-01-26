@@ -59,7 +59,7 @@ To create a new components, simply create a class extending `LISS()` and registe
 LISS can also automatically build and import your components, making them even easier to use.
 This feature is enabled simply by adding a `<liss-auto src='$COMPONENTS_DIR'></liss-auto>` HTML tag into your webpage:
 ```html
-<!-- $LISS/examples/liss-auto/ -->
+<!-- cf $LISS/examples/liss-auto/ -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -130,7 +130,54 @@ You can also add an `index.html` and a `index.css` files to your component. LISS
 
 ## Features and examples
 
-You can see all examples inside the [`LISS/examples/` directory](./examples/).
+You can see all examples below in the [`LISS/examples/` directory](./examples/).
+
+- **[Basic features](#basic-features)**
+  - [Use HTML/CSS files/strings](#use-html-css-files-strings)
+  - Management of HTML attributes.
+- **Advanced features**
+  - extend a JS class.
+  - extend an existing HTML element.
+  - ShadowRoot mode.
+  - parts.
+  - constructor parameters
+- **Helpers**
+  - builders
+  - query selectors
+  - dependancies
+  - EvtTarget [TODO]
+- **LISS full API**
+
+### Basic features
+
+#### Use HTML/CSS files/strings
+
+`LISS()` allows to inject HTML and CSS files/strings into your component thanks to the `content` and `css` options:
+```javascript
+// cf $LISS/examples/inject-html-css/
+import LISS from "$LISS"
+
+const CSS_RULES = `
+    :host {
+      color: blue;
+    }
+`;
+
+export default class Component extends LISS({
+    content: "./component.html",            // string|URL|HTMLTemplateElement
+    css    : ['./component.css', CSS_RULES] // string|URL|HTMLStyleElement|CSSStyleSheet (or an array)
+  }) {
+    //...
+}
+
+LISS.define("my-component", Component);
+```
+
+📖 By default, LISS assumes `string` values to be HTML or CSS content.
+However, if the `string` starts with `./`, it will be processed as a relative path to the current file.
+
+
+## Features and examples [OLD]
 
 - **Inherit a builtin HTML element easily**, without worrying about [`customElements.define()` third parameter](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define), or whether [`attachShadow` is supported by this HTML element](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).
   - [*📖 Learn more about this feature.*](#easily-inherit-a-builtin-html-element)

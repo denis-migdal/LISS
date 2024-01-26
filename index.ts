@@ -6,17 +6,19 @@ const CAN_HAVE_SHADOW = [
 	
 ];
 
+type CSS_Source = string|URL|HTMLStyleElement|CSSStyleSheet;
+
 export type LISSOptions<T extends HTMLElement, U extends Class> = {
 
 	htmlclass?: Constructor<T>|null,
 	inherit  ?: Constructor<U>|null,
 
-	dependancies?: readonly string[],
+	dependancies?: readonly Promise<any>[],
 	observedAttributes ?: readonly string[],
 
-	content?: string|HTMLTemplateElement,
+	content?: string|URL|HTMLTemplateElement,
 	shadow?:  ShadowCfg,
-	css?: readonly (string|HTMLStyleElement|CSSStyleSheet)[] | (string|HTMLStyleElement|CSSStyleSheet),
+	css?: readonly CSS_Source[] | CSS_Source,
 };
 
 type Constructor<T> = new () => T;
@@ -28,6 +30,17 @@ export enum ShadowCfg {
 	OPEN = 'open', 
 	CLOSE= 'closed'
 };
+
+// cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
+function _getCallerDir() {
+
+	const line = new Error().stack!.split('\n')[2];
+
+	let beg = line.indexOf('@') + 1;
+	let end = line.lastIndexOf('/') + 1;
+
+	return line.slice(beg, end);
+}
 
 export default function LISS<T extends HTMLElement = HTMLElement, U extends Class = Class>(
 							{   observedAttributes,
@@ -42,7 +55,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 	const inheritObjClass = inherit   ?? Object      as unknown as Constructor<U>;
 
 	observedAttributes ??= [];
-	dependancies ??= [];
+	const deps = [...dependancies ?? []];
 
 	const canHasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inheritClass) );
 	shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
@@ -52,48 +65,66 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 		shadow = ShadowCfg.NONE;
 	}
 
+	const cwd = _getCallerDir();
+
 	if( content !== undefined ) {
 
-		if( typeof content === 'string' && content[0] === '#')
-			content = document.querySelector<HTMLTemplateElement>(content)!;
+		if(content instanceof HTMLTemplateElement) {
 
-		if(content instanceof HTMLTemplateElement)
 			content = content.innerHTML;
+			content = (content as string).trim(); // Never return a text node of whitespace as the result
+			if(content === '')
+				content = undefined;
 
-		content = (content as string).trim(); // Never return a text node of whitespace as the result
-		if(content === '')
-			content = undefined;
+		} else if( content instanceof URL || content.startsWith('./') ) {
+
+			if( typeof content === 'string' )
+				content = `${cwd}/${content}`;
+
+			deps.push( new Promise( async (resolve) => {
+
+				content = await _fetchText(content as URL|string);
+
+				resolve( ImplLISS.Parameters.content = content );
+			}) );
+		}
 	}
 
-	let shadow_stylesheets: readonly CSSStyleSheet[] = [];
+	let stylesheets: readonly CSSStyleSheet[] = [];
 	if( css !== undefined ) {
 
 		if( ! Array.isArray(css) )
-			css = [css as any];
+			css = [css as CSS_Source];
 
-		shadow_stylesheets = css.map( c => {
+		stylesheets = (css as CSS_Source[]).map( (c, idx) => {
 
 			if(c instanceof CSSStyleSheet)
 				return c;
 
-			if( typeof c === 'string' && c[0] === '#' )
-				c = document.querySelector<HTMLStyleElement>(c)!;
-
 			if( c instanceof HTMLStyleElement)
 				return c.sheet!;
 
-			let style = new CSSStyleSheet()
-			style.replaceSync(c);
+			let style = new CSSStyleSheet();
+
+			if( ! (c instanceof URL) && ! c.startsWith('./') ) {
+				style.replace(c);
+				return style;
+			}
+
+			if( typeof content === 'string' )
+				content = `${cwd}/${content}`;
+
+			deps.push( new Promise<void>( async (resolve) => {
+
+				const text = await _fetchText(c);
+
+				stylesheets[idx].replace(text!);
+
+				resolve();
+			}));
 
 			return style;
 		});
-	}
-	let html_stylesheets = "";
-	if( ! shadow && css !== undefined) {
-
-		for(let style of shadow_stylesheets)
-			for(let rule of style.cssRules)
-				html_stylesheets += rule.cssText + '\n';
 	}
 
 	// @ts-ignore
@@ -120,10 +151,9 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 		static readonly Parameters = {
 			tagclass: inheritClass,
 			observedAttributes,
-			dependancies,
+			dependancies: deps,
 			shadow,
-			html_stylesheets,
-			shadow_stylesheets,
+			stylesheets,
 			content,
 		};
 
@@ -131,6 +161,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 								_oldValue: string,
 								_newValue: string) {}
 	}
+
 
 	return ImplLISS;
 }
@@ -185,8 +216,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 	const tagclass 			 = Liss.Parameters.tagclass;
 	const observedAttributes = Liss.Parameters.observedAttributes;
 	const shadow			 = Liss.Parameters.shadow;
-	const html_stylesheets	 = Liss.Parameters.html_stylesheets;
-	const shadow_stylesheets = Liss.Parameters.shadow_stylesheets;
+	const stylesheets 		 = Liss.Parameters.stylesheets;
 	const template  		 = Liss.Parameters.content;
 
 	const alreadyDeclaredCSS = new Set();
@@ -226,25 +256,33 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 				this.#attributes[obs] = this.getAttribute(obs);
 
 			// css
-			if( shadow && shadow_stylesheets.length )
-				(this.#content as ShadowRoot).adoptedStyleSheets.push(...shadow_stylesheets);
-			if( html_stylesheets !== "") {
+			if( stylesheets.length ) {
 
-				const cssselector = this.CSSSelector;
+				if( shadow )
+					(this.#content as ShadowRoot).adoptedStyleSheets.push(...stylesheets);
+				else {
 
-				// if not yet inserted :
-				if( ! alreadyDeclaredCSS.has(cssselector) ) {
-					
-					let style = document.createElement('style');
+					const cssselector = this.CSSSelector;
 
-					style.setAttribute('for', cssselector);
-					style.innerHTML = html_stylesheets.replace(':host', cssselector);
+					// if not yet inserted :
+					if( ! alreadyDeclaredCSS.has(cssselector) ) {
+						
+						let style = document.createElement('style');
 
-					document.head.append(style);
+						style.setAttribute('for', cssselector);
 
+						let html_stylesheets = "";
 
-					alreadyDeclaredCSS.add(cssselector);
-					//throw new Error('not yet implemented');
+						for(let style of stylesheets)
+							for(let rule of style.cssRules)
+								html_stylesheets += rule.cssText + '\n';
+
+						style.innerHTML = html_stylesheets.replace(':host', cssselector);
+
+						document.head.append(style);
+
+						alreadyDeclaredCSS.add(cssselector);
+					}
 				}
 			}
 
@@ -327,10 +365,11 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 }
 
 
-type DEFINE_DATA = readonly [string, LISSClassTypeType<any, any>,
-							 string|undefined,
-							 readonly string[],
-							 Readonly<Record<string, any>>];
+type DEFINE_DATA = readonly [string,						// tagname
+							 LISSClassTypeType<any, any>,   // class
+							 string|undefined,				// inherit HTML Element
+							 readonly Promise<any>[],		// deps
+							 Readonly<Record<string, any>>];// parameters.
 let TO_DEFINE: DEFINE_DATA[] = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -341,8 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function define(...args: DEFINE_DATA) {
 
-	for(let dep of args[3])
-		await customElements.whenDefined(dep);
+	await Promise.all(args[3]);
 
 	const LISSclass = buildImplLISSTag(args[1], args[4]);
 
@@ -575,7 +613,7 @@ class LISS_Auto extends LISS({observedAttributes: ["src"]}) {
 	}
 }
 
-async function _fetchText(uri: string) {
+async function _fetchText(uri: string|URL) {
 
 	const response = await fetch(uri);
 	if(response.status !== 200)
