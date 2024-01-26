@@ -17,8 +17,6 @@ export type LISSOptions<T extends HTMLElement, U extends Class> = {
 	content?: string|HTMLTemplateElement,
 	shadow?:  ShadowCfg,
 	css?: readonly (string|HTMLStyleElement|CSSStyleSheet)[] | (string|HTMLStyleElement|CSSStyleSheet),
-
-	delayedInit?: boolean //TODO is it still used ???
 };
 
 type Constructor<T> = new () => T;
@@ -37,7 +35,6 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 								inherit   = null,
 								dependancies,
 								content,
-								delayedInit = false,
 								css,
 								shadow}: LISSOptions<T, U> = {}) {
 
@@ -128,7 +125,6 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 			html_stylesheets,
 			shadow_stylesheets,
 			content,
-			delayedInit,
 		};
 
 		protected onAttrChanged(_name: string,
@@ -192,7 +188,6 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 	const html_stylesheets	 = Liss.Parameters.html_stylesheets;
 	const shadow_stylesheets = Liss.Parameters.shadow_stylesheets;
 	const template  		 = Liss.Parameters.content;
-	const delayedInit		 = Liss.Parameters.delayedInit;
 
 	const alreadyDeclaredCSS = new Set();
 
@@ -209,11 +204,11 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 		#API: InstanceType<U> | null = null;
 
 		connectedCallback() {
-			if( ! this.isInit && ! delayedInit && ! this.hasAttribute('delay-liss-init') )
+			if( ! this.isInit && ! this.hasAttribute('delay-liss-init') )
 				this.force_init();
 		}
 
-		force_init(options: Readonly<Record<string, any>>|undefined = this.#options) {
+		private force_init(options: Readonly<Record<string, any>>|undefined = this.#options) {
 			
 			if( this.isInit )
 				throw new Error('Webcomponent already initialized!');

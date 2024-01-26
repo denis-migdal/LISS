@@ -11,7 +11,7 @@ export var ShadowCfg;
     ShadowCfg["CLOSE"] = "closed";
 })(ShadowCfg || (ShadowCfg = {}));
 ;
-export default function LISS({ observedAttributes, htmlclass = null, inherit = null, dependancies, content, delayedInit = false, css, shadow } = {}) {
+export default function LISS({ observedAttributes, htmlclass = null, inherit = null, dependancies, content, css, shadow } = {}) {
     const inheritClass = htmlclass ?? HTMLElement;
     const inheritObjClass = inherit ?? Object;
     observedAttributes ??= [];
@@ -77,7 +77,6 @@ export default function LISS({ observedAttributes, htmlclass = null, inherit = n
             html_stylesheets,
             shadow_stylesheets,
             content,
-            delayedInit,
         };
         onAttrChanged(_name, _oldValue, _newValue) { }
     }
@@ -109,7 +108,6 @@ function buildImplLISSTag(Liss, withCstrParams = {}) {
     const html_stylesheets = Liss.Parameters.html_stylesheets;
     const shadow_stylesheets = Liss.Parameters.shadow_stylesheets;
     const template = Liss.Parameters.content;
-    const delayedInit = Liss.Parameters.delayedInit;
     const alreadyDeclaredCSS = new Set();
     // @ts-ignore : because TS is stupid.
     class ImplLISSTag extends tagclass {
@@ -121,7 +119,7 @@ function buildImplLISSTag(Liss, withCstrParams = {}) {
         /*** init ***/
         #API = null;
         connectedCallback() {
-            if (!this.isInit && !delayedInit && !this.hasAttribute('delay-liss-init'))
+            if (!this.isInit && !this.hasAttribute('delay-liss-init'))
                 this.force_init();
         }
         force_init(options = this.#options) {
