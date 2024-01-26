@@ -19,32 +19,44 @@ To create a new components, simply create a class extending `LISS()` and registe
 
 ```html
 <!-- $LISS/examples/basic.html -->
-<script type="module">
-  import LISS from '$LISS';
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="module">
+      import LISS from '$LISS';
 
-  class MyComponent extends LISS() {
+      class MyComponent extends LISS() {
 
-    // Initialize your WebComponent
-    constructor(htmltag) {
-      super(htmltag);
+        // Initialize your WebComponent
+        constructor(htmltag) {
+          super(htmltag);
 
-      // Use this.content to initialize the content
-      // of your WebComponent
-      this.content.append('Hello World ;)');
-    }
-  }
+          // Use this.content to initialize your component's content
+          this.content.append('Hello World ;)');
 
-  // Define your WebComponent
-  LISS.define('my-component', MyComponent); // define the "my-component" component.
-</script>
-<my-component></my-component> <!-- Prints "Hello World ;)" -->
+          // Use this.host to access the component's host:
+          console.log("Host", this.host); // <my-component></my-component>
+
+          // Use this.attrs to efficiently access the component's host's attributes:
+          console.log("Attributes", this.attrs); // {foo: "42"}
+        }
+      }
+
+      // Define your WebComponent
+      LISS.define('my-component', MyComponent); // define the "my-component" component.
+    </script>
+  </head>
+  <body>
+    <my-component foo="42"></my-component> <!-- Prints "Hello World ;)" -->
+  </body>
+</html>
 ```
 
 [📖 And a lot more features and examples below.](#features-and-examples)
 
 ## LISS (auto mode)
 
-LISS can now automatically build and import your components, making them even easier to use.
+LISS can also automatically build and import your components, making them even easier to use.
 This feature is enabled simply by adding a `<liss-auto src='$COMPONENTS_DIR'></liss-auto>` HTML tag into your webpage:
 ```html
 <!-- $LISS/examples/liss-auto/ -->
