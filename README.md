@@ -133,7 +133,7 @@ You can also add an `index.html` and a `index.css` files to your component. LISS
 You can see all examples below in the [`LISS/examples/` directory](./examples/).
 
 - **[Basic features](#basic-features)**
-  - [Use HTML/CSS files/strings](#use-html-css-files-strings)
+  - [Use HTML/CSS files/strings](#use-htmlcss-filesstrings)
   - Management of HTML attributes.
 - **Advanced features**
   - extend a JS class.
@@ -339,44 +339,6 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
     }
   });
 </script>
-```
-
-### Fill HTML/CSS from strings
-
-```html
-<!-- LISS/examples/fill-from-strings.html -->
-<script type="module">
-  import LISS from './LISS/index.js';
-
-  // const htmlstr = require(!raw!$FILEPATH) // for WebPack
-  // const htmlstr = await (await fetch($FILEPATH)).text();
-  const htmlstr = "X = <span>${a}</span>";
-  const cssstr  = `
-    :host span {
-      background-color: yellow;
-    }
-  `;
-
-  class MyComponentA extends LISS(null, {
-    template: htmlstr,// accepts string, or HTMLTemplateElement,
-    css   : cssstr  // accepts string, HTMLStyleElement, or CSSStyleSheet or an array of it.
-  }) {}
-
-  const htmlstr2 = "<td>X = <span>${b}</span></td>";
-
-  class MyComponentB extends LISS(HTMLTableRowElement, {
-    template: htmlstr2,// accepts string, or HTMLTemplateElement,
-    css   : cssstr   // accepts string, HTMLStyleElement, or CSSStyleSheet or an array of it.
-  }) {}
-
-  LISS.define('my-component-a', MyComponentA);
-  LISS.define('my-component-b', MyComponentB);
-</script>
-<my-component-a a="A"></my-component-a>
-<table>
-  <tr is="my-component-b" b="B"></tr>
-</table>
-<span>C</span>
 ```
 
 ### Parts
