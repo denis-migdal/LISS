@@ -14,11 +14,11 @@ export type LISSOptions<T extends HTMLElement, U extends Class> = {
 	inherit  ?: Constructor<U>|null,
 
 	dependancies?: readonly Promise<any>[],
-	observedAttributes ?: readonly string[],
+	attributes  ?: readonly string[],
 
 	content?: string|URL|HTMLTemplateElement,
-	shadow?:  ShadowCfg,
-	css?: readonly CSS_Source[] | CSS_Source,
+	css    ?: readonly CSS_Source[] | CSS_Source,
+	shadow ?:  ShadowCfg,
 };
 
 type Constructor<T> = new () => T;
@@ -43,7 +43,7 @@ function _getCallerDir() {
 }
 
 export default function LISS<T extends HTMLElement = HTMLElement, U extends Class = Class>(
-							{   observedAttributes,
+							{   attributes,
 								htmlclass = null,
 								inherit   = null,
 								dependancies,
@@ -54,7 +54,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 	const inheritClass    = htmlclass ?? HTMLElement as Constructor<T>;
 	const inheritObjClass = inherit   ?? Object      as unknown as Constructor<U>;
 
-	observedAttributes ??= [];
+	attributes ??= [];
 	const deps = [...dependancies ?? []];
 
 	const canHasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inheritClass) );
@@ -111,12 +111,12 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 				return style;
 			}
 
-			if( typeof content === 'string' )
-				content = `${cwd}/${content}`;
+			if( typeof c === 'string' )
+				c = `${cwd}/${c}`;
 
 			deps.push( new Promise<void>( async (resolve) => {
 
-				const text = await _fetchText(c);
+				const text = await _fetchText(c as string|URL);
 
 				stylesheets[idx].replace(text!);
 
@@ -126,6 +126,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 			return style;
 		});
 	}
+
 
 	// @ts-ignore
 	class ImplLISS extends inheritObjClass {
@@ -150,7 +151,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 
 		static readonly Parameters = {
 			tagclass: inheritClass,
-			observedAttributes,
+			attributes: attributes!,
 			dependancies: deps,
 			shadow,
 			stylesheets,
@@ -159,7 +160,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 
 		protected onAttrChanged(_name: string,
 								_oldValue: string,
-								_newValue: string) {}
+								_newValue: string): void|false {}
 	}
 
 
@@ -213,18 +214,55 @@ LISS.closest = function<T>(selector:string, currentElement: Element) {
 function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U extends LISSClassTypeType<T, SuperClass>>(Liss: U,
 																			 withCstrParams: Readonly<Record<string, any>> = {}) {
 	
-	const tagclass 			 = Liss.Parameters.tagclass;
-	const observedAttributes = Liss.Parameters.observedAttributes;
-	const shadow			 = Liss.Parameters.shadow;
-	const stylesheets 		 = Liss.Parameters.stylesheets;
-	const template  		 = Liss.Parameters.content;
+	const tagclass 	  = Liss.Parameters.tagclass;
+	const attributes  = Liss.Parameters.attributes;
+	const shadow	  = Liss.Parameters.shadow;
+	const stylesheets = Liss.Parameters.stylesheets;
+	const template    = Liss.Parameters.content;
 
 	const alreadyDeclaredCSS = new Set();
+
+	const GET = Symbol('get');
+	const SET = Symbol('set');
+
+	const properties = Object.fromEntries( attributes.map(n => [n, {
+
+		enumerable: true,
+		get: function(): string      { return this[GET](n); },
+		set: function(value: string) { return this[SET](n, value); }
+	}]) );
+
+	class Attrs implements Record<string, string|null> {
+        [x: string]: string|null;
+
+        #data  : Record<string, string|null>;
+        #setter: (name: string, value: string|null) => void;
+
+        [GET](name: string) {
+        	return this.#data[name];
+        };
+        [SET](name: string, value: string|null){
+        	return this.#setter(name, value); // required to get a clean object when doing {...attrs}
+        }
+
+        constructor(data: Record<string, string|null>,
+        			setter: (name: string, value: string|null) => void) {
+
+        	this.#data   = data;
+        	this.#setter = setter;
+
+        	Object.defineProperties(this, properties);
+        }
+	}
+
+
+	//Object.defineProperties(Attrs.prototype, properties);
 
 	// @ts-ignore : because TS is stupid.
 	class ImplLISSTag extends tagclass {
 
 		readonly #options?: Readonly<Record<string, any>>;
+
 		constructor(options?: Readonly<Record<string, any>>) {
 			super();
 			this.#options = options;
@@ -252,7 +290,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 			}
 
 			// attrs
-			for(let obs of observedAttributes!)
+			for(let obs of attributes!)
 				this.#attributes[obs] = this.getAttribute(obs);
 
 			// css
@@ -344,20 +382,45 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 		}
 
 		/*** attrs ***/
+		#attrs_flag = false;
+
 		#attributes: Record<string, string|null> = {};
+		#attrs = new Attrs(
+			this.#attributes,
+			(name: string, value:string|null) => {
+
+				this.#attributes[name] = value;
+
+				this.#attrs_flag = true; // do not trigger onAttrsChanged.
+				if( value === null)
+					this.removeAttribute(name);
+				else
+					this.setAttribute(name, value);
+			}
+		);
+
 		get attrs(): Readonly<Record<string, string|null>> {
-			return this.#attributes;
+
+			return this.#attrs;
 		}
 
-		static observedAttributes = observedAttributes;
+		static observedAttributes = attributes;
 		attributeChangedCallback(name: string,
 								 oldValue: string,
 								 newValue: string) {
+
+			if(this.#attrs_flag) {
+				this.#attrs_flag = false;
+				return;
+			}
+
 			this.#attributes[name] = newValue;
 			if( ! this.isInit )
 				return;
 
-			(this.#API! as any).onAttrChanged(name, oldValue, newValue);
+			if( (this.#API! as any).onAttrChanged(name, oldValue, newValue) === false) {
+				this.#attrs[name] = oldValue; // revert the change.
+			}
 		}
 	};
 
@@ -548,7 +611,7 @@ LISS.whenAllDefined = async function<T extends CustomElementConstructor = Custom
 
 /**** LISS-auto ****/
 
-class LISS_Auto extends LISS({observedAttributes: ["src"]}) {
+class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 	readonly #known_tag = new Set<string>();
 	readonly #directory: string;

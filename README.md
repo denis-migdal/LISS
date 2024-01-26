@@ -134,7 +134,7 @@ You can see all examples below in the [`LISS/examples/` directory](./examples/).
 
 - **[Basic features](#basic-features)**
   - [Use HTML/CSS files/strings](#use-htmlcss-filesstrings)
-  - Management of HTML attributes.
+  - [Management of HTML attributes](#manage-html-attributes)
 - **Advanced features**
   - extend a JS class.
   - extend an existing HTML element.
@@ -175,6 +175,10 @@ LISS.define("my-component", Component);
 
 📖 By default, LISS assumes `string` values to be HTML or CSS content.
 However, if the `string` starts with `./`, it will be processed as a relative path to the current file.
+
+#### Manage HTML attributes
+
+
 
 
 ## Features and examples [OLD]

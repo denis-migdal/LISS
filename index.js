@@ -18,10 +18,10 @@ function _getCallerDir() {
     let end = line.lastIndexOf('/') + 1;
     return line.slice(beg, end);
 }
-export default function LISS({ observedAttributes, htmlclass = null, inherit = null, dependancies, content, css, shadow } = {}) {
+export default function LISS({ attributes, htmlclass = null, inherit = null, dependancies, content, css, shadow } = {}) {
     const inheritClass = htmlclass ?? HTMLElement;
     const inheritObjClass = inherit ?? Object;
-    observedAttributes ??= [];
+    attributes ??= [];
     const deps = [...dependancies ?? []];
     const canHasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inheritClass));
     shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
@@ -60,8 +60,8 @@ export default function LISS({ observedAttributes, htmlclass = null, inherit = n
                 style.replace(c);
                 return style;
             }
-            if (typeof content === 'string')
-                content = `${cwd}/${content}`;
+            if (typeof c === 'string')
+                c = `${cwd}/${c}`;
             deps.push(new Promise(async (resolve) => {
                 const text = await _fetchText(c);
                 stylesheets[idx].replace(text);
@@ -88,7 +88,7 @@ export default function LISS({ observedAttributes, htmlclass = null, inherit = n
         }
         static Parameters = {
             tagclass: inheritClass,
-            observedAttributes,
+            attributes: attributes,
             dependancies: deps,
             shadow,
             stylesheets,
@@ -119,11 +119,35 @@ LISS.closest = function (selector, currentElement) {
 };
 function buildImplLISSTag(Liss, withCstrParams = {}) {
     const tagclass = Liss.Parameters.tagclass;
-    const observedAttributes = Liss.Parameters.observedAttributes;
+    const attributes = Liss.Parameters.attributes;
     const shadow = Liss.Parameters.shadow;
     const stylesheets = Liss.Parameters.stylesheets;
     const template = Liss.Parameters.content;
     const alreadyDeclaredCSS = new Set();
+    const GET = Symbol('get');
+    const SET = Symbol('set');
+    const properties = Object.fromEntries(attributes.map(n => [n, {
+            enumerable: true,
+            get: function () { return this[GET](n); },
+            set: function (value) { return this[SET](n, value); }
+        }]));
+    class Attrs {
+        #data;
+        #setter;
+        [GET](name) {
+            return this.#data[name];
+        }
+        ;
+        [SET](name, value) {
+            return this.#setter(name, value); // required to get a clean object when doing {...attrs}
+        }
+        constructor(data, setter) {
+            this.#data = data;
+            this.#setter = setter;
+            Object.defineProperties(this, properties);
+        }
+    }
+    //Object.defineProperties(Attrs.prototype, properties);
     // @ts-ignore : because TS is stupid.
     class ImplLISSTag extends tagclass {
         #options;
@@ -147,7 +171,7 @@ function buildImplLISSTag(Liss, withCstrParams = {}) {
                 this.#content = this.attachShadow({ mode: shadow });
             }
             // attrs
-            for (let obs of observedAttributes)
+            for (let obs of attributes)
                 this.#attributes[obs] = this.getAttribute(obs);
             // css
             if (stylesheets.length) {
@@ -216,16 +240,31 @@ function buildImplLISSTag(Liss, withCstrParams = {}) {
                 : `${this.tagName}[is="${this.getAttribute("is")}"]`;
         }
         /*** attrs ***/
+        #attrs_flag = false;
         #attributes = {};
+        #attrs = new Attrs(this.#attributes, (name, value) => {
+            this.#attributes[name] = value;
+            this.#attrs_flag = true; // do not trigger onAttrsChanged.
+            if (value === null)
+                this.removeAttribute(name);
+            else
+                this.setAttribute(name, value);
+        });
         get attrs() {
-            return this.#attributes;
+            return this.#attrs;
         }
-        static observedAttributes = observedAttributes;
+        static observedAttributes = attributes;
         attributeChangedCallback(name, oldValue, newValue) {
+            if (this.#attrs_flag) {
+                this.#attrs_flag = false;
+                return;
+            }
             this.#attributes[name] = newValue;
             if (!this.isInit)
                 return;
-            this.#API.onAttrChanged(name, oldValue, newValue);
+            if (this.#API.onAttrChanged(name, oldValue, newValue) === false) {
+                this.#attrs[name] = oldValue; // revert the change.
+            }
         }
     }
     ;
@@ -331,7 +370,7 @@ LISS.whenAllDefined = async function (tagnames, callback) {
         callback();
 };
 /**** LISS-auto ****/
-class LISS_Auto extends LISS({ observedAttributes: ["src"] }) {
+class LISS_Auto extends LISS({ attributes: ["src"] }) {
     #known_tag = new Set();
     #directory;
     constructor(htmltag) {

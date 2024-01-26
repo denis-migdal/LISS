@@ -4,38 +4,49 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>LISS Example (Attributes)</title>
+	<script type="importmap">
+		{
+			"imports": {
+				"LISS": "/index.js"
+			}
+		}
+	</script>
 	<script type="module">
-		import LISS from '../index.js';
+		import LISS from 'LISS';
 
-		const OPTIONS = {
-			// declare the attributes to observe.
-			observedAttributes: ["content"]
-		};
-
-		class MyComponent extends LISS(null, OPTIONS) {
+		class MyComponent extends LISS({
+											attributes: ["content"] // attributes to observe.
+										}) {
 
 			constructor(htmltag) {
+
 				super(htmltag);
 
 				// this.attrs contains the current values of the observed attributes.
-				console.log("Attributes (init)", this.attrs);
-				// you can validate this.attrs here.
+				console.log("Attributes (init)", {...this.attrs});
 
+				// you can validate this.attrs here.
 				this.content.textContent = this.attrs.content;
 
-				setInterval( () => {
-
-					this.host.setAttribute("content", +this.attrs.content + 1);
-
+				setTimeout( () => {
+					this.host.setAttribute("content", 1);
 				}, 1000);
+				setTimeout( () => {
+					this.host.setAttribute("content", 2);
+				}, 2000);
 			}
 
 			onAttrChanged(name, oldValue, newValue) {
+
 				console.log("AttrChanged", name, oldValue, "->", newValue);
-				console.log(this.attrs);
+				console.log("Attributes:", {...this.attrs});
+
 				// you can validate this.attrs here.
+				if( this.attrs.content === "2" )
+					return false; // cancel the change.
 
 				this.content.textContent = this.attrs.content;
+				this.attrs.content = "done"; // will NOT trigger onAttrChanged.
 			}
 		}
 
