@@ -151,7 +151,6 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 								_newValue: string): void|false {}
 	}
 
-
 	return LISSBase;
 }
 
@@ -173,7 +172,7 @@ type inferLISSClassTypeTypeFromLISSClass<LISSClass> = Constructor<LISSClass> & {
 type LISSTagClassTypeType<LISSClassType>  = LISSClassType extends LISSClassTypeType<infer T extends HTMLElement, infer SC extends Class> ? ReturnType<typeof buildLISSHost<T, SC, LISSClassType>> : never;
 type LISSTagClassType<LISSClassType>      = InstanceType<LISSTagClassTypeType<LISSClassType>>;
 
-type inferLISSTagClassTypeFROMLISSClass<LISSClass> = LISSTagClassType<inferLISSClassTypeTypeFromLISSClass<LISSClass>>;
+export type LISSHost<LISSClass> = LISSTagClassType<inferLISSClassTypeTypeFromLISSClass<LISSClass>>;
 
 
 // ================================================
@@ -549,7 +548,7 @@ LISS.qso = function<T>(	selector: string,
 	if(selector === '')
 		return null;
 
-	return parent.querySelector<inferLISSTagClassTypeFROMLISSClass<T>>(selector);
+	return parent.querySelector<LISSHost<T>>(selector);
 }
 LISS.qsa = function<T>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
@@ -558,11 +557,11 @@ LISS.qsa = function<T>(	selector: string,
 	if(selector === '')
 		return [];
 
-	return [...parent.querySelectorAll<inferLISSTagClassTypeFROMLISSClass<T>>(selector)];
+	return [...parent.querySelectorAll<LISSHost<T>>(selector)];
 }
 
 LISS.closest = function<T>(selector:string, currentElement: Element) {
-	return currentElement.closest<inferLISSTagClassTypeFROMLISSClass<T>>(selector);
+	return currentElement.closest<LISSHost<T>>(selector);
 }
 
 LISS.whenDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagname: string, callback?: (cstr: T) => void ) : Promise<T> {
