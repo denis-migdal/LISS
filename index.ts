@@ -161,6 +161,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 // ================================================
 
 // TODO remove ???
+// Super confus...
 
 type LISSClassTypeType<T extends HTMLElement, SuperClass extends Class> = ReturnType<typeof LISS<T, SuperClass>>;
 //type LISSClassType    <T extends HTMLElement> = InstanceType<LISSClassTypeType<T>>;
@@ -169,7 +170,7 @@ type LISSClassTypeType<T extends HTMLElement, SuperClass extends Class> = Return
 type inferLISSClassTypeTypeFromLISSClass<LISSClass> = Constructor<LISSClass> & {Parameters: any};
 
 // i.e. we need to give them "typeof LISS".
-type LISSTagClassTypeType<LISSClassType>  = LISSClassType extends LISSClassTypeType<infer T extends HTMLElement, infer SC extends Class> ? ReturnType<typeof buildImplLISSTag<T, SC, LISSClassType>> : never;
+type LISSTagClassTypeType<LISSClassType>  = LISSClassType extends LISSClassTypeType<infer T extends HTMLElement, infer SC extends Class> ? ReturnType<typeof buildLISSHost<T, SC, LISSClassType>> : never;
 type LISSTagClassType<LISSClassType>      = InstanceType<LISSTagClassTypeType<LISSClassType>>;
 
 type inferLISSTagClassTypeFROMLISSClass<LISSClass> = LISSTagClassType<inferLISSClassTypeTypeFromLISSClass<LISSClass>>;
@@ -179,7 +180,7 @@ type inferLISSTagClassTypeFROMLISSClass<LISSClass> = LISSTagClassType<inferLISSC
 // =============== LISSHost class =================
 // ================================================
 
-function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U extends LISSClassTypeType<T, SuperClass>>(Liss: U,
+function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extends LISSClassTypeType<T, SuperClass>>(Liss: U,
 																			 withCstrParams: Readonly<Record<string, any>> = {}) {
 	
 	const tagclass 	  = Liss.Parameters.tagclass;
@@ -227,7 +228,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 	//Object.defineProperties(Attrs.prototype, properties);
 
 	// @ts-ignore : because TS is stupid.
-	class ImplLISSTag extends tagclass {
+	class LISSHostBase extends tagclass {
 
 		readonly #options?: Readonly<Record<string, any>>;
 
@@ -392,7 +393,7 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 		}
 	};
 
-	return ImplLISSTag;
+	return LISSHostBase;
 }
 
 // ================================================
@@ -417,7 +418,7 @@ async function define(...args: DEFINE_DATA) {
 
 	await Promise.all(args[3]);
 
-	const LISSclass = buildImplLISSTag(args[1], args[4]);
+	const LISSclass = buildLISSHost(args[1], args[4]);
 
 	customElements.define(args[0], LISSclass, {extends: args[2]});
 }
@@ -451,7 +452,7 @@ LISS.define = function<U extends HTMLElement,
 
 //TODO remove ?
 LISS.createElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, args: Readonly<Record<string, any>>): Promise<T> {
-			
+
 	let CustomClass = await customElements.whenDefined(tagname);
 
 	//if(CustomClass === undefined)
@@ -573,7 +574,6 @@ LISS.whenDefined = async function<T extends CustomElementConstructor = CustomEle
 
 	return cstr;
 }
-
 LISS.whenAllDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagnames: readonly string[], callback?: () => void ) : Promise<void> {
 
 	await Promise.all( tagnames.map( t => customElements.whenDefined(t) as Promise<T>) )

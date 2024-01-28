@@ -91,7 +91,7 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
 // ================================================
 // =============== LISSHost class =================
 // ================================================
-function buildImplLISSTag(Liss, withCstrParams = {}) {
+function buildLISSHost(Liss, withCstrParams = {}) {
     const tagclass = Liss.Parameters.tagclass;
     const attributes = Liss.Parameters.attributes;
     const shadow = Liss.Parameters.shadow;
@@ -123,7 +123,7 @@ function buildImplLISSTag(Liss, withCstrParams = {}) {
     }
     //Object.defineProperties(Attrs.prototype, properties);
     // @ts-ignore : because TS is stupid.
-    class ImplLISSTag extends tagclass {
+    class LISSHostBase extends tagclass {
         #options;
         constructor(options) {
             super();
@@ -242,7 +242,7 @@ function buildImplLISSTag(Liss, withCstrParams = {}) {
         }
     }
     ;
-    return ImplLISSTag;
+    return LISSHostBase;
 }
 let TO_DEFINE = [];
 document.addEventListener('DOMContentLoaded', () => {
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }, true);
 async function define(...args) {
     await Promise.all(args[3]);
-    const LISSclass = buildImplLISSTag(args[1], args[4]);
+    const LISSclass = buildLISSHost(args[1], args[4]);
     customElements.define(args[0], LISSclass, { extends: args[2] });
 }
 LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
