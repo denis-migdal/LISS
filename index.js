@@ -286,6 +286,8 @@ LISS.define = async function (tagname, CustomClass, { dependancies, withCstrPara
     customElements.define(tagname, LISSclass, { extends: htmltag });
 };
 LISS.build = async function (tagname, { withCstrParams = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
+    if (!initialize && parent === null)
+        throw new Error("A parent must be given if initialize is false");
     let CustomClass = await customElements.whenDefined(tagname);
     let elem = new CustomClass(withCstrParams);
     if (id !== undefined)
@@ -318,7 +320,7 @@ LISS.build = async function (tagname, { withCstrParams = {}, initialize = true, 
         parent.append(elem);
     return initialize
         ? await LISS.initialize(elem)
-        : await LISS.getLISS(elem);
+        : await LISS.getLISS(elem); // will never be called...
 };
 LISS.getName = function (element) {
     const name = element.getAttribute('is') ?? element.tagName.toLowerCase();

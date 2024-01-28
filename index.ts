@@ -456,16 +456,20 @@ LISS.define = async function<U extends HTMLElement,
 
 type BUILD_OPTIONS = Partial<{
 					  	withCstrParams: Readonly<Record<string, any>>,
-						initialize: boolean,
 					  	content	  : string|Node|readonly Node[],
-					  	parent    : HTMLElement,
 						id 		  : string,
 					  	classes	  : readonly string[],
 					  	cssvars   : Readonly<Record<string, string>>,
 					  	attrs 	  : Readonly<Record<string, string|boolean>>,
 					  	data 	  : Readonly<Record<string, string|boolean>>,
 					  	listeners : Readonly<Record<string, (ev: Event) => void>>
-					}>;
+					}> & ({
+						initialize: false,
+						parent: HTMLElement
+					}|{
+						initialize?: true,
+						parent?: HTMLElement
+					});
 LISS.build = async function <T extends LISSBase<any,any>>(tagname: string, {
 		withCstrParams = {},
 		initialize= true,
@@ -478,6 +482,9 @@ LISS.build = async function <T extends LISSBase<any,any>>(tagname: string, {
 		data 	  = {},
 		listeners = {}
 	}: BUILD_OPTIONS = {}): Promise<T> {
+
+	if( ! initialize && parent === null)
+		throw new Error("A parent must be given if initialize is false");
 
 	let CustomClass = await customElements.whenDefined(tagname);
 	let elem = new CustomClass(withCstrParams) as LISSHost<T>;	
@@ -523,7 +530,7 @@ LISS.build = async function <T extends LISSBase<any,any>>(tagname: string, {
 
 	return initialize
 			? await LISS.initialize(elem)
-			: await LISS.getLISS(elem);
+			: await LISS.getLISS(elem); // will never be called...
 }
 
 LISS.getName = function( element: HTMLElement ): string {
