@@ -332,7 +332,12 @@ function buildLISSHost<T extends HTMLElement,
 
 	    	// build
 	    	options = Object.assign({}, options, withCstrParams);
-			this.#API = new Liss(this, options) as InstanceType<U>;
+
+	    	let obj = new Liss(this, options);
+	    	if( obj instanceof Promise)
+	    		obj = await obj;
+
+			this.#API = obj as InstanceType<U>;
 
 			// default slot
 			if( this.hasShadow && this.#content.childNodes.length === 0 )

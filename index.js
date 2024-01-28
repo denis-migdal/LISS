@@ -203,7 +203,10 @@ function buildLISSHost(Liss, withCstrParams = {}) {
             }
             // build
             options = Object.assign({}, options, withCstrParams);
-            this.#API = new Liss(this, options);
+            let obj = new Liss(this, options);
+            if (obj instanceof Promise)
+                obj = await obj;
+            this.#API = obj;
             // default slot
             if (this.hasShadow && this.#content.childNodes.length === 0)
                 this.#content.append(document.createElement('slot'));
