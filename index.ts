@@ -1,12 +1,8 @@
-// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
-const CAN_HAVE_SHADOW = [
-	null, 'article', 'aside', 'blockquote', 'body', 'div',
-	'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
-	'nav', 'p', 'section', 'span'
-	
-];
+// ================================================
+// =============== LISS exported types ============
+// ================================================
 
-type CSS_Source = string|URL|HTMLStyleElement|CSSStyleSheet;
+export type CSS_Source = string|URL|HTMLStyleElement|CSSStyleSheet;
 
 export type LISSOptions<T extends HTMLElement, U extends Class> = {
 
@@ -21,26 +17,18 @@ export type LISSOptions<T extends HTMLElement, U extends Class> = {
 	shadow ?:  ShadowCfg,
 };
 
-type Constructor<T> = new () => T;
-
-interface Class {}
-
 export enum ShadowCfg {
 	NONE = 0,
 	OPEN = 'open', 
 	CLOSE= 'closed'
 };
 
-// cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
-function _getCallerDir(depth = 2) {
+// ================================================
+// =============== LISS Class =====================
+// ================================================
 
-	const line = new Error().stack!.split('\n')[depth];
-
-	let beg = line.indexOf('@') + 1;
-	let end = line.lastIndexOf('/') + 1;
-
-	return line.slice(beg, end);
-}
+type Constructor<T> = new () => T;
+interface Class {}
 
 export default function LISS<T extends HTMLElement = HTMLElement, U extends Class = Class>(
 							{   attributes,
@@ -57,7 +45,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 	attributes ??= [];
 	const deps = [...dependancies ?? []];
 
-	const canHasShadow = CAN_HAVE_SHADOW.includes( element2tagname(inheritClass) );
+	const canHasShadow = CAN_HAVE_SHADOW.includes( _element2tagname(inheritClass) );
 	shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
 
 	if( ! canHasShadow && shadow !== ShadowCfg.NONE) {
@@ -167,6 +155,13 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 	return ImplLISS;
 }
 
+
+// ================================================
+// =============== LISS type helpers ==============
+// ================================================
+
+// TODO remove ???
+
 type LISSClassTypeType<T extends HTMLElement, SuperClass extends Class> = ReturnType<typeof LISS<T, SuperClass>>;
 //type LISSClassType    <T extends HTMLElement> = InstanceType<LISSClassTypeType<T>>;
 
@@ -179,37 +174,10 @@ type LISSTagClassType<LISSClassType>      = InstanceType<LISSTagClassTypeType<LI
 
 type inferLISSTagClassTypeFROMLISSClass<LISSClass> = LISSTagClassType<inferLISSClassTypeTypeFromLISSClass<LISSClass>>;
 
-LISS.qs = function<T>(	selector: string,
-						parent  : Element|DocumentFragment|Document = document) {
 
-	let result = LISS.qso<T>(selector, parent);
-	if(result === null)
-		throw new Error(`Element ${selector} not found`);
-
-	return result!
-}
-
-LISS.qso = function<T>(	selector: string,
-						parent  : Element|DocumentFragment|Document = document) {
-
-	if(selector === '')
-		return null;
-
-	return parent.querySelector<inferLISSTagClassTypeFROMLISSClass<T>>(selector);
-}
-LISS.qsa = function<T>(	selector: string,
-						parent  : Element|DocumentFragment|Document = document) {
-	
-
-	if(selector === '')
-		return [];
-
-	return [...parent.querySelectorAll<inferLISSTagClassTypeFROMLISSClass<T>>(selector)];
-}
-
-LISS.closest = function<T>(selector:string, currentElement: Element) {
-	return currentElement.closest<inferLISSTagClassTypeFROMLISSClass<T>>(selector);
-}
+// ================================================
+// =============== LISSHost class =================
+// ================================================
 
 function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U extends LISSClassTypeType<T, SuperClass>>(Liss: U,
 																			 withCstrParams: Readonly<Record<string, any>> = {}) {
@@ -427,6 +395,10 @@ function buildImplLISSTag<T extends HTMLElement, SuperClass extends Class, U ext
 	return ImplLISSTag;
 }
 
+// ================================================
+// =============== LISS define ====================
+// ================================================
+
 
 type DEFINE_DATA = readonly [string,						// tagname
 							 LISSClassTypeType<any, any>,   // class
@@ -450,39 +422,6 @@ async function define(...args: DEFINE_DATA) {
 	customElements.define(args[0], LISSclass, {extends: args[2]});
 }
 
-
-
-const HTMLCLASS_REGEX =  /HTML(\w+)Element/;
-// from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
-const elementNameLookupTable = {
-    'UList': 'ul',
-    'TableCaption': 'caption',
-    'TableCell': 'td', // th
-    'TableCol': 'col',  //'colgroup',
-    'TableRow': 'tr',
-    'TableSection': 'tbody', //['thead', 'tbody', 'tfoot'],
-    'Quote': 'q',
-    'Paragraph': 'p',
-    'OList': 'ol',
-    'Mod': 'ins', //, 'del'],
-    'Media': 'video',// 'audio'],
-    'Image': 'img',
-    'Heading': 'h1', //, 'h2', 'h3', 'h4', 'h5', 'h6'],
-    'Directory': 'dir',
-    'DList': 'dl',
-    'Anchor': 'a'
-  };
-
-function element2tagname(Class: typeof HTMLElement): string|null {
-
-	if( Class === HTMLElement )
-		return null;
-	
-	let htmltag = HTMLCLASS_REGEX.exec(Class.name)![1];
-	return elementNameLookupTable[htmltag as keyof typeof elementNameLookupTable] ?? htmltag.toLowerCase()
-}
-
-
 LISS.define = function<U extends HTMLElement,
 					   CL extends Class,
 					   T extends LISSClassTypeType<U, CL>>(
@@ -494,7 +433,7 @@ LISS.define = function<U extends HTMLElement,
 
 	const Class = CustomClass.Parameters.tagclass;
 	let ImplLISSClass: any = CustomClass;
-	let htmltag = element2tagname(Class)??undefined;
+	let htmltag = _element2tagname(Class)??undefined;
 
 	withCstrParams ??= {};
 
@@ -506,6 +445,11 @@ LISS.define = function<U extends HTMLElement,
 		TO_DEFINE.push(args);
 };
 
+// ================================================
+// =============== LISS helpers ===================
+// ================================================
+
+//TODO remove ?
 LISS.createElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, args: Readonly<Record<string, any>>): Promise<T> {
 			
 	let CustomClass = await customElements.whenDefined(tagname);
@@ -528,7 +472,6 @@ type BUILD_OPTIONS = Partial<{
 					  	data 	 : Readonly<Record<string, string|boolean>>,
 					  	listeners: Readonly<Record<string, (ev: Event) => void>>
 					}>;
-
 LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, {
 		withCstrParams = {},
 		init 	  = true,
@@ -589,6 +532,38 @@ LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname
 	return elem as T;
 }
 
+LISS.qs = function<T>(	selector: string,
+						parent  : Element|DocumentFragment|Document = document) {
+
+	let result = LISS.qso<T>(selector, parent);
+	if(result === null)
+		throw new Error(`Element ${selector} not found`);
+
+	return result!
+}
+
+LISS.qso = function<T>(	selector: string,
+						parent  : Element|DocumentFragment|Document = document) {
+
+	if(selector === '')
+		return null;
+
+	return parent.querySelector<inferLISSTagClassTypeFROMLISSClass<T>>(selector);
+}
+LISS.qsa = function<T>(	selector: string,
+						parent  : Element|DocumentFragment|Document = document) {
+	
+
+	if(selector === '')
+		return [];
+
+	return [...parent.querySelectorAll<inferLISSTagClassTypeFROMLISSClass<T>>(selector)];
+}
+
+LISS.closest = function<T>(selector:string, currentElement: Element) {
+	return currentElement.closest<inferLISSTagClassTypeFROMLISSClass<T>>(selector);
+}
+
 LISS.whenDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagname: string, callback?: (cstr: T) => void ) : Promise<T> {
 
 	let cstr = await customElements.whenDefined(tagname) as T;
@@ -599,7 +574,6 @@ LISS.whenDefined = async function<T extends CustomElementConstructor = CustomEle
 	return cstr;
 }
 
-
 LISS.whenAllDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagnames: readonly string[], callback?: () => void ) : Promise<void> {
 
 	await Promise.all( tagnames.map( t => customElements.whenDefined(t) as Promise<T>) )
@@ -609,7 +583,9 @@ LISS.whenAllDefined = async function<T extends CustomElementConstructor = Custom
 
 }
 
-/**** LISS-auto ****/
+// ================================================
+// =============== LISS Auto ======================
+// ================================================
 
 class LISS_Auto extends LISS({attributes: ["src"]}) {
 
@@ -696,6 +672,12 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 		return LISS.define(tagname, js({content, css}) );
 	}
 }
+LISS.define("liss-auto", LISS_Auto);
+
+
+// ================================================
+// =============== LISS internal tools ============
+// ================================================
 
 async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
 
@@ -713,7 +695,6 @@ async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
 
 	return await response.text();
 }
-
 async function _import(uri: string, isLissAuto: boolean = false) {
 
 	// test for the module existance.
@@ -728,4 +709,51 @@ async function _import(uri: string, isLissAuto: boolean = false) {
 	}
 }
 
-LISS.define("liss-auto", LISS_Auto);
+
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
+const CAN_HAVE_SHADOW = [
+	null, 'article', 'aside', 'blockquote', 'body', 'div',
+	'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
+	'nav', 'p', 'section', 'span'
+	
+];
+
+// from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
+const HTMLCLASS_REGEX =  /HTML(\w+)Element/;
+const elementNameLookupTable = {
+    'UList': 'ul',
+    'TableCaption': 'caption',
+    'TableCell': 'td', // th
+    'TableCol': 'col',  //'colgroup',
+    'TableRow': 'tr',
+    'TableSection': 'tbody', //['thead', 'tbody', 'tfoot'],
+    'Quote': 'q',
+    'Paragraph': 'p',
+    'OList': 'ol',
+    'Mod': 'ins', //, 'del'],
+    'Media': 'video',// 'audio'],
+    'Image': 'img',
+    'Heading': 'h1', //, 'h2', 'h3', 'h4', 'h5', 'h6'],
+    'Directory': 'dir',
+    'DList': 'dl',
+    'Anchor': 'a'
+  };
+function _element2tagname(Class: typeof HTMLElement): string|null {
+
+	if( Class === HTMLElement )
+		return null;
+	
+	let htmltag = HTMLCLASS_REGEX.exec(Class.name)![1];
+	return elementNameLookupTable[htmltag as keyof typeof elementNameLookupTable] ?? htmltag.toLowerCase()
+}
+
+// cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
+function _getCallerDir(depth = 2) {
+
+	const line = new Error().stack!.split('\n')[depth];
+
+	let beg = line.indexOf('@') + 1;
+	let end = line.lastIndexOf('/') + 1;
+
+	return line.slice(beg, end);
+}

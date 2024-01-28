@@ -1,9 +1,6 @@
-// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
-const CAN_HAVE_SHADOW = [
-    null, 'article', 'aside', 'blockquote', 'body', 'div',
-    'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
-    'nav', 'p', 'section', 'span'
-];
+// ================================================
+// =============== LISS exported types ============
+// ================================================
 export var ShadowCfg;
 (function (ShadowCfg) {
     ShadowCfg[ShadowCfg["NONE"] = 0] = "NONE";
@@ -11,19 +8,12 @@ export var ShadowCfg;
     ShadowCfg["CLOSE"] = "closed";
 })(ShadowCfg || (ShadowCfg = {}));
 ;
-// cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
-function _getCallerDir(depth = 2) {
-    const line = new Error().stack.split('\n')[depth];
-    let beg = line.indexOf('@') + 1;
-    let end = line.lastIndexOf('/') + 1;
-    return line.slice(beg, end);
-}
 export default function LISS({ attributes, htmlclass = null, inherit = null, dependancies, content, css, shadow } = {}) {
     const inheritClass = htmlclass ?? HTMLElement;
     const inheritObjClass = inherit ?? Object;
     attributes ??= [];
     const deps = [...dependancies ?? []];
-    const canHasShadow = CAN_HAVE_SHADOW.includes(element2tagname(inheritClass));
+    const canHasShadow = CAN_HAVE_SHADOW.includes(_element2tagname(inheritClass));
     shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
     if (!canHasShadow && shadow !== ShadowCfg.NONE) {
         console.warn('This element does not support ShadowRoot');
@@ -98,25 +88,9 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
     }
     return ImplLISS;
 }
-LISS.qs = function (selector, parent = document) {
-    let result = LISS.qso(selector, parent);
-    if (result === null)
-        throw new Error(`Element ${selector} not found`);
-    return result;
-};
-LISS.qso = function (selector, parent = document) {
-    if (selector === '')
-        return null;
-    return parent.querySelector(selector);
-};
-LISS.qsa = function (selector, parent = document) {
-    if (selector === '')
-        return [];
-    return [...parent.querySelectorAll(selector)];
-};
-LISS.closest = function (selector, currentElement) {
-    return currentElement.closest(selector);
-};
+// ================================================
+// =============== LISSHost class =================
+// ================================================
 function buildImplLISSTag(Liss, withCstrParams = {}) {
     const tagclass = Liss.Parameters.tagclass;
     const attributes = Liss.Parameters.attributes;
@@ -280,37 +254,11 @@ async function define(...args) {
     const LISSclass = buildImplLISSTag(args[1], args[4]);
     customElements.define(args[0], LISSclass, { extends: args[2] });
 }
-const HTMLCLASS_REGEX = /HTML(\w+)Element/;
-// from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
-const elementNameLookupTable = {
-    'UList': 'ul',
-    'TableCaption': 'caption',
-    'TableCell': 'td',
-    'TableCol': 'col',
-    'TableRow': 'tr',
-    'TableSection': 'tbody',
-    'Quote': 'q',
-    'Paragraph': 'p',
-    'OList': 'ol',
-    'Mod': 'ins',
-    'Media': 'video',
-    'Image': 'img',
-    'Heading': 'h1',
-    'Directory': 'dir',
-    'DList': 'dl',
-    'Anchor': 'a'
-};
-function element2tagname(Class) {
-    if (Class === HTMLElement)
-        return null;
-    let htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
-    return elementNameLookupTable[htmltag] ?? htmltag.toLowerCase();
-}
 LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
     dependancies ??= [];
     const Class = CustomClass.Parameters.tagclass;
     let ImplLISSClass = CustomClass;
-    let htmltag = element2tagname(Class) ?? undefined;
+    let htmltag = _element2tagname(Class) ?? undefined;
     withCstrParams ??= {};
     let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.Parameters.dependancies], withCstrParams];
     if (document.readyState === "interactive" || document.readyState === "complete")
@@ -318,6 +266,10 @@ LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } =
     else
         TO_DEFINE.push(args);
 };
+// ================================================
+// =============== LISS helpers ===================
+// ================================================
+//TODO remove ?
 LISS.createElement = async function (tagname, args) {
     let CustomClass = await customElements.whenDefined(tagname);
     //if(CustomClass === undefined)
@@ -358,6 +310,25 @@ LISS.buildElement = async function (tagname, { withCstrParams = {}, init = true,
         parent.append(elem);
     return elem;
 };
+LISS.qs = function (selector, parent = document) {
+    let result = LISS.qso(selector, parent);
+    if (result === null)
+        throw new Error(`Element ${selector} not found`);
+    return result;
+};
+LISS.qso = function (selector, parent = document) {
+    if (selector === '')
+        return null;
+    return parent.querySelector(selector);
+};
+LISS.qsa = function (selector, parent = document) {
+    if (selector === '')
+        return [];
+    return [...parent.querySelectorAll(selector)];
+};
+LISS.closest = function (selector, currentElement) {
+    return currentElement.closest(selector);
+};
 LISS.whenDefined = async function (tagname, callback) {
     let cstr = await customElements.whenDefined(tagname);
     if (callback !== undefined)
@@ -369,7 +340,9 @@ LISS.whenAllDefined = async function (tagnames, callback) {
     if (callback !== undefined)
         callback();
 };
-/**** LISS-auto ****/
+// ================================================
+// =============== LISS Auto ======================
+// ================================================
 class LISS_Auto extends LISS({ attributes: ["src"] }) {
     #known_tag = new Set();
     #directory;
@@ -431,6 +404,10 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
         return LISS.define(tagname, js({ content, css }));
     }
 }
+LISS.define("liss-auto", LISS_Auto);
+// ================================================
+// =============== LISS internal tools ============
+// ================================================
 async function _fetchText(uri, isLissAuto = false) {
     const options = isLissAuto
         ? { headers: { "liss-auto": "true" } }
@@ -454,4 +431,42 @@ async function _import(uri, isLissAuto = false) {
         return undefined;
     }
 }
-LISS.define("liss-auto", LISS_Auto);
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
+const CAN_HAVE_SHADOW = [
+    null, 'article', 'aside', 'blockquote', 'body', 'div',
+    'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
+    'nav', 'p', 'section', 'span'
+];
+// from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
+const HTMLCLASS_REGEX = /HTML(\w+)Element/;
+const elementNameLookupTable = {
+    'UList': 'ul',
+    'TableCaption': 'caption',
+    'TableCell': 'td',
+    'TableCol': 'col',
+    'TableRow': 'tr',
+    'TableSection': 'tbody',
+    'Quote': 'q',
+    'Paragraph': 'p',
+    'OList': 'ol',
+    'Mod': 'ins',
+    'Media': 'video',
+    'Image': 'img',
+    'Heading': 'h1',
+    'Directory': 'dir',
+    'DList': 'dl',
+    'Anchor': 'a'
+};
+function _element2tagname(Class) {
+    if (Class === HTMLElement)
+        return null;
+    let htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
+    return elementNameLookupTable[htmltag] ?? htmltag.toLowerCase();
+}
+// cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
+function _getCallerDir(depth = 2) {
+    const line = new Error().stack.split('\n')[depth];
+    let beg = line.indexOf('@') + 1;
+    let end = line.lastIndexOf('/') + 1;
+    return line.slice(beg, end);
+}
