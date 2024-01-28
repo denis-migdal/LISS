@@ -147,6 +147,11 @@ function buildLISSHost(Liss, withCstrParams = {}) {
         get waitInit() {
             return this.#waitInit;
         }
+        async initialize() {
+            if (!this.isInit)
+                await this.force_init();
+            return this.#API;
+        }
         get API() {
             if (!this.isInit)
                 throw new Error('Accessing API before WebComponent initialization!');
@@ -157,12 +162,9 @@ function buildLISSHost(Liss, withCstrParams = {}) {
         #resolve = null;
         #API = null;
         connectedCallback() {
-            if (!this.isInit)
-                this.force_init();
+            this.initialize();
         }
-        force_init(options = this.#options) {
-            if (this.isInit)
-                throw new Error('Webcomponent already initialized!');
+        async force_init(options = this.#options) {
             customElements.upgrade(this);
             // shadow
             this.#content = this;
@@ -326,6 +328,20 @@ LISS.buildElement = async function (tagname, { withCstrParams = {}, init = true,
     if (init)
         elem.connectedCallback(); //force init ?
     return elem;
+};
+LISS.getName = function (element) {
+    const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
+    if (!name.includes('-'))
+        throw new Error(`Element ${name} is not a WebComponent`);
+    return name;
+};
+LISS.getLISS = async function (element) {
+    await LISS.whenDefined(LISS.getName(element));
+    return element.waitInit; // ensure initialized.
+};
+LISS.initialize = async function (element) {
+    await LISS.whenDefined(LISS.getName(element));
+    return await element.initialize(); // ensure initialization.
 };
 LISS.qs = function (selector, parent = document) {
     let result = LISS.qso(selector, parent);

@@ -251,6 +251,14 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 			return this.#waitInit;
 		}
 
+		async initialize() {
+
+			if( ! this.isInit )
+				await this.force_init();
+
+			return this.#API!;
+		}
+
 		get API() {
 			if( ! this.isInit )
 				throw new Error('Accessing API before WebComponent initialization!');
@@ -263,15 +271,11 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 		#API: InstanceType<U> | null = null;
 
 		connectedCallback() {
-			if( ! this.isInit )
-				this.force_init();
+			this.initialize();
 		}
 
-		private force_init(options: Readonly<Record<string, any>>|undefined = this.#options) {
+		private async force_init(options: Readonly<Record<string, any>>|undefined = this.#options) {
 			
-			if( this.isInit )
-				throw new Error('Webcomponent already initialized!');
-
 			customElements.upgrade(this);
 			
 			// shadow
@@ -533,7 +537,31 @@ LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname
 	return elem as T;
 }
 
-LISS.qs = function<T extends LISSBase<any,any>>(	selector: string,
+LISS.getName = function( element: HTMLElement ): string {
+
+	const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
+	
+	if( ! name.includes('-') )
+		throw new Error(`Element ${name} is not a WebComponent`);
+
+	return name;
+}
+
+LISS.getLISS  = async function<T extends LISSBase<any,any>>( element: HTMLElement ) {
+
+	await LISS.whenDefined( LISS.getName(element) );
+
+	return (element as LISSHost<T>).waitInit; // ensure initialized.
+}
+
+LISS.initialize = async function<T extends LISSBase<any,any>>( element: HTMLElement) {
+
+	await LISS.whenDefined( LISS.getName(element) );
+
+	return await (element as LISSHost<T>).initialize(); // ensure initialization.
+}
+
+LISS.qs  = function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	let result = LISS.qso<T>(selector, parent);
@@ -542,7 +570,6 @@ LISS.qs = function<T extends LISSBase<any,any>>(	selector: string,
 
 	return result!
 }
-
 LISS.qso = function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
@@ -565,7 +592,7 @@ LISS.closest = function<T extends LISSBase<any,any>>(selector:string, currentEle
 	return currentElement.closest<LISSHost<T>>(selector);
 }
 
-LISS.whenDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagname: string, callback?: (cstr: T) => void ) : Promise<T> {
+LISS.whenDefined    = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagname: string, callback?: (cstr: T) => void ) : Promise<T> {
 
 	let cstr = await customElements.whenDefined(tagname) as T;
 

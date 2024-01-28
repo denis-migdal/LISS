@@ -3,37 +3,46 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>LISS Example (Builtin)</title>
+	<title>Dependancies</title>
+	<script type="importmap">
+		{
+			"imports": {
+				"LISS": "/index.js"
+			}
+		}
+	</script>
 	<script type="module">
-		import LISS from '../index.js';
+		import LISS from 'LISS';
 
-		class MyComponentA extends LISS() {
+		const p = new Promise( (resolve) => {
+			setTimeout( () => resolve(), 2000);
+		});
 
-			constructor(htmltag) {
-				super(htmltag);
-
-				console.log("A");
-			}
-
-		}
-
-		class MyComponentB extends LISS(HTMLElement,
-										{dependancies: ["my-component-a"]}) {
+		class MyComponentA extends LISS({
+			dependancies: [p]
+		}) {
 
 			constructor(htmltag) {
 				super(htmltag);
 
-				console.log("B");
+				this.content.append('Hello World');
 			}
 		}
 
-		LISS.define('my-component-b', MyComponentB);
-		LISS.define('my-component-a', MyComponentA);
+		async function showWhenResolved(p, msg) {
+			console.log(msg, await p );
+		}
+
+		const p1 = LISS.getLISS( document.querySelector('my-component-a') );
+		const p3 = LISS.define('my-component-a', MyComponentA);
+
+		showWhenResolved(p, "p0");
+		showWhenResolved(p1, "p1");
+		showWhenResolved(p3, "p3");
 
 	</script>
 </head>
 <body>
-	<my-component-b></my-component-b>
 	<my-component-a></my-component-a>
 </body>
 </html>
