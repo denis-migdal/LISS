@@ -144,18 +144,18 @@ function buildLISSHost(Liss, withCstrParams = {}) {
         get isInit() {
             return this.#API !== null;
         }
-        get waitInit() {
-            return this.#waitInit;
-        }
         async initialize() {
             if (!this.isInit)
                 await this.force_init();
             return this.#API;
         }
-        get API() {
+        get LISSSync() {
             if (!this.isInit)
                 throw new Error('Accessing API before WebComponent initialization!');
             return this.#API;
+        }
+        get LISS() {
+            return this.#waitInit;
         }
         /*** init ***/
         #waitInit;
@@ -330,7 +330,7 @@ LISS.getName = function (element) {
 };
 LISS.getLISS = async function (element) {
     await LISS.whenDefined(LISS.getName(element));
-    return element.waitInit; // ensure initialized.
+    return element.LISS; // ensure initialized.
 };
 LISS.initialize = async function (element) {
     await LISS.whenDefined(LISS.getName(element));
@@ -376,6 +376,39 @@ LISS.whenAllDefined = async function (tagnames, callback) {
     await Promise.all(tagnames.map(t => customElements.whenDefined(t)));
     if (callback !== undefined)
         callback();
+};
+LISS.isDefined = function (name) {
+    return customElements.get(name);
+};
+LISS.getLISSSync = function (element) {
+    if (!LISS.isDefined(LISS.getName(element)))
+        throw new Error(`${name} hasn't been defined yet.`);
+    let host = element;
+    if (!host.isInit)
+        throw new Error("Instance hasn't been initialized yet.");
+    return host.LISSSync;
+};
+LISS.qsSync = function (selector, parent = document) {
+    const element = parent.querySelector(selector);
+    if (element === null)
+        throw new Error(`Element ${selector} not found`);
+    return LISS.getLISSSync(element);
+};
+LISS.qsaSync = function (selector, parent = document) {
+    if (selector === '')
+        return [];
+    const elements = parent.querySelectorAll(selector);
+    let idx = 0;
+    const result = new Array(elements.length);
+    for (let element of elements)
+        result[idx++] = LISS.getLISSSync(element);
+    return result;
+};
+LISS.closestSync = async function (selector, currentElement) {
+    const element = currentElement.closest(selector);
+    if (element === null)
+        return null;
+    return LISS.getLISSSync(element);
 };
 // ================================================
 // =============== LISS Auto ======================

@@ -246,11 +246,6 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 		get isInit() {
 			return this.#API !== null;
 		}
-
-		get waitInit() {
-			return this.#waitInit;
-		}
-
 		async initialize() {
 
 			if( ! this.isInit )
@@ -259,10 +254,13 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 			return this.#API!;
 		}
 
-		get API() {
+		get LISSSync() {
 			if( ! this.isInit )
 				throw new Error('Accessing API before WebComponent initialization!');
 			return this.#API!;
+		}
+		get LISS() {
+			return this.#waitInit;
 		}
 
 		/*** init ***/
@@ -547,7 +545,7 @@ LISS.getLISS    = async function<T extends LISSBase<any,any>>( element: HTMLElem
 
 	await LISS.whenDefined( LISS.getName(element) );
 
-	return (element as LISSHost<T>).waitInit; // ensure initialized.
+	return (element as LISSHost<T>).LISS; // ensure initialized.
 }
 LISS.initialize = async function<T extends LISSBase<any,any>>( element: HTMLElement) {
 
@@ -577,7 +575,6 @@ LISS.qso = async function<T extends LISSBase<any,any>>(	selector: string,
 
 	return await LISS.getLISS( element );
 }
-
 LISS.qsa = async function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 	
@@ -621,6 +618,62 @@ LISS.whenAllDefined = async function<T extends CustomElementConstructor = Custom
 		callback();
 
 }
+
+
+
+LISS.isDefined = function(name: string) {
+	return customElements.get(name);
+}
+
+LISS.getLISSSync = function<T extends LISSBase<any,any>>( element: HTMLElement ) {
+
+	if( ! LISS.isDefined( LISS.getName(element) ) )
+		throw new Error(`${name} hasn't been defined yet.`);
+
+	let host = element as LISSHost<T>;
+
+	if( ! host.isInit )
+		throw new Error("Instance hasn't been initialized yet.");
+
+	return host.LISSSync;
+}
+
+LISS.qsSync  = function<T extends LISSBase<any,any>>(	selector: string,
+						parent  : Element|DocumentFragment|Document = document) {
+
+	const element = parent.querySelector<LISSHost<T>>(selector);
+
+	if( element === null )
+		throw new Error(`Element ${selector} not found`);
+
+	return LISS.getLISSSync( element );
+}
+LISS.qsaSync = function<T extends LISSBase<any,any>>(	selector: string,
+						parent  : Element|DocumentFragment|Document = document) {
+	
+
+	if(selector === '')
+		return [];
+
+	const elements = parent.querySelectorAll<LISSHost<T>>(selector);
+
+	let idx = 0;
+	const result = new Array<T>( elements.length );
+	for(let element of elements)
+		result[idx++] = LISS.getLISSSync( element );
+
+	return result;
+}
+
+LISS.closestSync = async function<T extends LISSBase<any,any>>(selector:string, currentElement: Element) {
+	
+	const element = currentElement.closest<LISSHost<T>>(selector);
+	if(element === null)
+		return null;
+
+	return LISS.getLISSSync(element);
+}
+
 
 // ================================================
 // =============== LISS Auto ======================
