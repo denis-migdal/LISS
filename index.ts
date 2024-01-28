@@ -119,12 +119,12 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 	// @ts-ignore
 	class LISSBase extends inheritObjClass {
 
-		readonly #htmltag: LISSTagClassType<typeof LISSBase>;
+		readonly #htmltag: LISSHost<LISSBase>;
 
 		constructor(htmltag  :  any,
 					_options?: Readonly<Record<string, any>>) {
 			super();
-			this.#htmltag = htmltag as LISSTagClassType<typeof LISSBase>;
+			this.#htmltag = htmltag as LISSHost<LISSBase>;
 		}
 
 		public get host(): T {
@@ -159,27 +159,17 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 // =============== LISS type helpers ==============
 // ================================================
 
-// TODO remove ???
-// Super confus...
+type buildLISSHostReturnType<U>  = U extends LISSReturnType<infer T extends HTMLElement, infer SC extends Class> ? ReturnType<typeof buildLISSHost<T, SC, U>> : never;
 
-type LISSClassTypeType<T extends HTMLElement, SuperClass extends Class> = ReturnType<typeof LISS<T, SuperClass>>;
-//type LISSClassType    <T extends HTMLElement> = InstanceType<LISSClassTypeType<T>>;
-
-//type inferElemFromLISSClass<LISSClass>     = LISSClass extends LISSClassType<infer X extends HTMLElement> ? X : never;
-type inferLISSClassTypeTypeFromLISSClass<LISSClass> = Constructor<LISSClass> & {Parameters: any};
-
-// i.e. we need to give them "typeof LISS".
-type LISSTagClassTypeType<LISSClassType>  = LISSClassType extends LISSClassTypeType<infer T extends HTMLElement, infer SC extends Class> ? ReturnType<typeof buildLISSHost<T, SC, LISSClassType>> : never;
-type LISSTagClassType<LISSClassType>      = InstanceType<LISSTagClassTypeType<LISSClassType>>;
-
-export type LISSHost<LISSClass> = LISSTagClassType<inferLISSClassTypeTypeFromLISSClass<LISSClass>>;
-
+export type LISSReturnType<T extends HTMLElement, SuperClass extends Class> = ReturnType<typeof LISS<T, SuperClass>>;
+export type LISSBase      <T extends HTMLElement, SuperClass extends Class> = InstanceType<LISSReturnType<T, SuperClass>>;
+export type LISSHost<LISS extends LISSBase<any,any> > = InstanceType<buildLISSHostReturnType<Constructor<LISS> & {Parameters: any}>>;
 
 // ================================================
 // =============== LISSHost class =================
 // ================================================
 
-function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extends LISSClassTypeType<T, SuperClass>>(Liss: U,
+function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extends LISSReturnType<T, SuperClass>>(Liss: U,
 																			 withCstrParams: Readonly<Record<string, any>> = {}) {
 	
 	const tagclass 	  = Liss.Parameters.tagclass;
@@ -401,7 +391,7 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 
 
 type DEFINE_DATA = readonly [string,						// tagname
-							 LISSClassTypeType<any, any>,   // class
+							 LISSReturnType<any, any>,   // class
 							 string|undefined,				// inherit HTML Element
 							 readonly Promise<any>[],		// deps
 							 Readonly<Record<string, any>>];// parameters.
@@ -424,7 +414,7 @@ async function define(...args: DEFINE_DATA) {
 
 LISS.define = function<U extends HTMLElement,
 					   CL extends Class,
-					   T extends LISSClassTypeType<U, CL>>(
+					   T extends LISSReturnType<U, CL>>(
 					   	tagname: string,
 						CustomClass: T,
 						{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: string[]} = {}) {
@@ -532,7 +522,7 @@ LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname
 	return elem as T;
 }
 
-LISS.qs = function<T>(	selector: string,
+LISS.qs = function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	let result = LISS.qso<T>(selector, parent);
@@ -542,7 +532,7 @@ LISS.qs = function<T>(	selector: string,
 	return result!
 }
 
-LISS.qso = function<T>(	selector: string,
+LISS.qso = function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	if(selector === '')
@@ -550,7 +540,7 @@ LISS.qso = function<T>(	selector: string,
 
 	return parent.querySelector<LISSHost<T>>(selector);
 }
-LISS.qsa = function<T>(	selector: string,
+LISS.qsa = function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 	
 
@@ -560,7 +550,7 @@ LISS.qsa = function<T>(	selector: string,
 	return [...parent.querySelectorAll<LISSHost<T>>(selector)];
 }
 
-LISS.closest = function<T>(selector:string, currentElement: Element) {
+LISS.closest = function<T extends LISSBase<any,any>>(selector:string, currentElement: Element) {
 	return currentElement.closest<LISSHost<T>>(selector);
 }
 
