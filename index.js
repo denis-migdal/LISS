@@ -285,18 +285,9 @@ LISS.define = async function (tagname, CustomClass, { dependancies, withCstrPara
     const LISSclass = buildLISSHost(CustomClass, withCstrParams);
     customElements.define(tagname, LISSclass, { extends: htmltag });
 };
-// ================================================
-// =============== LISS helpers ===================
-// ================================================
-//TODO remove ?
-LISS.createElement = async function (tagname, args) {
+LISS.build = async function (tagname, { withCstrParams = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
     let CustomClass = await customElements.whenDefined(tagname);
-    //if(CustomClass === undefined)
-    //	throw new Error(`Tag "${tagname}" is not defined (yet)!`)
-    return new CustomClass(args);
-};
-LISS.buildElement = async function (tagname, { withCstrParams = {}, init = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
-    let elem = await LISS.createElement(tagname, withCstrParams);
+    let elem = new CustomClass(withCstrParams);
     if (id !== undefined)
         elem.id = id;
     elem.classList.add(...classes);
@@ -325,9 +316,9 @@ LISS.buildElement = async function (tagname, { withCstrParams = {}, init = true,
         elem.addEventListener(name, listeners[name]);
     if (parent !== undefined)
         parent.append(elem);
-    if (init)
-        elem.connectedCallback(); //force init ?
-    return elem;
+    return initialize
+        ? await LISS.initialize(elem)
+        : await LISS.getLISS(elem);
 };
 LISS.getName = function (element) {
     const name = element.getAttribute('is') ?? element.tagName.toLowerCase();

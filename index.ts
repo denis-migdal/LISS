@@ -454,32 +454,21 @@ LISS.define = async function<U extends HTMLElement,
 // =============== LISS helpers ===================
 // ================================================
 
-//TODO remove ?
-LISS.createElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, args: Readonly<Record<string, any>>): Promise<T> {
-
-	let CustomClass = await customElements.whenDefined(tagname);
-
-	//if(CustomClass === undefined)
-	//	throw new Error(`Tag "${tagname}" is not defined (yet)!`)
-
-	return new CustomClass(args) as T;	
-}
-
 type BUILD_OPTIONS = Partial<{
 					  	withCstrParams: Readonly<Record<string, any>>,
-						init 	 : boolean,
-					  	content	 : string|Node|readonly Node[],
-					  	parent   : HTMLElement,
-						id 		 : string,
-					  	classes	 : readonly string[],
-					  	cssvars  : Readonly<Record<string, string>>,
-					  	attrs 	 : Readonly<Record<string, string|boolean>>,
-					  	data 	 : Readonly<Record<string, string|boolean>>,
-					  	listeners: Readonly<Record<string, (ev: Event) => void>>
+						initialize: boolean,
+					  	content	  : string|Node|readonly Node[],
+					  	parent    : HTMLElement,
+						id 		  : string,
+					  	classes	  : readonly string[],
+					  	cssvars   : Readonly<Record<string, string>>,
+					  	attrs 	  : Readonly<Record<string, string|boolean>>,
+					  	data 	  : Readonly<Record<string, string|boolean>>,
+					  	listeners : Readonly<Record<string, (ev: Event) => void>>
 					}>;
-LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname: string, {
+LISS.build = async function <T extends LISSBase<any,any>>(tagname: string, {
 		withCstrParams = {},
-		init 	  = true,
+		initialize= true,
 		content   = [],
 		parent    = undefined,
 		id 		  = undefined,
@@ -490,7 +479,8 @@ LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname
 		listeners = {}
 	}: BUILD_OPTIONS = {}): Promise<T> {
 
-	let elem = await LISS.createElement(tagname, withCstrParams)
+	let CustomClass = await customElements.whenDefined(tagname);
+	let elem = new CustomClass(withCstrParams) as LISSHost<T>;	
 
 	if( id !== undefined )
 		elem.id = id;
@@ -531,10 +521,9 @@ LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname
 	if( parent !== undefined )
 		parent.append(elem);
 
-	if(init)
-		(elem as any).connectedCallback(); //force init ?
-
-	return elem as T;
+	return initialize
+			? await LISS.initialize(elem)
+			: await LISS.getLISS(elem);
 }
 
 LISS.getName = function( element: HTMLElement ): string {
