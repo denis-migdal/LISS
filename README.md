@@ -85,6 +85,8 @@ For example, the component `<liss-html></liss-html>` will be defined in the `./c
 The component directory must at least include either an `index.js` or an `index.html` file.
 An optionnal `index.css` file can also be provided.
 
+⚠ In order to suppress 404 errors in the console, auto-mode requires to put the file `$LISS/sw.js` in the same directory than your webpage.
+
 ### LISS auto-mode with an HTML file
 
 Defining a component with only an HTML file is very easy with LISS: simply create a `$COMPONENTS_DIR/$name/index.html` file with the component's HTML content:
@@ -436,12 +438,9 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
 ## TODO
 
 - [ ] Explain better the principles.
-- [ ] LISS.qs and LISS.qsa for TS.
+- [ ] LISS.qs and LISS.qsa +qso + closest for TS (+fix)
 - [ ] now inherit and htmlclass.
-- [ ] dataset.delayLISSInit + force_init
 - [ ] new Shadow opts : None.
-- [ ] delayedInit opts.
-- [ ] qs vs qso
 
 - [ ] whenInit promise.
 - [ ] Documentation/usage

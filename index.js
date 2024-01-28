@@ -12,8 +12,8 @@ export var ShadowCfg;
 })(ShadowCfg || (ShadowCfg = {}));
 ;
 // cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
-function _getCallerDir() {
-    const line = new Error().stack.split('\n')[2];
+function _getCallerDir(depth = 2) {
+    const line = new Error().stack.split('\n')[depth];
     let beg = line.indexOf('@') + 1;
     let end = line.lastIndexOf('/') + 1;
     return line.slice(beg, end);
@@ -373,8 +373,22 @@ LISS.whenAllDefined = async function (tagnames, callback) {
 class LISS_Auto extends LISS({ attributes: ["src"] }) {
     #known_tag = new Set();
     #directory;
+    #sw;
     constructor(htmltag) {
         super(htmltag);
+        // remove 404 errors.
+        // 
+        //const cwd = _getCallerDir(1);
+        //this.#sw = navigator.serviceWorker.register(`${cwd}/sw.js`, { scope: location.pathname });
+        // Because FF stupid.
+        this.#sw = new Promise(async (resolve) => {
+            let sw = await navigator.serviceWorker.register(`./sw.js`);
+            if (navigator.serviceWorker.controller)
+                resolve();
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                resolve();
+            });
+        });
         const src = this.attrs.src;
         if (src === null)
             throw new Error("src attribute is missing.");
@@ -395,10 +409,11 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
         if (tagname === 'liss-auto' || !tagname.includes('-') || this.#known_tag.has(tagname))
             return;
         this.#known_tag.add(tagname);
+        await this.#sw; // ensure SW is installed.
         const results = await Promise.all([
-            _import(`${this.#directory}/${tagname}/index.js`),
-            _fetchText(`${this.#directory}/${tagname}/index.html`),
-            _fetchText(`${this.#directory}/${tagname}/index.css`),
+            _import(`${this.#directory}/${tagname}/index.js`, true),
+            _fetchText(`${this.#directory}/${tagname}/index.html`, true),
+            _fetchText(`${this.#directory}/${tagname}/index.css`, true),
         ]);
         const js = results[0];
         const content = results[1];
@@ -416,13 +431,21 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
         return LISS.define(tagname, js({ content, css }));
     }
 }
-async function _fetchText(uri) {
-    const response = await fetch(uri);
+async function _fetchText(uri, isLissAuto = false) {
+    const options = isLissAuto
+        ? { headers: { "liss-auto": "true" } }
+        : {};
+    const response = await fetch(uri, options);
     if (response.status !== 200)
+        return undefined;
+    if (isLissAuto && response.headers.get("status") === "404")
         return undefined;
     return await response.text();
 }
-async function _import(uri) {
+async function _import(uri, isLissAuto = false) {
+    // test for the module existance.
+    if (isLissAuto && await _fetchText(uri, isLissAuto) === undefined)
+        return undefined;
     try {
         return (await import(uri)).default;
     }

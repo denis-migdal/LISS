@@ -32,9 +32,9 @@ export enum ShadowCfg {
 };
 
 // cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
-function _getCallerDir() {
+function _getCallerDir(depth = 2) {
 
-	const line = new Error().stack!.split('\n')[2];
+	const line = new Error().stack!.split('\n')[depth];
 
 	let beg = line.indexOf('@') + 1;
 	let end = line.lastIndexOf('/') + 1;
@@ -615,9 +615,28 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 	readonly #known_tag = new Set<string>();
 	readonly #directory: string;
+	readonly #sw: Promise<void>;
 
 	constructor(htmltag: any) {
 		super(htmltag);
+
+		// remove 404 errors.
+		// 
+		//const cwd = _getCallerDir(1);
+		//this.#sw = navigator.serviceWorker.register(`${cwd}/sw.js`, { scope: location.pathname });
+		// Because FF stupid.
+		
+		this.#sw = new Promise( async (resolve) => {
+			let sw = await navigator.serviceWorker.register(`./sw.js`);
+
+			if( navigator.serviceWorker.controller )
+				resolve();
+
+			navigator.serviceWorker.addEventListener('controllerchange', () => {
+				resolve();
+			});
+		});
+
 
 		const src = this.attrs.src;
 		if(src === null)
@@ -649,10 +668,12 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 		this.#known_tag.add(tagname);
 
+		await this.#sw; // ensure SW is installed.
+
 		const results = await Promise.all([
-			_import(`${this.#directory}/${tagname}/index.js`), // current page...
-			_fetchText(`${this.#directory}/${tagname}/index.html`), // TODO better
-			_fetchText(`${this.#directory}/${tagname}/index.css`),
+			_import(`${this.#directory}/${tagname}/index.js`, true), // current page...
+			_fetchText(`${this.#directory}/${tagname}/index.html`, true), // TODO better
+			_fetchText(`${this.#directory}/${tagname}/index.css`, true),
 		]);
 
 		const js	  = results[0];
@@ -676,16 +697,28 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 	}
 }
 
-async function _fetchText(uri: string|URL) {
+async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
 
-	const response = await fetch(uri);
-	if(response.status !== 200)
+	const options = isLissAuto
+						? {headers:{"liss-auto": "true"}}
+						: {};
+
+
+	const response = await fetch(uri, options);
+	if(response.status !== 200 )
 		return undefined;
 
-	return await response.text()
+	if( isLissAuto && response.headers.get("status")! === "404" )
+		return undefined;
+
+	return await response.text();
 }
 
-async function _import(uri: string) {
+async function _import(uri: string, isLissAuto: boolean = false) {
+
+	// test for the module existance.
+	if(isLissAuto && await _fetchText(uri, isLissAuto) === undefined )
+		return undefined;
 
 	try {
 		return (await import(uri)).default;

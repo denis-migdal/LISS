@@ -29,10 +29,10 @@
 				this.content.textContent = this.attrs.content;
 
 				setTimeout( () => {
-					this.host.setAttribute("content", 1);
+					this.host.setAttribute("content", 1); // will triggers onAttrChanged
 				}, 1000);
 				setTimeout( () => {
-					this.host.setAttribute("content", 2);
+					this.host.setAttribute("content", 2); // will triggers onAttrChanged
 				}, 2000);
 			}
 
