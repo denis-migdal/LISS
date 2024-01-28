@@ -343,24 +343,35 @@ LISS.initialize = async function (element) {
     await LISS.whenDefined(LISS.getName(element));
     return await element.initialize(); // ensure initialization.
 };
-LISS.qs = function (selector, parent = document) {
-    let result = LISS.qso(selector, parent);
+LISS.qs = async function (selector, parent = document) {
+    let result = await LISS.qso(selector, parent);
     if (result === null)
         throw new Error(`Element ${selector} not found`);
     return result;
 };
-LISS.qso = function (selector, parent = document) {
+LISS.qso = async function (selector, parent = document) {
     if (selector === '')
         return null;
-    return parent.querySelector(selector);
+    const element = parent.querySelector(selector);
+    if (element === null)
+        return null;
+    return await LISS.getLISS(element);
 };
-LISS.qsa = function (selector, parent = document) {
+LISS.qsa = async function (selector, parent = document) {
     if (selector === '')
         return [];
-    return [...parent.querySelectorAll(selector)];
+    const elements = parent.querySelectorAll(selector);
+    let idx = 0;
+    const promises = new Array(elements.length);
+    for (let element of elements)
+        promises[idx++] = LISS.getLISS(element);
+    return await Promise.all(promises);
 };
-LISS.closest = function (selector, currentElement) {
-    return currentElement.closest(selector);
+LISS.closest = async function (selector, currentElement) {
+    const element = currentElement.closest(selector);
+    if (element === null)
+        return null;
+    return await LISS.getLISS(element);
 };
 LISS.whenDefined = async function (tagname, callback) {
     let cstr = await customElements.whenDefined(tagname);

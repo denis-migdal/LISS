@@ -547,13 +547,12 @@ LISS.getName = function( element: HTMLElement ): string {
 	return name;
 }
 
-LISS.getLISS  = async function<T extends LISSBase<any,any>>( element: HTMLElement ) {
+LISS.getLISS    = async function<T extends LISSBase<any,any>>( element: HTMLElement ) {
 
 	await LISS.whenDefined( LISS.getName(element) );
 
 	return (element as LISSHost<T>).waitInit; // ensure initialized.
 }
-
 LISS.initialize = async function<T extends LISSBase<any,any>>( element: HTMLElement) {
 
 	await LISS.whenDefined( LISS.getName(element) );
@@ -561,35 +560,52 @@ LISS.initialize = async function<T extends LISSBase<any,any>>( element: HTMLElem
 	return await (element as LISSHost<T>).initialize(); // ensure initialization.
 }
 
-LISS.qs  = function<T extends LISSBase<any,any>>(	selector: string,
+LISS.qs  = async function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
-	let result = LISS.qso<T>(selector, parent);
+	let result = await LISS.qso<T>(selector, parent);
 	if(result === null)
 		throw new Error(`Element ${selector} not found`);
 
 	return result!
 }
-LISS.qso = function<T extends LISSBase<any,any>>(	selector: string,
+LISS.qso = async function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	if(selector === '')
 		return null;
 
-	return parent.querySelector<LISSHost<T>>(selector);
+	const element = parent.querySelector<LISSHost<T>>(selector);
+	if( element === null )
+		return null;
+
+	return await LISS.getLISS( element );
 }
-LISS.qsa = function<T extends LISSBase<any,any>>(	selector: string,
+
+LISS.qsa = async function<T extends LISSBase<any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 	
 
 	if(selector === '')
 		return [];
 
-	return [...parent.querySelectorAll<LISSHost<T>>(selector)];
+	const elements = parent.querySelectorAll<LISSHost<T>>(selector);
+
+	let idx = 0;
+	const promises = new Array<Promise<T>>( elements.length );
+	for(let element of elements)
+		promises[idx++] = LISS.getLISS( element );
+
+	return await Promise.all(promises);
 }
 
-LISS.closest = function<T extends LISSBase<any,any>>(selector:string, currentElement: Element) {
-	return currentElement.closest<LISSHost<T>>(selector);
+LISS.closest = async function<T extends LISSBase<any,any>>(selector:string, currentElement: Element) {
+	
+	const element = currentElement.closest<LISSHost<T>>(selector);
+	if(element === null)
+		return null;
+
+	return await LISS.getLISS(element);
 }
 
 LISS.whenDefined    = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagname: string, callback?: (cstr: T) => void ) : Promise<T> {
