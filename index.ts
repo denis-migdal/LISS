@@ -4,13 +4,13 @@
 
 export type CSS_Source = string|URL|HTMLStyleElement|CSSStyleSheet;
 
-export type LISSOptions<T extends HTMLElement, U extends Class> = {
+export type LISSOptions<T extends HTMLElement, U extends Class, ATTRS extends string> = {
 
 	htmlclass?: Constructor<T>|null,
 	inherit  ?: Constructor<U>|null,
 
 	dependancies?: readonly Promise<any>[],
-	attributes  ?: readonly string[],
+	attributes  ?: readonly ATTRS[],
 
 	content?: string|URL|HTMLTemplateElement,
 	css    ?: readonly CSS_Source[] | CSS_Source,
@@ -38,14 +38,16 @@ const CAN_HAVE_SHADOW = [
 	
 ];
 
-export default function LISS<T extends HTMLElement = HTMLElement, U extends Class = Class>(
+export default function LISS<T extends HTMLElement,
+							 U extends Class,
+							 ATTRS extends string>(
 							{   attributes,
 								htmlclass = null,
 								inherit   = null,
 								dependancies,
 								content,
 								css,
-								shadow}: LISSOptions<T, U> = {}) {
+								shadow}: LISSOptions<T, U, ATTRS> = {}) {
 
 	const inheritClass    = htmlclass ?? HTMLElement as Constructor<T>;
 	const inheritObjClass = inherit   ?? Object      as unknown as Constructor<U>;
@@ -167,19 +169,22 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 // =============== LISS type helpers ==============
 // ================================================
 
-type buildLISSHostReturnType<U>  = U extends LISSReturnType<infer T extends HTMLElement, infer SC extends Class> ? ReturnType<typeof buildLISSHost<T, SC, U>> : never;
+type buildLISSHostReturnType<U>  = U extends LISSReturnType<infer T extends HTMLElement, infer SC extends Class, infer ATTRS extends string> ? ReturnType<typeof buildLISSHost<T, SC, ATTRS, U>> : never;
 
-export type LISSReturnType<T extends HTMLElement, SuperClass extends Class> = ReturnType<typeof LISS<T, SuperClass>>;
-export type LISSBase      <T extends HTMLElement, SuperClass extends Class> = InstanceType<LISSReturnType<T, SuperClass>>;
-export type LISSHost<LISS extends LISSBase<any,any> > = InstanceType<buildLISSHostReturnType<Constructor<LISS> & {Parameters: any}>>;
+export type LISSReturnType<T extends HTMLElement, SuperClass extends Class, ATTRS extends string> = ReturnType<typeof LISS<T, SuperClass, ATTRS>>;
+export type LISSBase      <T extends HTMLElement, SuperClass extends Class, ATTRS extends string> = InstanceType<LISSReturnType<T, SuperClass, ATTRS>>;
+export type LISSHost<LISS extends LISSBase<any,any,any> > = InstanceType<buildLISSHostReturnType<Constructor<LISS> & {Parameters: any}>>;
 
 // ================================================
 // =============== LISSHost class =================
 // ================================================
 
 
-function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extends LISSReturnType<T, SuperClass>>(Liss: U,
-																			 withCstrParams: Readonly<Record<string, any>> = {}) {
+function buildLISSHost<T extends HTMLElement,
+					   SuperClass extends Class,
+					   ATTRS extends string,
+					   U extends LISSReturnType<T, SuperClass, ATTRS>>(Liss: U,
+															    withCstrParams: Readonly<Record<string, any>> = {}) {
 	
 	const tagclass 	  = Liss.Parameters.tagclass;
 	const attributes  = Liss.Parameters.attributes;
@@ -199,7 +204,7 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 		set: function(value: string) { return this[SET](n, value); }
 	}]) );
 
-	class Attrs implements Record<string, string|null> {
+	class Attrs {
         [x: string]: string|null;
 
         #data  : Record<string, string|null>;
@@ -371,7 +376,7 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 		/*** attrs ***/
 		#attrs_flag = false;
 
-		#attributes: Record<string, string|null> = {};
+		#attributes = {} as Record<ATTRS, string|null>;
 		#attrs = new Attrs(
 			this.#attributes,
 			(name: string, value:string|null) => {
@@ -384,15 +389,15 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 				else
 					this.setAttribute(name, value);
 			}
-		);
+		) as unknown as Record<ATTRS, string|null>;
 
-		get attrs(): Readonly<Record<string, string|null>> {
+		get attrs(): Readonly<Record<ATTRS, string|null>> {
 
 			return this.#attrs;
 		}
 
 		static observedAttributes = attributes;
-		attributeChangedCallback(name: string,
+		attributeChangedCallback(name    : ATTRS,
 								 oldValue: string,
 								 newValue: string) {
 
@@ -430,7 +435,8 @@ const _DOMContentLoaded = new Promise<void>( (resolve) => {
 
 LISS.define = async function<U extends HTMLElement,
 						   CL extends Class,
-						   T extends LISSReturnType<U, CL>>(
+						   ATTRS extends string,
+						   T extends LISSReturnType<U, CL, ATTRS>>(
 						   	tagname: string,
 							CustomClass: T,
 							{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: string[]} = {}) {
@@ -468,7 +474,7 @@ type BUILD_OPTIONS = Partial<{
 						initialize?: true,
 						parent?: HTMLElement
 					});
-LISS.build = async function <T extends LISSBase<any,any>>(tagname: string, {
+LISS.build = async function <T extends LISSBase<any,any,any>>(tagname: string, {
 		withCstrParams = {},
 		initialize= true,
 		content   = [],
@@ -541,20 +547,20 @@ LISS.getName = function( element: HTMLElement ): string {
 	return name;
 }
 
-LISS.getLISS    = async function<T extends LISSBase<any,any>>( element: HTMLElement ) {
+LISS.getLISS    = async function<T extends LISSBase<any,any,any>>( element: HTMLElement ) {
 
 	await LISS.whenDefined( LISS.getName(element) );
 
 	return (element as LISSHost<T>).LISS; // ensure initialized.
 }
-LISS.initialize = async function<T extends LISSBase<any,any>>( element: HTMLElement) {
+LISS.initialize = async function<T extends LISSBase<any,any,any>>( element: HTMLElement) {
 
 	await LISS.whenDefined( LISS.getName(element) );
 
 	return await (element as LISSHost<T>).initialize(); // ensure initialization.
 }
 
-LISS.qs  = async function<T extends LISSBase<any,any>>(	selector: string,
+LISS.qs  = async function<T extends LISSBase<any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	let result = await LISS.qso<T>(selector, parent);
@@ -563,7 +569,7 @@ LISS.qs  = async function<T extends LISSBase<any,any>>(	selector: string,
 
 	return result!
 }
-LISS.qso = async function<T extends LISSBase<any,any>>(	selector: string,
+LISS.qso = async function<T extends LISSBase<any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	if(selector === '')
@@ -575,7 +581,7 @@ LISS.qso = async function<T extends LISSBase<any,any>>(	selector: string,
 
 	return await LISS.getLISS( element );
 }
-LISS.qsa = async function<T extends LISSBase<any,any>>(	selector: string,
+LISS.qsa = async function<T extends LISSBase<any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 	
 
@@ -592,7 +598,7 @@ LISS.qsa = async function<T extends LISSBase<any,any>>(	selector: string,
 	return await Promise.all(promises);
 }
 
-LISS.closest = async function<T extends LISSBase<any,any>>(selector:string, currentElement: Element) {
+LISS.closest = async function<T extends LISSBase<any,any,any>>(selector:string, currentElement: Element) {
 	
 	const element = currentElement.closest<LISSHost<T>>(selector);
 	if(element === null)
@@ -625,7 +631,7 @@ LISS.isDefined = function(name: string) {
 	return customElements.get(name);
 }
 
-LISS.getLISSSync = function<T extends LISSBase<any,any>>( element: HTMLElement ) {
+LISS.getLISSSync = function<T extends LISSBase<any,any,any>>( element: HTMLElement ) {
 
 	if( ! LISS.isDefined( LISS.getName(element) ) )
 		throw new Error(`${name} hasn't been defined yet.`);
@@ -638,7 +644,7 @@ LISS.getLISSSync = function<T extends LISSBase<any,any>>( element: HTMLElement )
 	return host.LISSSync;
 }
 
-LISS.qsSync  = function<T extends LISSBase<any,any>>(	selector: string,
+LISS.qsSync  = function<T extends LISSBase<any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	const element = parent.querySelector<LISSHost<T>>(selector);
@@ -648,7 +654,7 @@ LISS.qsSync  = function<T extends LISSBase<any,any>>(	selector: string,
 
 	return LISS.getLISSSync( element );
 }
-LISS.qsaSync = function<T extends LISSBase<any,any>>(	selector: string,
+LISS.qsaSync = function<T extends LISSBase<any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 	
 
@@ -665,7 +671,7 @@ LISS.qsaSync = function<T extends LISSBase<any,any>>(	selector: string,
 	return result;
 }
 
-LISS.closestSync = async function<T extends LISSBase<any,any>>(selector:string, currentElement: Element) {
+LISS.closestSync = async function<T extends LISSBase<any,any,any>>(selector:string, currentElement: Element) {
 	
 	const element = currentElement.closest<LISSHost<T>>(selector);
 	if(element === null)
@@ -673,7 +679,6 @@ LISS.closestSync = async function<T extends LISSBase<any,any>>(selector:string, 
 
 	return LISS.getLISSSync(element);
 }
-
 
 // ================================================
 // =============== LISS Auto ======================
