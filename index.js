@@ -128,11 +128,30 @@ function buildLISSHost(Liss, withCstrParams = {}) {
         constructor(options) {
             super();
             this.#options = options;
+            this.#waitInit = new Promise((resolve) => {
+                if (this.isInit)
+                    return resolve(this.#API);
+                this.#resolve = resolve;
+            });
+        }
+        /**** public API *************/
+        get isInit() {
+            return this.#API !== null;
+        }
+        get waitInit() {
+            return this.#waitInit;
+        }
+        get API() {
+            if (!this.isInit)
+                throw new Error('Accessing API before WebComponent initialization!');
+            return this.#API;
         }
         /*** init ***/
+        #waitInit;
+        #resolve = null;
         #API = null;
         connectedCallback() {
-            if (!this.isInit && !this.hasAttribute('delay-liss-init'))
+            if (!this.isInit)
                 this.force_init();
         }
         force_init(options = this.#options) {
@@ -180,14 +199,8 @@ function buildLISSHost(Liss, withCstrParams = {}) {
             // default slot
             if (this.hasShadow && this.#content.childNodes.length === 0)
                 this.#content.append(document.createElement('slot'));
-        }
-        get isInit() {
-            return this.#API !== null;
-        }
-        get API() {
-            if (!this.isInit)
-                throw new Error('Accessing API before WebComponent initialization!');
-            return this.#API;
+            if (this.#resolve !== null)
+                this.#resolve(this.#API);
         }
         /*** content ***/
         #content = null;
@@ -304,10 +317,10 @@ LISS.buildElement = async function (tagname, { withCstrParams = {}, init = true,
     elem.replaceChildren(...content);
     for (let name in listeners)
         elem.addEventListener(name, listeners[name]);
-    if (init)
-        elem.connectedCallback(); //force init ?
     if (parent !== undefined)
         parent.append(elem);
+    if (init)
+        elem.connectedCallback(); //force init ?
     return elem;
 };
 LISS.qs = function (selector, parent = document) {

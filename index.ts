@@ -169,6 +169,7 @@ export type LISSHost<LISS extends LISSBase<any,any> > = InstanceType<buildLISSHo
 // =============== LISSHost class =================
 // ================================================
 
+
 function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extends LISSReturnType<T, SuperClass>>(Liss: U,
 																			 withCstrParams: Readonly<Record<string, any>> = {}) {
 	
@@ -224,13 +225,37 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 		constructor(options?: Readonly<Record<string, any>>) {
 			super();
 			this.#options = options;
+
+			this.#waitInit = new Promise( (resolve) => {
+				if(this.isInit)
+					return resolve(this.#API!);
+				this.#resolve = resolve;
+			});
+		}
+
+		/**** public API *************/
+
+		get isInit() {
+			return this.#API !== null;
+		}
+
+		get waitInit() {
+			return this.#waitInit;
+		}
+
+		get API() {
+			if( ! this.isInit )
+				throw new Error('Accessing API before WebComponent initialization!');
+			return this.#API!;
 		}
 
 		/*** init ***/
+		#waitInit: Promise<InstanceType<U>>;
+		#resolve: ((u: InstanceType<U>) => void) | null = null;
 		#API: InstanceType<U> | null = null;
 
 		connectedCallback() {
-			if( ! this.isInit && ! this.hasAttribute('delay-liss-init') )
+			if( ! this.isInit )
 				this.force_init();
 		}
 
@@ -297,17 +322,11 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 			// default slot
 			if( this.hasShadow && this.#content.childNodes.length === 0 )
 				this.#content.append( document.createElement('slot') );
+
+			if( this.#resolve !== null)
+				this.#resolve(this.#API);
 		}
 
-		get isInit() {
-			return this.#API !== null;
-		}
-
-		get API() {
-			if( ! this.isInit )
-				throw new Error('Accessing API before WebComponent initialization!');
-			return this.#API!;
-		}
 
 		/*** content ***/
 		#content: HTMLElement|ShadowRoot|null = null;
@@ -513,11 +532,11 @@ LISS.buildElement = async function <T extends HTMLElement = HTMLElement>(tagname
 	for(let name in listeners)
 		elem.addEventListener(name, listeners[name]);
 
-	if(init)
-		(elem as any).connectedCallback(); //force init ?
-
 	if( parent !== undefined )
 		parent.append(elem);
+
+	if(init)
+		(elem as any).connectedCallback(); //force init ?
 
 	return elem as T;
 }
