@@ -30,6 +30,14 @@ export enum ShadowCfg {
 type Constructor<T> = new () => T;
 interface Class {}
 
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
+const CAN_HAVE_SHADOW = [
+	null, 'article', 'aside', 'blockquote', 'body', 'div',
+	'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
+	'nav', 'p', 'section', 'span'
+	
+];
+
 export default function LISS<T extends HTMLElement = HTMLElement, U extends Class = Class>(
 							{   attributes,
 								htmlclass = null,
@@ -408,50 +416,34 @@ function buildLISSHost<T extends HTMLElement, SuperClass extends Class, U extend
 // =============== LISS define ====================
 // ================================================
 
+const _DOMContentLoaded = new Promise<void>( (resolve) => {
 
-type DEFINE_DATA = readonly [string,						// tagname
-							 LISSReturnType<any, any>,   // class
-							 string|undefined,				// inherit HTML Element
-							 readonly Promise<any>[],		// deps
-							 Readonly<Record<string, any>>];// parameters.
-let TO_DEFINE: DEFINE_DATA[] = [];
+	if(document.readyState === "interactive" || document.readyState === "complete")
+		return resolve();
 
-document.addEventListener('DOMContentLoaded', () => {
+	document.addEventListener('DOMContentLoaded', () => {
+		resolve();
+	}, true);
+});
 
-	for(let args of TO_DEFINE)
-		define(...args)
-}, true);
-
-async function define(...args: DEFINE_DATA) {
-
-	await Promise.all(args[3]);
-
-	const LISSclass = buildLISSHost(args[1], args[4]);
-
-	customElements.define(args[0], LISSclass, {extends: args[2]});
-}
-
-LISS.define = function<U extends HTMLElement,
-					   CL extends Class,
-					   T extends LISSReturnType<U, CL>>(
-					   	tagname: string,
-						CustomClass: T,
-						{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: string[]} = {}) {
+LISS.define = async function<U extends HTMLElement,
+						   CL extends Class,
+						   T extends LISSReturnType<U, CL>>(
+						   	tagname: string,
+							CustomClass: T,
+							{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: string[]} = {}) {
 
 	dependancies??=[];
+	withCstrParams ??= {};
 
 	const Class = CustomClass.Parameters.tagclass;
 	let LISSBase: any = CustomClass;
 	let htmltag = _element2tagname(Class)??undefined;
 
-	withCstrParams ??= {};
+	await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
 
-	let args = [tagname, CustomClass, htmltag, [...dependancies, ...LISSBase.Parameters.dependancies], withCstrParams] as const;
-
-	if(document.readyState === "interactive" || document.readyState === "complete")
-		define(...args)
-	else
-		TO_DEFINE.push(args);
+	const LISSclass = buildLISSHost(CustomClass, withCstrParams);
+	customElements.define(tagname, LISSclass, {extends: htmltag});
 };
 
 // ================================================
@@ -716,15 +708,6 @@ async function _import(uri: string, isLissAuto: boolean = false) {
 		return undefined;
 	}
 }
-
-
-// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
-const CAN_HAVE_SHADOW = [
-	null, 'article', 'aside', 'blockquote', 'body', 'div',
-	'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
-	'nav', 'p', 'section', 'span'
-	
-];
 
 // from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
 const HTMLCLASS_REGEX =  /HTML(\w+)Element/;

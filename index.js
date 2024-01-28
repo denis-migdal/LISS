@@ -8,6 +8,12 @@ export var ShadowCfg;
     ShadowCfg["CLOSE"] = "closed";
 })(ShadowCfg || (ShadowCfg = {}));
 ;
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
+const CAN_HAVE_SHADOW = [
+    null, 'article', 'aside', 'blockquote', 'body', 'div',
+    'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
+    'nav', 'p', 'section', 'span'
+];
 export default function LISS({ attributes, htmlclass = null, inherit = null, dependancies, content, css, shadow } = {}) {
     const inheritClass = htmlclass ?? HTMLElement;
     const inheritObjClass = inherit ?? Object;
@@ -257,27 +263,25 @@ function buildLISSHost(Liss, withCstrParams = {}) {
     ;
     return LISSHostBase;
 }
-let TO_DEFINE = [];
-document.addEventListener('DOMContentLoaded', () => {
-    for (let args of TO_DEFINE)
-        define(...args);
-}, true);
-async function define(...args) {
-    await Promise.all(args[3]);
-    const LISSclass = buildLISSHost(args[1], args[4]);
-    customElements.define(args[0], LISSclass, { extends: args[2] });
-}
-LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
+// ================================================
+// =============== LISS define ====================
+// ================================================
+const _DOMContentLoaded = new Promise((resolve) => {
+    if (document.readyState === "interactive" || document.readyState === "complete")
+        return resolve();
+    document.addEventListener('DOMContentLoaded', () => {
+        resolve();
+    }, true);
+});
+LISS.define = async function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
     dependancies ??= [];
+    withCstrParams ??= {};
     const Class = CustomClass.Parameters.tagclass;
     let LISSBase = CustomClass;
     let htmltag = _element2tagname(Class) ?? undefined;
-    withCstrParams ??= {};
-    let args = [tagname, CustomClass, htmltag, [...dependancies, ...LISSBase.Parameters.dependancies], withCstrParams];
-    if (document.readyState === "interactive" || document.readyState === "complete")
-        define(...args);
-    else
-        TO_DEFINE.push(args);
+    await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
+    const LISSclass = buildLISSHost(CustomClass, withCstrParams);
+    customElements.define(tagname, LISSclass, { extends: htmltag });
 };
 // ================================================
 // =============== LISS helpers ===================
@@ -444,12 +448,6 @@ async function _import(uri, isLissAuto = false) {
         return undefined;
     }
 }
-// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
-const CAN_HAVE_SHADOW = [
-    null, 'article', 'aside', 'blockquote', 'body', 'div',
-    'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
-    'nav', 'p', 'section', 'span'
-];
 // from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
 const HTMLCLASS_REGEX = /HTML(\w+)Element/;
 const elementNameLookupTable = {
