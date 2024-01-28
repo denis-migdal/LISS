@@ -32,7 +32,7 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
                 content = `${cwd}/${content}`;
             deps.push(new Promise(async (resolve) => {
                 content = await _fetchText(content);
-                resolve(ImplLISS.Parameters.content = content);
+                resolve(LISSBase.Parameters.content = content);
             }));
         }
     }
@@ -61,7 +61,7 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
         });
     }
     // @ts-ignore
-    class ImplLISS extends inheritObjClass {
+    class LISSBase extends inheritObjClass {
         #htmltag;
         constructor(htmltag, _options) {
             super();
@@ -86,7 +86,7 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
         };
         onAttrChanged(_name, _oldValue, _newValue) { }
     }
-    return ImplLISS;
+    return LISSBase;
 }
 // ================================================
 // =============== LISSHost class =================
@@ -257,10 +257,10 @@ async function define(...args) {
 LISS.define = function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
     dependancies ??= [];
     const Class = CustomClass.Parameters.tagclass;
-    let ImplLISSClass = CustomClass;
+    let LISSBase = CustomClass;
     let htmltag = _element2tagname(Class) ?? undefined;
     withCstrParams ??= {};
-    let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.Parameters.dependancies], withCstrParams];
+    let args = [tagname, CustomClass, htmltag, [...dependancies, ...LISSBase.Parameters.dependancies], withCstrParams];
     if (document.readyState === "interactive" || document.readyState === "complete")
         define(...args);
     else

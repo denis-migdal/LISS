@@ -73,7 +73,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 
 				content = await _fetchText(content as URL|string);
 
-				resolve( ImplLISS.Parameters.content = content );
+				resolve( LISSBase.Parameters.content = content );
 			}) );
 		}
 	}
@@ -117,14 +117,14 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 
 
 	// @ts-ignore
-	class ImplLISS extends inheritObjClass {
+	class LISSBase extends inheritObjClass {
 
-		readonly #htmltag: LISSTagClassType<typeof ImplLISS>;
+		readonly #htmltag: LISSTagClassType<typeof LISSBase>;
 
 		constructor(htmltag  :  any,
 					_options?: Readonly<Record<string, any>>) {
 			super();
-			this.#htmltag = htmltag as LISSTagClassType<typeof ImplLISS>;
+			this.#htmltag = htmltag as LISSTagClassType<typeof LISSBase>;
 		}
 
 		public get host(): T {
@@ -152,7 +152,7 @@ export default function LISS<T extends HTMLElement = HTMLElement, U extends Clas
 	}
 
 
-	return ImplLISS;
+	return LISSBase;
 }
 
 
@@ -433,12 +433,12 @@ LISS.define = function<U extends HTMLElement,
 	dependancies??=[];
 
 	const Class = CustomClass.Parameters.tagclass;
-	let ImplLISSClass: any = CustomClass;
+	let LISSBase: any = CustomClass;
 	let htmltag = _element2tagname(Class)??undefined;
 
 	withCstrParams ??= {};
 
-	let args = [tagname, CustomClass, htmltag, [...dependancies, ...ImplLISSClass.Parameters.dependancies], withCstrParams] as const;
+	let args = [tagname, CustomClass, htmltag, [...dependancies, ...LISSBase.Parameters.dependancies], withCstrParams] as const;
 
 	if(document.readyState === "interactive" || document.readyState === "complete")
 		define(...args)
