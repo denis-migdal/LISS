@@ -6,6 +6,10 @@ Web Components are simple to use... but, due to a multitude of non-intuitives be
 
 **LISS enables you to easily use Web Compoments without worrying about all of that.**
 
+[toc]
+
+
+
 ## Install LISS
 
 In order to use LISS in your project, copy either the `/index.ts` or `/index.js` file into your project.
@@ -186,29 +190,27 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
 
 ### LISS full API
 
-#### Component declaration
-
-##### LISS.define< *Extends, Host, Attrs* >(tagname, ComponentClass, options)
+#### LISS.define< *Extends, Host, Attrs* >(tagname, ComponentClass, options)
 
 This function awaits the component's dependancies, then declares a new custom element using `customElements(tagname, _host, ...)`.
 
 Internally, `_host` is an instance of `LISSHost<>` which, once the custom element is ready to be initialized, instantiate a new instance of the given `ComponentClass`.
 
-| Name                   | Type                                   | Description                                          |
-| ---------------------- | -------------------------------------- | ---------------------------------------------------- |
-| `tagname`              | `string`                               |                                                      |
-| `ComponentClass`       | `LISSReturnType<Extends, Host, Attrs>` | A class extendings a class returned by `LISS()`.     |
-| `options.dependancies` | `readonly Promise<string>[]`           | Promises to wait before declaring the component.     |
-| `withCstrParams`       | `Readonly<Record<string, any>>`        | Parameters to add to the component constructor call. |
+| Name                     | Type                                   | Description                                          |
+| ------------------------ | -------------------------------------- | ---------------------------------------------------- |
+| `tagname`                | `string`                               |                                                      |
+| `ComponentClass`         | `LISSReturnType<Extends, Host, Attrs>` | A class extendings a class returned by `LISS()`.     |
+| `options.dependancies`   | `readonly Promise<string>[]`           | Promises to wait before declaring the component.     |
+| `options.withCstrParams` | `Readonly<Record<string, any>>`        | Parameters to add to the component constructor call. |
 
-##### LISS< *Extends, Host, Attrs* >(options)
+#### LISS< *Extends, Host, Attrs* >(options)
 
 | Name      | Type                                   |
 | --------- | -------------------------------------- |
 | `options` | `LISSOptions<Extends, Host, Attrs>`    |
 | `return`  | `LISSReturnType<Extends, Host, Attrs>` |
 
-##### LISSOptions&lt; *Extends, Host, Attrs* &gt;
+#### LISSOptions&lt; *Extends, Host, Attrs* &gt;
 
 | Name           | Type                                  | Default            | Description                                       |
 | -------------- | ------------------------------------- | ------------------ | ------------------------------------------------- |
@@ -223,7 +225,7 @@ Internally, `_host` is an instance of `LISSHost<>` which, once the custom elemen
 | `css`          | `readonly CSS_Source[] \| CSS_Source` | `[]`               | CSS rules for the component.                      |
 | `shadow`       | `ShadowCfg`                           | `closed` or `none` | ShadowRoot configuration (0 if none).             |
 
-##### LISSReturnType< *Extends, Host, Attrs* >
+#### LISSReturnType< *Extends, Host, Attrs* >
 
 **`Methods:`**
 
@@ -234,16 +236,15 @@ Internally, `_host` is an instance of `LISSHost<>` which, once the custom elemen
 
 **`Properties:`**
 
-| Modifiers            | Name          | Type                      | Description                        |
-| -------------------- | ------------- | ------------------------- | ---------------------------------- |
-| `readonly public`    | `host`        | `Host`                    | The component HTML host.           |
-| `protected readonly` | `content`     | `HTMLElement\|ShadowRoot` | The component HTML content.        |
-| `protected readonly` | `attrs`       | `Attrs`                   | The host observed HTML attributes. |
-| `protected`          | onAttrChanges |                           |                                    |
+| Modifiers            | Name      | Type                      | Description                        |
+| -------------------- | --------- | ------------------------- | ---------------------------------- |
+| `readonly public`    | `host`    | `Host`                    | The component HTML host.           |
+| `protected readonly` | `content` | `HTMLElement\|ShadowRoot` | The component HTML content.        |
+| `protected readonly` | `attrs`   | `Attrs`                   | The host observed HTML attributes. |
 
 #### Helpers
 
-
+[TODO]
 
 ## Features and examples [OLD]
 
