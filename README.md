@@ -12,7 +12,7 @@ In order to use LISS in your project, copy either the `/index.ts` or `/index.js`
 
 💡 If you need to rebuild the JS file, use the command: `tsc index.ts --target esnext --module esnext`.
 
-## LISS (basic usage)
+## Basic usage
 
 To create a new components, simply create a class extending `LISS()` and register it using `LISS.define()`:
 
@@ -27,8 +27,8 @@ To create a new components, simply create a class extending `LISS()` and registe
       class MyComponent extends LISS() {
 
         // Initialize your WebComponent
-        constructor(htmltag) {
-          super(htmltag);
+        constructor() {
+          super();
 
           // Use this.content to initialize your component's content
           this.content.append('Hello World ;)');
@@ -37,7 +37,10 @@ To create a new components, simply create a class extending `LISS()` and registe
           console.log("Host", this.host); // <my-component></my-component>
 
           // Use this.attrs to efficiently access the component's host's attributes:
-          console.log("Attributes", this.attrs); // {foo: "42"}
+          console.log("Attributes", {...this.attrs}); // {foo: "42"}
+
+          // Use this.params to access the component parameters.
+          console.log("Parameters", this.params); // {}
         }
       }
 

@@ -3,15 +3,22 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>LISS Example (Basic)</title>
+		<title>Basic usage</title>
+		<script type="importmap">
+		{
+			"imports": {
+				"LISS": "/index.js"
+			}
+		}
+		</script>
 		<script type="module">
 			import LISS from 'LISS';
 
 			class MyComponent extends LISS() {
 
 				// Initialize your WebComponent
-				constructor(htmltag) {
-					super(htmltag);
+				constructor() {
+					super();
 
 					// Use this.content to initialize your component's content
 					this.content.append('Hello World ;)');
@@ -20,7 +27,10 @@
 					console.log("Host", this.host); // <my-component></my-component>
 
 					// Use this.attrs to efficiently access the component's host's attributes:
-					console.log("Attributes", this.attrs); // {foo: "42"}
+					console.log("Attributes", {...this.attrs}); // {foo: "42"}
+
+					// Use this.params to access the component parameters.
+					console.log("Parameters", this.params); // {}
 				}
 			}
 
