@@ -17,7 +17,7 @@ In order to use LISS in your project, copy either the `/index.ts` or `/index.js`
 To create a new components, simply create a class extending `LISS()` and register it using `LISS.define()`:
 
 ```html
-<!-- $LISS/examples/basic -->
+<!-- cf /examples/basic -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -93,10 +93,8 @@ Then, `this.onAttrChanged()` will be called at each modification of the observed
 
 `this.attrs` enables to access them in an efficient way, i.e. without requiring multiples access to the DOM. Modification of an attribute through `this.attrs` will update the HTML attributes without firing `this.onAttrChanged()`.
 
-
-
 ```typescript
-// /examples/attributes
+// cf /examples/attributes
 import LISS from 'LISS';
 
 class MyComponent extends LISS({
@@ -127,9 +125,9 @@ class MyComponent extends LISS({
 
 		// you can validate this.attrs here.
 		if( this.attrs.counter === "5" ) {
-            clearInterval(this.#interval);
+            clearInterval(this.#interval);
 			return false; // cancel the change.
-        }      
+        }      
 
 		this.content.textContent += this.attrs.counter;
 	}
@@ -147,8 +145,8 @@ LISS.define('my-component', MyComponent);
 `LISS()` allows to inject HTML and CSS files/strings into your component thanks to the `content` and `css` options:
 
 ```javascript
-// cf $LISS/examples/inject-html-css/
-import LISS from "$LISS"
+// cf /examples/inject-html-css/
+import LISS from "LISS"
 
 const CSS_RULES = `
     :host {
@@ -175,7 +173,7 @@ LISS can also automatically build and import your components, making them even e
 This feature is enabled simply by adding a `<liss-auto src='$COMPONENTS_DIR'></liss-auto>` HTML tag into your webpage:
 
 ```html
-<!-- cf $LISS/examples/liss-auto/ -->
+<!-- cf /examples/liss-auto/ -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -208,7 +206,7 @@ An optionnal `index.css` file can also be provided.
 Defining a component with only an HTML file is very easy with LISS: simply create a `$COMPONENTS_DIR/$name/index.html` file with the component's HTML content:
 
 ```html
-<!-- cf $LISS/examples/liss-auto/components/liss-html/index.html -->
+<!-- cf /examples/liss-auto/components/liss-html/index.html -->
 Hello World
 ```
 
@@ -231,16 +229,15 @@ You can also add a CSS file to your component, simple by adding a `$COMPONENTS_D
 You can also define a component with only a JS file, by creating a `$COMPONENTS_DIR/$name/index.js` file default exporting a function returning a class extending `LISS()`:
 
 ```javascript
-// cf $LISS/examples/liss-auto/components/liss-js/index.js
-import LISS from "$LISS";
+// cf /examples/liss-auto/components/liss-js/index.js
+import LISS from "LISS";
 
 export default function(options) {
 
   return class LISSComponent extends LISS(options) {
 
-    constructor(htmltag) {
-      super(htmltag);
-
+    constructor() {
+      super();
       //do stuff here (cf LISS features)
     }
   }
@@ -421,51 +418,6 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 <table>
   <tr is="my-component"></tr>
 </table>
-```
-
-### Observe Attributes
-
-```html
-<!-- LISS/examples/attributes.html -->
-<script type="module">
-  import LISS from './LISS/index.js';
-
-  const OPTIONS = {
-    // declare the attributes to observe.
-    observedAttributes: ["content"]
-  };
-
-  class MyComponent extends LISS(null, OPTIONS) {
-
-    constructor(htmltag) {
-      super(htmltag);
-
-      // this.attrs contains the current values of the observed attributes.
-      console.log("Attributes (init)", this.attrs);
-      // you can validate this.attrs here.
-
-      this.content.textContent = this.attrs.content;
-
-      setInterval( () => {
-
-        this.host.setAttribute("content", +this.attrs.content + 1);
-
-      }, 1000);
-    }
-
-    onAttrChanged(name, oldValue, newValue) {
-      console.log("AttrChanged", name, oldValue, newValue);
-      console.log(this.attrs);
-      // you can validate this.attrs here.
-
-      this.content.textContent = this.attrs.content;
-    }
-  }
-
-  // Define your WebComponent
-  LISS.define('my-component', MyComponent);
-</script>
-<my-component></my-component>
 ```
 
 ### Constructor parameters

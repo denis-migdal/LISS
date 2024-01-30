@@ -4,10 +4,9 @@ export default function(options) {
 
 	return class LISSComponent extends LISS(options) {
 
-		constructor(htmltag) {
-
-			super(htmltag);
-
+		constructor() {
+			super();
+			
 			// do stuff...
 			const COLORS = ['blue', 'yellow'];
 			let cidx   = 0;
