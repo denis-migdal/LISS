@@ -242,9 +242,38 @@ Internally, `_host` is an instance of `LISSHost<>` which, once the custom elemen
 | `protected readonly` | `content` | `HTMLElement\|ShadowRoot` | The component HTML content.        |
 | `protected readonly` | `attrs`   | `Attrs`                   | The host observed HTML attributes. |
 
-#### Helpers
+#### LISSBase< *Extends, Host, Attrs* >
 
-[TODO]
+```typescript
+type LISSBase<E,H,A> = InstanceType<LISSReturnType<E,H,A>>
+```
+
+#### Query selectors
+
+LISS provides several fonctions to get fully intialized LISS components from a query string:
+
+| Function                           | Return             | Remarks                                                         |
+| ---------------------------------- | ------------------ | --------------------------------------------------------------- |
+| `LISS.qs<T>(query, parent?)`       | `Promise<T>`       | Throws an exception if not found.                               |
+| `LISS.qso<T>(query, parent?)`      | `Promise<T>\|null` | `null` if not found.                                            |
+| `LISS.qsa<T>(query, parent?)`      | `Promise<T[]>`     |                                                                 |
+| `LISS.closest(query, element?)`    | `Promise<T>\|null` |                                                                 |
+| `LISS.qsSync(query, parent?)`      | `T`                | Throws an exception if component not yet initialized.           |
+| `LISS.qsaSync(query, parent?)`     | `T[]`              | Throws an exception if any found component not yet initialized. |
+| `LISS.closestSync(query, element)` | `T`                | Throws an exception if component not yet initialized.           |
+
+**`parameters`**
+
+| Name      | Type                                  | Default    |
+| --------- | ------------------------------------- | ---------- |
+| `T`       | `T extends LISSBase<any,any,any>`     |            |
+| `query`   | `string`                              |            |
+| `parent?` | `Element\|Document\|DocumentFragment` | `document` |
+| `element` | `Element`                             |            |
+
+
+
+
 
 ## Features and examples [OLD]
 
