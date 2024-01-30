@@ -548,6 +548,55 @@ LISS.build = async function <T extends LISSBase<any,any,any>>(tagname: string, {
 			: await LISS.getLISS(elem); // will never be called...
 }
 
+
+LISS.whenDefined    = async function(tagname: string, callback?: () => void ) : Promise<void> {
+
+	await customElements.whenDefined(tagname);
+
+	if( callback !== undefined)
+		callback();
+
+	return;
+}
+LISS.whenAllDefined = async function(tagnames: readonly string[], callback?: () => void ) : Promise<void> {
+
+	await Promise.all( tagnames.map( t => customElements.whenDefined(t) ) )
+
+	if( callback !== undefined)
+		callback();
+
+}
+
+LISS.isDefined = function(name: string) {
+	return customElements.get(name);
+}
+
+
+LISS.getLISS    = async function<T extends LISSBase<any,any,any>>( element: HTMLElement ) {
+
+	await LISS.whenDefined( LISS.getName(element) );
+
+	return (element as LISSHost<T>).LISS; // ensure initialized.
+}
+LISS.getLISSSync= function<T extends LISSBase<any,any,any>>( element: HTMLElement ) {
+
+	if( ! LISS.isDefined( LISS.getName(element) ) )
+		throw new Error(`${name} hasn't been defined yet.`);
+
+	let host = element as LISSHost<T>;
+
+	if( ! host.isInit )
+		throw new Error("Instance hasn't been initialized yet.");
+
+	return host.LISSSync;
+}
+LISS.initialize = async function<T extends LISSBase<any,any,any>>( element: HTMLElement) {
+
+	await LISS.whenDefined( LISS.getName(element) );
+
+	return await (element as LISSHost<T>).initialize(); // ensure initialization.
+}
+
 LISS.getName = function( element: HTMLElement ): string {
 
 	const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
@@ -558,18 +607,6 @@ LISS.getName = function( element: HTMLElement ): string {
 	return name;
 }
 
-LISS.getLISS    = async function<T extends LISSBase<any,any,any>>( element: HTMLElement ) {
-
-	await LISS.whenDefined( LISS.getName(element) );
-
-	return (element as LISSHost<T>).LISS; // ensure initialized.
-}
-LISS.initialize = async function<T extends LISSBase<any,any,any>>( element: HTMLElement) {
-
-	await LISS.whenDefined( LISS.getName(element) );
-
-	return await (element as LISSHost<T>).initialize(); // ensure initialization.
-}
 
 LISS.qs  = async function<T extends LISSBase<any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
@@ -616,43 +653,6 @@ LISS.closest = async function<T extends LISSBase<any,any,any>>(selector:string, 
 		return null;
 
 	return await LISS.getLISS(element);
-}
-
-LISS.whenDefined    = async function(tagname: string, callback?: () => void ) : Promise<void> {
-
-	await customElements.whenDefined(tagname);
-
-	if( callback !== undefined)
-		callback();
-
-	return;
-}
-LISS.whenAllDefined = async function(tagnames: readonly string[], callback?: () => void ) : Promise<void> {
-
-	await Promise.all( tagnames.map( t => customElements.whenDefined(t) ) )
-
-	if( callback !== undefined)
-		callback();
-
-}
-
-
-
-LISS.isDefined = function(name: string) {
-	return customElements.get(name);
-}
-
-LISS.getLISSSync = function<T extends LISSBase<any,any,any>>( element: HTMLElement ) {
-
-	if( ! LISS.isDefined( LISS.getName(element) ) )
-		throw new Error(`${name} hasn't been defined yet.`);
-
-	let host = element as LISSHost<T>;
-
-	if( ! host.isInit )
-		throw new Error("Instance hasn't been initialized yet.");
-
-	return host.LISSSync;
 }
 
 LISS.qsSync  = function<T extends LISSBase<any,any,any>>(	selector: string,

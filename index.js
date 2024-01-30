@@ -323,19 +323,41 @@ LISS.build = async function (tagname, { withCstrParams = {}, initialize = true, 
         ? await LISS.initialize(elem)
         : await LISS.getLISS(elem); // will never be called...
 };
-LISS.getName = function (element) {
-    const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
-    if (!name.includes('-'))
-        throw new Error(`Element ${name} is not a WebComponent`);
-    return name;
+LISS.whenDefined = async function (tagname, callback) {
+    await customElements.whenDefined(tagname);
+    if (callback !== undefined)
+        callback();
+    return;
+};
+LISS.whenAllDefined = async function (tagnames, callback) {
+    await Promise.all(tagnames.map(t => customElements.whenDefined(t)));
+    if (callback !== undefined)
+        callback();
+};
+LISS.isDefined = function (name) {
+    return customElements.get(name);
 };
 LISS.getLISS = async function (element) {
     await LISS.whenDefined(LISS.getName(element));
     return element.LISS; // ensure initialized.
 };
+LISS.getLISSSync = function (element) {
+    if (!LISS.isDefined(LISS.getName(element)))
+        throw new Error(`${name} hasn't been defined yet.`);
+    let host = element;
+    if (!host.isInit)
+        throw new Error("Instance hasn't been initialized yet.");
+    return host.LISSSync;
+};
 LISS.initialize = async function (element) {
     await LISS.whenDefined(LISS.getName(element));
     return await element.initialize(); // ensure initialization.
+};
+LISS.getName = function (element) {
+    const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
+    if (!name.includes('-'))
+        throw new Error(`Element ${name} is not a WebComponent`);
+    return name;
 };
 LISS.qs = async function (selector, parent = document) {
     let result = await LISS.qso(selector, parent);
@@ -366,28 +388,6 @@ LISS.closest = async function (selector, currentElement) {
     if (element === null)
         return null;
     return await LISS.getLISS(element);
-};
-LISS.whenDefined = async function (tagname, callback) {
-    await customElements.whenDefined(tagname);
-    if (callback !== undefined)
-        callback();
-    return;
-};
-LISS.whenAllDefined = async function (tagnames, callback) {
-    await Promise.all(tagnames.map(t => customElements.whenDefined(t)));
-    if (callback !== undefined)
-        callback();
-};
-LISS.isDefined = function (name) {
-    return customElements.get(name);
-};
-LISS.getLISSSync = function (element) {
-    if (!LISS.isDefined(LISS.getName(element)))
-        throw new Error(`${name} hasn't been defined yet.`);
-    let host = element;
-    if (!host.isInit)
-        throw new Error("Instance hasn't been initialized yet.");
-    return host.LISSSync;
 };
 LISS.qsSync = function (selector, parent = document) {
     const element = parent.querySelector(selector);
