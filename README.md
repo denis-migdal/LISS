@@ -186,22 +186,35 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
 
 ### LISS full API
 
-#### LISS()
+#### Component declaration
 
+##### LISS.define< *Extends, Host, Attrs* >(tagname, ComponentClass, options)
 
+This function awaits the component's dependancies, then declares a new custom element using `customElements(tagname, _host, ...)`.
 
+Internally, `_host` is an instance of `LISSHost<>` which, once the custom element is ready to be initialized, instantiate a new instance of the given `ComponentClass`.
 
+| Name                   | Type                                   | Description                                          |
+| ---------------------- | -------------------------------------- | ---------------------------------------------------- |
+| `tagname`              | `string`                               |                                                      |
+| `ComponentClass`       | `LISSReturnType<Extends, Host, Attrs>` | A class extendings a class returned by `LISS()`.     |
+| `options.dependancies` | `readonly Promise<string>[]`           | Promises to wait before declaring the component.     |
+| `withCstrParams`       | `Readonly<Record<string, any>>`        | Parameters to add to the component constructor call. |
 
-+ how it works (LISS vs Host)
+##### LISS< *Extends, Host, Attrs* >(options)
 
-+ parameters + generic parameters (extends vs inherit)
+| Name      | Type                                   |
+| --------- | -------------------------------------- |
+| `options` | `LISSOptions<Extends, Host, Attrs>`    |
+| `return`  | `LISSReturnType<Extends, Host, Attrs>` |
 
-+ return type
-
-##### LISSOptions<Extends, Host, Attrs>
+##### LISSOptions&lt; *Extends, Host, Attrs* &gt;
 
 | Name           | Type                                  | Default            | Description                                       |
 | -------------- | ------------------------------------- | ------------------ | ------------------------------------------------- |
+| `Extends`      | `extends Class`                       |                    |                                                   |
+| `Host`         | `extends HTMLElement`                 |                    |                                                   |
+| `Attrs`        | `extends string`                      |                    |                                                   |
 | `extends`      | `Constructor<Extends>`                | `Object`           | The JS class the component extends.               |
 | `host`         | `Constructor<Host>`                   | `HTMLElement`      | The host HTML Element class.                      |
 | `attributes`   | `readonly Attrs[]`                    | `[]`               | The names of the host HTML attributes to observe. |
@@ -210,15 +223,27 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
 | `css`          | `readonly CSS_Source[] \| CSS_Source` | `[]`               | CSS rules for the component.                      |
 | `shadow`       | `ShadowCfg`                           | `closed` or `none` | ShadowRoot configuration (0 if none).             |
 
+##### LISSReturnType< *Extends, Host, Attrs* >
 
+**`Methods:`**
 
+| Name            | Parameters                                                   | Return                            | Description                                                                 |
+| --------------- | ------------------------------------------------------------ | --------------------------------- | --------------------------------------------------------------------------- |
+| `constructor`   | `host: Host`<br/>`params?: Record<string, any>`              | `this`<br/>or<br/>`Promise<this>` | Async constructors are supported.                                           |
+| `onAttrChanged` | `name: string`<br/>`oldValue: string`<br/>`newValue: string` | `void`<br/>or <br/>`false`        | Called when an attribute is changed.<br/>Return false to cancel the change. |
 
+**`Properties:`**
+
+| Modifiers            | Name          | Type                      | Description                        |
+| -------------------- | ------------- | ------------------------- | ---------------------------------- |
+| `readonly public`    | `host`        | `Host`                    | The component HTML host.           |
+| `protected readonly` | `content`     | `HTMLElement\|ShadowRoot` | The component HTML content.        |
+| `protected readonly` | `attrs`       | `Attrs`                   | The host observed HTML attributes. |
+| `protected`          | onAttrChanges |                           |                                    |
 
 #### Helpers
 
 
-
-TODO: + how it works
 
 ## Features and examples [OLD]
 

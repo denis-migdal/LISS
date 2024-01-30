@@ -72,7 +72,7 @@ export default function LISS({ attributes: p_attrs, extends: p_extends, host: p_
     // @ts-ignore
     class LISSBase extends _extends {
         #host;
-        constructor(host, _options) {
+        constructor(host, _params) {
             super();
             this.#host = host;
         }
@@ -276,14 +276,14 @@ const _DOMContentLoaded = new Promise((resolve) => {
         resolve();
     }, true);
 });
-LISS.define = async function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
+LISS.define = async function (tagname, ComponentClass, { dependancies, withCstrParams } = {}) {
     dependancies ??= [];
     withCstrParams ??= {};
-    const Class = CustomClass.Parameters.host;
-    let LISSBase = CustomClass;
+    const Class = ComponentClass.Parameters.host;
+    let LISSBase = ComponentClass;
     let htmltag = _element2tagname(Class) ?? undefined;
     await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
-    const LISSclass = buildLISSHost(CustomClass, withCstrParams);
+    const LISSclass = buildLISSHost(ComponentClass, withCstrParams);
     customElements.define(tagname, LISSclass, { extends: htmltag });
 };
 LISS.build = async function (tagname, { withCstrParams = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {

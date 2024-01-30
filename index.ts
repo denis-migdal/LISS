@@ -135,8 +135,8 @@ export default function LISS<Extends extends Class = Class,
 
 		readonly #host: LISSHost<LISSBase>;
 
-		constructor(host     :  any,
-					_options?: Readonly<Record<string, any>>) {
+		constructor(host    :  any,
+					_params?: Readonly<Record<string, any>>) {
 			super();
 			this.#host = host as LISSHost<LISSBase>;
 		}
@@ -449,19 +449,19 @@ LISS.define = async function<Extends extends Class,
 						     Attrs   extends string,
 						   	 T extends LISSReturnType<Extends, Host, Attrs>>(
 						   	tagname: string,
-							CustomClass: T,
-							{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: string[]} = {}) {
+							ComponentClass: T,
+							{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: readonly Promise<string>[]} = {}) {
 
 	dependancies??=[];
 	withCstrParams ??= {};
 
-	const Class = CustomClass.Parameters.host;
-	let LISSBase: any = CustomClass;
+	const Class = ComponentClass.Parameters.host;
+	let LISSBase: any = ComponentClass;
 	let htmltag = _element2tagname(Class)??undefined;
 
 	await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
 
-	const LISSclass = buildLISSHost<Extends, Host, Attrs, T>(CustomClass, withCstrParams);
+	const LISSclass = buildLISSHost<Extends, Host, Attrs, T>(ComponentClass, withCstrParams);
 	customElements.define(tagname, LISSclass, {extends: htmltag});
 };
 
