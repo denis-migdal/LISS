@@ -29,6 +29,9 @@ export enum ShadowCfg {
 // =============== LISS Class =====================
 // ================================================
 
+let __cstr_params: any;
+let __cstr_host  : any;
+
 type Constructor<T> = new () => T;
 interface Class {}
 
@@ -135,10 +138,13 @@ export default function LISS<Extends extends Class = Class,
 
 		readonly #host: LISSHost<LISSBase>;
 
-		constructor(host    :  any,
-					_params?: Readonly<Record<string, any>>) {
+		constructor() {
+
 			super();
-			this.#host = host as LISSHost<LISSBase>;
+
+			// h4ck, okay because JS is monothreaded.
+			//__cstr_params
+			this.#host = __cstr_host as LISSHost<LISSBase>;
 		}
 
 		public get host(): Host {
@@ -339,7 +345,11 @@ function buildLISSHost<Extends extends Class,
 	    	// build
 	    	options = Object.assign({}, options, withCstrParams);
 
-	    	let obj = new Liss(this, options);
+	    	// h4ck, okay because JS is monothreaded.
+			__cstr_host   = this;
+			__cstr_params = options;
+
+	    	let obj = new Liss();
 	    	if( obj instanceof Promise)
 	    		obj = await obj;
 
@@ -701,8 +711,9 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 	readonly #directory: string;
 	readonly #sw: Promise<void>;
 
-	constructor(htmltag: any) {
-		super(htmltag);
+	constructor() {
+		
+		super();
 
 		this.#sw = new Promise( async (resolve) => {
 			
@@ -776,6 +787,38 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 	}
 }
 LISS.define("liss-auto", LISS_Auto);
+
+// ================================================
+// =============== LISS EventsTarget ==============
+// ================================================
+
+type CstEvent<Event extends string, Args> = CustomEvent<Args> & {type: Event};
+
+export interface EventsTarget<Events extends Record<string, any>>{
+
+	addEventListener<Event extends Exclude<keyof Events, symbol|number>>(type: Event,
+												 listener: null| ((ev: CstEvent<Event, Events[Event]>) => void),
+												 options?: boolean|AddEventListenerOptions): void;
+
+	dispatchEvent<Event extends Exclude<keyof Events, symbol|number>>(event: CstEvent<Event, Events[Event]>): boolean;
+
+	removeEventListener<Event extends Exclude<keyof Events, symbol|number>>(type: Event,
+													listener: null| ((ev: CstEvent<Event, Events[Event]>) => void),
+													options?: boolean|AddEventListenerOptions): void;
+}
+
+//let ev = new EventTarget() as EventsTarget<{"ok": boolean}>;
+//ev.addEventListener("ok",)
+
+
+// ================================================
+// =============== LISS CstrParams ================
+// ================================================
+
+let vars = {
+	"foo": 4 as number,
+	"faa": 7 as number|string,
+}
 
 
 // ================================================

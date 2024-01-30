@@ -8,6 +8,11 @@ export var ShadowCfg;
     ShadowCfg["CLOSE"] = "closed";
 })(ShadowCfg || (ShadowCfg = {}));
 ;
+// ================================================
+// =============== LISS Class =====================
+// ================================================
+let __cstr_params;
+let __cstr_host;
 // https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
 const CAN_HAVE_SHADOW = [
     null, 'article', 'aside', 'blockquote', 'body', 'div',
@@ -72,9 +77,11 @@ export default function LISS({ attributes: p_attrs, extends: p_extends, host: p_
     // @ts-ignore
     class LISSBase extends _extends {
         #host;
-        constructor(host, _params) {
+        constructor() {
             super();
-            this.#host = host;
+            // h4ck, okay because JS is monothreaded.
+            //__cstr_params
+            this.#host = __cstr_host;
         }
         get host() {
             return this.#host; // because TS stupid.
@@ -201,7 +208,10 @@ function buildLISSHost(Liss, withCstrParams = {}) {
             }
             // build
             options = Object.assign({}, options, withCstrParams);
-            let obj = new Liss(this, options);
+            // h4ck, okay because JS is monothreaded.
+            __cstr_host = this;
+            __cstr_params = options;
+            let obj = new Liss();
             if (obj instanceof Promise)
                 obj = await obj;
             this.#API = obj;
@@ -418,8 +428,8 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
     #known_tag = new Set();
     #directory;
     #sw;
-    constructor(htmltag) {
-        super(htmltag);
+    constructor() {
+        super();
         this.#sw = new Promise(async (resolve) => {
             await navigator.serviceWorker.register(`./sw.js`);
             if (navigator.serviceWorker.controller)
@@ -471,6 +481,15 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
     }
 }
 LISS.define("liss-auto", LISS_Auto);
+//let ev = new EventTarget() as EventsTarget<{"ok": boolean}>;
+//ev.addEventListener("ok",)
+// ================================================
+// =============== LISS CstrParams ================
+// ================================================
+let vars = {
+    "foo": 4,
+    "faa": 7,
+};
 // ================================================
 // =============== LISS internal tools ============
 // ================================================
