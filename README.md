@@ -22,12 +22,12 @@ To create a new components, simply create a class extending `LISS()` and registe
 <html>
   <head>
     <script type="importmap">
-	{
-		"imports": {
-			"LISS": "$LISS/index.js"
-		}
+    {
+        "imports": {
+            "LISS": "$LISS/index.js"
+        }
     }
-	</script>
+    </script>
     <script type="module">
       import LISS from 'LISS';
 
@@ -70,19 +70,15 @@ To create a new components, simply create a class extending `LISS()` and registe
 You can see all examples below in the [`LISS/examples/` directory](./examples/).
 
 - [Management of HTML attributes](#manage-html-attributes)
-- [Use HTML/CSS files/strings](#use-htmlcss-filesstrings)
+- events
+- DOM manipulation (build/parameters)
+- DOM manipulation (qs/getLISS)
+- Extend existing classes (JS and HTMLElement)
+- [Use HTML/CSS files/strings to fill the component](#use-htmlcss-filesstrings-to-fill-the-component)
 - [Auto mode](#auto-mode)
 - **Advanced features**
-  - extend a JS class.
-  - extend an existing HTML element.
-  - ShadowRoot mode.
-  - parts.
-  - constructor parameters
-- **Helpers**
-  - builders
-  - query selectors
-  - dependancies
-  - EvtTarget [TODO]
+  - ShadowRoot mode / parts.
+  - dependancies / async constructor
 - **[LISS full API](liss-full-API)**
 
 ### Manage HTML attributes
@@ -98,39 +94,39 @@ Then, `this.onAttrChanged()` will be called at each modification of the observed
 import LISS from 'LISS';
 
 class MyComponent extends LISS({
-									attributes: ["counter"] // observed attributes.
-								}) {
+                                    attributes: ["counter"] // observed attributes.
+                                }) {
     #interval = null;
 
-	constructor() {
-		super();
+    constructor() {
+        super();
 
-		// this.attrs contains the current values of the observed attributes.
-		console.log("Attributes (initial)", {...this.attrs});
-		// you can validate this.attrs here.
+        // this.attrs contains the current values of the observed attributes.
+        console.log("Attributes (initial)", {...this.attrs});
+        // you can validate this.attrs here.
 
-		this.#counter = setInterval( () => {
+        this.#counter = setInterval( () => {
             // will trigger onAttrChanged
-			this.host.setAttribute("counter", +this.attrs.counter+1);
-		}, 1000);
+            this.host.setAttribute("counter", +this.attrs.counter+1);
+        }, 1000);
 
         // will NOT trigger onAttrChanged.
         this.content.textContent = this.attrs.counter = 0;
-	}
+    }
 
-	onAttrChanged(name, oldValue, newValue) {
+    onAttrChanged(name, oldValue, newValue) {
 
-		console.log("AttrChanged", name, oldValue, "->", newValue);
-		console.log("Attributes (now):", {...this.attrs});
+        console.log("AttrChanged", name, oldValue, "->", newValue);
+        console.log("Attributes (now):", {...this.attrs});
 
-		// you can validate this.attrs here.
-		if( this.attrs.counter === "5" ) {
+        // you can validate this.attrs here.
+        if( this.attrs.counter === "5" ) {
             clearInterval(this.#interval);
-			return false; // cancel the change.
+            return false; // cancel the change.
         }      
 
-		this.content.textContent += this.attrs.counter;
-	}
+        this.content.textContent += this.attrs.counter;
+    }
 }
 
 LISS.define('my-component', MyComponent);
@@ -140,7 +136,7 @@ LISS.define('my-component', MyComponent);
 <my-component counter="null"></my-component><!-- prints 01234 -->
 ```
 
-### Use HTML/CSS files/strings
+### Use HTML/CSS files/strings to fill the component
 
 `LISS()` allows to inject HTML and CSS files/strings into your component thanks to the `content` and `css` options:
 
@@ -547,56 +543,69 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 
 ## List of issues solved by LISS
 
-- `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)).
-  - ***Solution :*** We provide `LISS.define()`, that takes care of the third argument for you.
-- `customElements.define()` should be called only once the DOM has finished to load in order to prevent issues of childs not being present when custom elements are being initialized.
-  - ***Solution :*** `LISS.define()`, takes care of that for you, calling `customElements.define()` once the DOM is loaded or immediately if the DOM is already loaded.
-- For some reasons, some of your Web Components might be requires some other Web Components to be defined.
-  - ***Solution :*** The third parameter of `LISS()` and `LISS.define()` allow you to define a list of dependancies when defining a component.
+### Component initialisation
+
+- TS types (ensure declared)
+
+- async cstr
+
 - `document.createElement()` doesn't allow you to pass parameters to your Web Component ([more info](https://github.com/WICG/webcomponents/issues/605))
+  
   - ***Solution :*** `LISS.createElement()` enables you to give parameters to your WebComponent, and `LISS.define()` third argument to set values to be given to the WebComponent constructor.
 - WebComponent's DOM should not be accessed/modified until the first call of `connectedCallback()`.
   - ***Solution 1:*** Use `this.self` (protected) instead of `this` to access the WebComponent attribute/children. Throws an exception if the Web Component still hasn't be initialized.
   - ***Solution 2:*** Use `this.content` (protected) to access the Web Component's content.
   - ***Solution 3:*** You may also use `this.assertInit()` (protected) at the start of your methods, to throw an exception if called while the WebComponent still hasn't be initialized.
+
 - WebComponent should be initialized at the first call of `connectedCallback()` (can be called several times).
+  
   - ***Solution:*** Redefine `this.init()` (protected) to initialize your Web Component. LISS will call it only once, at the first call of `connectedCallback()`.
+
 - Web Component's children might not be yet upgraded when `connectedCallback()` is called. Then, `customElements.upgrade(this)` need to be called.
+  
   - ***Solution:*** LISS automatically calls it before calling `this.init()`.
-- Web Components should use `ShadowRoot` for its content. However some custom elements inheriting builtin elements doesn't support having one. ([more info](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow)).
-  - ***Solution:*** Use `this.content` to set the Web Component content. LISS attaches a `ShadowRoot` if supported, else `this` is used. In your webcomponent, use `super(true/false)` to indicate whether you want the `ShadowRoot` to be open (true) or closed (false).
 - `attributeChangedCallback()` is called each time an attribute is modified, even when the Web Component hasn't been initialized yet !
   - ***Solution:*** Use `onAttrChanged()` instead, it won't be called if an attribute is modified before the Web Component has finished its initialization. Set the list of listened attributes in the second argument of `LISS()`.
+
+### Uniformisation
+
+- Web Components should use `ShadowRoot` for its content. However some custom elements inheriting builtin elements doesn't support having one. ([more info](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow)).
+  
+  - ***Solution:*** Use `this.content` to set the Web Component content. LISS attaches a `ShadowRoot` if supported, else `this` is used. In your webcomponent, use `super(true/false)` to indicate whether you want the `ShadowRoot` to be open (true) or closed (false).
+
+- Depending whether the Web Component uses a ShadowRoot or not, they way to declare and add the CSS rules differs.
+  
+  - ***Solution:*** If the element doesn't support `ShadowRoot`, LISS creates `HTMLStyleElement` that are appened to the `HTMLHeadElement`. Rules are modified to replace ":host" by the Web Component tagname.
+
+- `::part()` is chaotic. It can only be used on open `ShadowRoot`.
+  
+  - ***Solution:*** LISS provides `.getPart(name)` and `.getParts(name)` to offer a more consistant usage.
+
+- +CSS (shadow vs non-shadow)
+
+### Definition
+
+- `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)).
+  - ***Solution :*** We provide `LISS.define()`, that takes care of the third argument for you.
+
+- `customElements.define()` should be called only once the DOM has finished to load in order to prevent issues of childs not being present when custom elements are being initialized.
+  - ***Solution :*** `LISS.define()`, takes care of that for you, calling `customElements.define()` once the DOM is loaded or immediately if the DOM is already loaded.
+
+- For some reasons, some of your Web Components might be requires some other Web Components to be defined.
+  
+  - ***Solution :*** The third parameter of `LISS()` and `LISS.define()` allow you to define a list of dependancies when defining a component.
+
+### Helpers
+
 - building a tag with its attribute, children, etc. takes too many lines.
   - ***Solution:*** Use `LISS.buildElement()` to build a WebComponent, insert attributes, classes, datasets values, children, etc. before its initialization. The option `init` will force the element initialization before returning it.
+
 - Accessing to the HTML attributes in order to get their values is costly. Even more when we want to gather all values to validate them altogether.
   - ***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
-- With TS, when using the WebComponent, all properties of `HTMLElement` are listed.
-  - ***Solution:*** With LISS, `this.API` will remove all `HTMLElement` members from the suggestions.
-- Filling the Web Component can be cumbersome
-  - ***Solution 1:*** `LISS()` accept a string, a `HTMLTemplateElement`, or an identifer to a `HTMLTemplateElement` that will be used to fill the Web Component.
-  - ***Solution 2:*** `LISS()` accept a string, a `CSSStyleSheet`, a `HTMLStyleElement`, or an identifer to a `HTMLStyleElement` that will be used to fill the Web Component CSS.
-- Depending whether the Web Component uses a ShadowRoot or not, they way to declare and add the CSS rules differs.
-  - ***Solution:*** If the element doesn't support `ShadowRoot`, LISS creates `HTMLStyleElement` that are appened to the `HTMLHeadElement`. Rules are modified to replace ":host" by the Web Component tagname.
-- `::part()` is chaotic. It can only be used on open `ShadowRoot`.
-  - ***Solution:*** LISS provides `.getPart(name)` and `.getParts(name)` to offer a more consistant usage.
 
 ## TODO
 
-- [ ] Explain better the principles.
-
-- [ ] LISS.qs and LISS.qsa +qso + closest for TS (+fix)
-
-- [ ] now inherit and htmlclass.
-
-- [ ] new Shadow opts : None.
-
-- [ ] whenInit promise.
-
 - [ ] Documentation/usage
-  
-  - [ ] this.API
-  - [ ] ShadowRoot (open/close)
 
 - [ ] npm package
 
@@ -610,6 +619,4 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 
 - [ ] LISS parameter Custom Element (mutation observer + event parents)
 
-- [ ] Ressources : finalize+destroy (?)
-  
-  - [ ] declare ressource
+- [ ] LISS in DOM connected observer (for opti).
