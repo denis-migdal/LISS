@@ -186,18 +186,18 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
 
 ### LISS full API
 
-#### LISS.define< *Extends, Host, Attrs* >(tagname, ComponentClass, options)
+#### LISS.define< *Extends, Host, Attrs, Params* >(tagname, ComponentClass, options)
 
 This function awaits the component's dependancies, then declares a new custom element using `customElements(tagname, _host, ...)`.
 
 Internally, `_host` is an instance of `LISSHost<>` which, once the custom element is ready to be initialized, instantiate a new instance of the given `ComponentClass`.
 
-| Name                     | Type                                   | Description                                          |
-| ------------------------ | -------------------------------------- | ---------------------------------------------------- |
-| `tagname`                | `string`                               |                                                      |
-| `ComponentClass`         | `LISSReturnType<Extends, Host, Attrs>` | A class extendings a class returned by `LISS()`.     |
-| `options.dependancies`   | `readonly Promise<string>[]`           | Promises to wait before declaring the component.     |
-| `options.withCstrParams` | `Readonly<Record<string, any>>`        | Parameters to add to the component constructor call. |
+| Name                   | Type                                           | Description                                          |
+| ---------------------- | ---------------------------------------------- | ---------------------------------------------------- |
+| `tagname`              | `string`                                       |                                                      |
+| `ComponentClass`       | `LISSReturnType<Extends, Host, Attrs, Params>` | A class extendings a class returned by `LISS()`.     |
+| `options.dependancies` | `readonly Promise<string>[]`                   | Promises to wait before declaring the component.     |
+| `options.params`       | `Partial<Params>`                              | Parameters to add to the component constructor call. |
 
 LISS also provides functions to follow the component definition process/status:
 
@@ -210,10 +210,10 @@ LISS.whenAllDefined(tagnames: readonly string[], callback ?: () => void): Promis
 
 #### LISS< *Extends, Host, Attrs* >(options)
 
-| Name      | Type                                   |
-| --------- | -------------------------------------- |
-| `options` | `LISSOptions<Extends, Host, Attrs>`    |
-| `return`  | `LISSReturnType<Extends, Host, Attrs>` |
+| Name      | Type                                           |
+| --------- | ---------------------------------------------- |
+| `options` | `LISSOptions<Extends, Host, Attrs, Params>`    |
+| `return`  | `LISSReturnType<Extends, Host, Attrs, Params>` |
 
 #### LISSOptions&lt; *Extends, Host, Attrs* &gt;
 
@@ -222,9 +222,11 @@ LISS.whenAllDefined(tagnames: readonly string[], callback ?: () => void): Promis
 | `Extends`       | `extends Class`                       |                    |                                                   |
 | `Host`          | `extends HTMLElement`                 |                    |                                                   |
 | `Attrs`         | `extends string`                      |                    |                                                   |
+| `Params`        | `extends Record<string, any>`         |                    |                                                   |
 | `extends?`      | `Constructor<Extends>`                | `Object`           | The JS class the component extends.               |
 | `host?`         | `Constructor<Host>`                   | `HTMLElement`      | The host HTML Element class.                      |
 | `attributes?`   | `readonly Attrs[]`                    | `[]`               | The names of the host HTML attributes to observe. |
+| `params?`       | `Params`                              | `{}`               | Default values for the component parameters.      |
 | `dependancies?` | `readonly Promise<any>[]`             | `[]`               | Promises to wait before declaring the component.  |
 | `content?`      | `string\|URL\|HTMLTemplateElement`    | `undefined`        | The component default HTML content.               |
 | `css?`          | `readonly CSS_Source[] \| CSS_Source` | `[]`               | CSS rules for the component.                      |
@@ -236,7 +238,7 @@ LISS.whenAllDefined(tagnames: readonly string[], callback ?: () => void): Promis
 
 | Name            | Parameters                                                   | Return                            | Description                                                                 |
 | --------------- | ------------------------------------------------------------ | --------------------------------- | --------------------------------------------------------------------------- |
-| `constructor`   | `host: Host`<br/>`params?: Record<string, any>`              | `this`<br/>or<br/>`Promise<this>` | Async constructors are supported.                                           |
+| `constructor`   |                                                              | `this`<br/>or<br/>`Promise<this>` | Async constructors are supported.                                           |
 | `onAttrChanged` | `name: string`<br/>`oldValue: string`<br/>`newValue: string` | `void`<br/>or <br/>`false`        | Called when an attribute is changed.<br/>Return false to cancel the change. |
 
 **`Properties:`**
@@ -246,38 +248,39 @@ LISS.whenAllDefined(tagnames: readonly string[], callback ?: () => void): Promis
 | `readonly public`    | `host`    | `Host`                    | The component HTML host.           |
 | `protected readonly` | `content` | `HTMLElement\|ShadowRoot` | The component HTML content.        |
 | `protected readonly` | `attrs`   | `Attrs`                   | The host observed HTML attributes. |
+| `protected readonly` | `params`  | `Params`                  | The component parameters.          |
 
 #### LISSBase< *Extends, Host, Attrs* >
 
 ```typescript
-type LISSBase<E,H,A> = InstanceType<LISSReturnType<E,H,A>>
+type LISSBase<E,I,A,P> = InstanceType<LISSReturnType<E,I,A,P>>
 ```
 
 #### LISS.build&lt;*T*&gt;(tagname, options): Promise<*T*>
 
 Build a new component instance.
 
-| Name                      | Type                                            | Default     | Description                       |
-| ------------------------- | ----------------------------------------------- | ----------- | --------------------------------- |
-| `T`                       | `extends LISSBase<>`                            |             |                                   |
-| `tagname`                 | `string`                                        |             |                                   |
-| `options.withCstrParams?` | `Readonly<Record<string,any>>`                  | `{}`        | Component constructor parameters. |
-| `options.content?`        | `string\|Node\|readonly Node[]`                 | `undefined` | Host default content.             |
-| `options.id?`             | `string`                                        | `undefined` | Host id attribute                 |
-| `options.classes?`        | `readonly string[]`                             | `[]`        | Host class list.                  |
-| `options.cssvars?`        | `Readonly<Record<string, string>>`              | `{}`        | Host CSS variables.               |
-| `options.attrs?`          | `Readonly<Record<string, string\|boolean>>`     | `{}`        | Host HTML attributes.             |
-| `options.data?`           | `Readonly<Record<string, string\|boolean>>`     | `{}`        | Host dataset.                     |
-| `options.listeners?`      | `Readonly<Record<string, (ev: Event) => void>>` | `{}`        | Host events listeners.            |
+| Name                 | Type                                            | Default     | Description            |
+| -------------------- | ----------------------------------------------- | ----------- | ---------------------- |
+| `T`                  | `extends LISSBase<E,I,A,P>`                     |             |                        |
+| `tagname`            | `string`                                        |             |                        |
+| `options.params?`    | `Partial<Params>`                               | `{}`        | Component parameters.  |
+| `options.content?`   | `string\|Node\|readonly Node[]`                 | `undefined` | Host default content.  |
+| `options.id?`        | `string`                                        | `undefined` | Host id attribute      |
+| `options.classes?`   | `readonly string[]`                             | `[]`        | Host class list.       |
+| `options.cssvars?`   | `Readonly<Record<string, string>>`              | `{}`        | Host CSS variables.    |
+| `options.attrs?`     | `Readonly<Record<string, string\|boolean>>`     | `{}`        | Host HTML attributes.  |
+| `options.data?`      | `Readonly<Record<string, string\|boolean>>`     | `{}`        | Host dataset.          |
+| `options.listeners?` | `Readonly<Record<string, (ev: Event) => void>>` | `{}`        | Host events listeners. |
 
 #### HTMLElement manipulations
 
-| Function                       | Return       | Description                                                |
-| ------------------------------ | ------------ | ---------------------------------------------------------- |
-| `LISS.getLISS<T>(element)`     | `Promise<T>` | Returns the LISS component associated to the HTML Element. |
-| `LISS.getLISSSync<T>(element)` | `T`          | Throws an exception if component not yet initialized.      |
-| `LISS.initialized<T>(element)` | `Promise<T>` | Force the compoment initialization.                        |
-| `LISS.getName(element)`        | `string`     | Returns the component name.                                |
+| Function                               | Return       | Description                                                |
+| -------------------------------------- | ------------ | ---------------------------------------------------------- |
+| `LISS.getLISS<T>(element)`             | `Promise<T>` | Returns the LISS component associated to the HTML Element. |
+| `LISS.getLISSSync<T>(element)`         | `T`          | Throws an exception if component not yet initialized.      |
+| `LISS.initialize<T>(element, params?)` | `Promise<T>` | Force the compoment initialization.                        |
+| `LISS.getName(element)`                | `string`     | Returns the component name.                                |
 
 **`parameters`**
 
@@ -285,6 +288,7 @@ Build a new component instance.
 | --------- | -------------------- | ----------- |
 | `T`       | `extends LISSBase<>` |             |
 | `element` | `HTMLElement`        |             |
+| `params?` | `Partial<Params>`    |             |
 
 #### Query selectors
 

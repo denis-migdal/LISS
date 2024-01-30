@@ -11,7 +11,6 @@ export var ShadowCfg;
 // ================================================
 // =============== LISS Class =====================
 // ================================================
-let __cstr_params;
 let __cstr_host;
 // https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
 const CAN_HAVE_SHADOW = [
@@ -22,7 +21,7 @@ const CAN_HAVE_SHADOW = [
 function _canHasShadow(tag) {
     return CAN_HAVE_SHADOW.includes(_element2tagname(tag));
 }
-export default function LISS({ attributes: p_attrs, extends: p_extends, host: p_host, dependancies: p_deps, content, css, shadow: p_shadow, } = {}) {
+export default function LISS({ extends: p_extends, host: p_host, dependancies: p_deps, attributes: p_attrs, params, content, css, shadow: p_shadow, } = {}) {
     const host = p_host ?? HTMLElement;
     const _extends = p_extends ?? Object;
     const attributes = p_attrs ?? [];
@@ -80,25 +79,28 @@ export default function LISS({ attributes: p_attrs, extends: p_extends, host: p_
         constructor() {
             super();
             // h4ck, okay because JS is monothreaded.
-            //__cstr_params
             this.#host = __cstr_host;
         }
         get host() {
             return this.#host; // because TS stupid.
         }
-        get content() {
-            return this.#host.content;
-        }
         get attrs() {
             return this.#host.attrs;
         }
+        get params() {
+            return this.#host.params;
+        }
+        get content() {
+            return this.#host.content;
+        }
         static Parameters = {
             host,
-            attributes,
             dependancies,
-            shadow,
-            stylesheets,
+            attributes,
+            params,
             content,
+            stylesheets,
+            shadow,
         };
         onAttrChanged(_name, _oldValue, _newValue) { }
     }
@@ -107,8 +109,8 @@ export default function LISS({ attributes: p_attrs, extends: p_extends, host: p_
 // ================================================
 // =============== LISSHost class =================
 // ================================================
-function buildLISSHost(Liss, withCstrParams = {}) {
-    const { host, attributes, shadow, stylesheets, content } = Liss.Parameters;
+function buildLISSHost(Liss, _params = {}) {
+    const { host, attributes, content, stylesheets, shadow, } = Liss.Parameters;
     const alreadyDeclaredCSS = new Set();
     const GET = Symbol('get');
     const SET = Symbol('set');
@@ -135,10 +137,10 @@ function buildLISSHost(Liss, withCstrParams = {}) {
     }
     // @ts-ignore : because TS is stupid.
     class LISSHostBase extends host {
-        #options;
-        constructor(options) {
+        #params;
+        constructor(params = {}) {
             super();
-            this.#options = options;
+            this.#params = Object.assign({}, Liss.Parameters.params, _params, params);
             this.#waitInit = new Promise((resolve) => {
                 if (this.isInit)
                     return resolve(this.#API);
@@ -149,10 +151,11 @@ function buildLISSHost(Liss, withCstrParams = {}) {
         get isInit() {
             return this.#API !== null;
         }
-        async initialize() {
-            if (!this.isInit)
-                await this.force_init();
-            return this.#API;
+        async initialize(params = {}) {
+            if (this.isInit)
+                throw new Error('Element already initialized!');
+            Object.assign(this.#params, params);
+            return await this.init();
         }
         get LISSSync() {
             if (!this.isInit)
@@ -167,9 +170,10 @@ function buildLISSHost(Liss, withCstrParams = {}) {
         #resolve = null;
         #API = null;
         connectedCallback() {
-            this.initialize();
+            if (!this.isInit)
+                this.init();
         }
-        async force_init(options = this.#options) {
+        async init() {
             customElements.upgrade(this);
             // shadow
             this.#content = this;
@@ -207,10 +211,8 @@ function buildLISSHost(Liss, withCstrParams = {}) {
                 this.#content.append(...template_elem.content.childNodes);
             }
             // build
-            options = Object.assign({}, options, withCstrParams);
             // h4ck, okay because JS is monothreaded.
             __cstr_host = this;
-            __cstr_params = options;
             let obj = new Liss();
             if (obj instanceof Promise)
                 obj = await obj;
@@ -220,6 +222,10 @@ function buildLISSHost(Liss, withCstrParams = {}) {
                 this.#content.append(document.createElement('slot'));
             if (this.#resolve !== null)
                 this.#resolve(this.#API);
+            return this.#API;
+        }
+        get params() {
+            return this.#params;
         }
         /*** content ***/
         #content = null;
@@ -286,21 +292,21 @@ const _DOMContentLoaded = new Promise((resolve) => {
         resolve();
     }, true);
 });
-LISS.define = async function (tagname, ComponentClass, { dependancies, withCstrParams } = {}) {
+LISS.define = async function (tagname, ComponentClass, { dependancies, params } = {}) {
     dependancies ??= [];
-    withCstrParams ??= {};
+    params ??= {};
     const Class = ComponentClass.Parameters.host;
     let LISSBase = ComponentClass;
     let htmltag = _element2tagname(Class) ?? undefined;
     await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
-    const LISSclass = buildLISSHost(ComponentClass, withCstrParams);
+    const LISSclass = buildLISSHost(ComponentClass, params);
     customElements.define(tagname, LISSclass, { extends: htmltag });
 };
-LISS.build = async function (tagname, { withCstrParams = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
+LISS.build = async function (tagname, { params = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
     if (!initialize && parent === null)
         throw new Error("A parent must be given if initialize is false");
     let CustomClass = await customElements.whenDefined(tagname);
-    let elem = new CustomClass(withCstrParams);
+    let elem = new CustomClass(params);
     if (id !== undefined)
         elem.id = id;
     elem.classList.add(...classes);

@@ -4,15 +4,17 @@
 
 export type CSS_Source = string|URL|HTMLStyleElement|CSSStyleSheet;
 
-export type LISSOptions<Extends extends Class,
-						Host extends HTMLElement,
-						Attrs extends string> = {
+export type LISSOptions<Extends    extends Class,
+						Host       extends HTMLElement,
+						Attrs      extends string,
+						Parameters extends Record<string, any>> = {
 
 	extends?: Constructor<Extends>,
 	host   ?: Constructor<Host>,
 
 	dependancies?: readonly Promise<any>[],
 	attributes  ?: readonly Attrs[],
+	params      ?: Readonly<Parameters>,
 
 	content?: string|URL|HTMLTemplateElement,
 	css    ?: readonly CSS_Source[] | CSS_Source,
@@ -29,7 +31,6 @@ export enum ShadowCfg {
 // =============== LISS Class =====================
 // ================================================
 
-let __cstr_params: any;
 let __cstr_host  : any;
 
 type Constructor<T> = new () => T;
@@ -46,17 +47,19 @@ function _canHasShadow(tag: typeof HTMLElement) {
 	return CAN_HAVE_SHADOW.includes( _element2tagname(tag) );
 }
 
-export default function LISS<Extends extends Class = Class,
-							 Host    extends HTMLElement = HTMLElement,
-							 Attrs   extends string = never>(
-							{   attributes  : p_attrs,
+export default function LISS<Extends    extends Class              = Class,
+							 Host       extends HTMLElement        = HTMLElement,
+							 Attrs      extends string             = never,
+							 Parameters extends Record<string,any> = {}>({
 								extends     : p_extends,
 								host        : p_host,
 								dependancies: p_deps,
+							    attributes  : p_attrs,
+							    params,
 								content,
 								css,
 								shadow      : p_shadow,
-							}: LISSOptions<Extends, Host, Attrs> = {}) {
+							}: LISSOptions<Extends, Host, Attrs, Parameters> = {}) {
 
 	const host        = p_host    ?? HTMLElement as Constructor<Host>;
 	const _extends    = p_extends ?? Object      as unknown as Constructor<Extends>;
@@ -143,27 +146,30 @@ export default function LISS<Extends extends Class = Class,
 			super();
 
 			// h4ck, okay because JS is monothreaded.
-			//__cstr_params
 			this.#host = __cstr_host as LISSHost<LISSBase>;
 		}
 
 		public get host(): Host {
 			return this.#host as unknown as Host; // because TS stupid.
 		}
-		protected get content() {
-			return this.#host.content!;
-		}
 		protected get attrs() {
 			return this.#host.attrs;
+		}
+		protected get params() {
+			return this.#host.params;
+		}
+		protected get content() {
+			return this.#host.content!;
 		}
 
 		static readonly Parameters = {
 			host,
-			attributes,
 			dependancies,
-			shadow,
-			stylesheets,
+			attributes,
+			params,
 			content,
+			stylesheets,
+			shadow,
 		};
 
 		protected onAttrChanged(_name: string,
@@ -179,16 +185,22 @@ export default function LISS<Extends extends Class = Class,
 // =============== LISS type helpers ==============
 // ================================================
 
-type buildLISSHostReturnType<T>  = T extends LISSReturnType<infer Extends extends Class, infer Host extends HTMLElement, infer Attrs extends string> ? ReturnType<typeof buildLISSHost<Extends, Host, Attrs, T>> : never;
+type buildLISSHostReturnType<T>  = T extends LISSReturnType<infer Extends extends Class,
+															infer Host    extends HTMLElement,
+															infer Attrs   extends string,
+															infer Params  extends Record<string,any>>
+															? ReturnType<typeof buildLISSHost<Extends, Host, Attrs, Params, T>> : never;
 
 export type LISSReturnType<
 	Extends extends Class,
 	Host    extends HTMLElement,
-	Attrs   extends string> = ReturnType<typeof LISS<Extends, Host, Attrs>>;
+	Attrs   extends string,
+	Params  extends Record<string,any>> = ReturnType<typeof LISS<Extends, Host, Attrs, Params>>;
 export type LISSBase<Extends extends Class,
 					 Host    extends HTMLElement,
-					 Attrs   extends string> = InstanceType<LISSReturnType<Extends, Host, Attrs>>;
-export type LISSHost<LISS extends LISSBase<any,any,any> > = InstanceType<buildLISSHostReturnType<Constructor<LISS> & {Parameters: any}>>;
+					 Attrs   extends string,
+					 Params  extends Record<string,any>> = InstanceType<LISSReturnType<Extends, Host, Attrs, Params>>;
+export type LISSHost<LISS extends LISSBase<any,any,any,any> > = InstanceType<buildLISSHostReturnType<Constructor<LISS> & {Parameters: any}>>;
 
 // ================================================
 // =============== LISSHost class =================
@@ -197,14 +209,14 @@ export type LISSHost<LISS extends LISSBase<any,any,any> > = InstanceType<buildLI
 function buildLISSHost<Extends extends Class,
 					   Host    extends HTMLElement,
 					   Attrs   extends string,
-					   T extends LISSReturnType<Extends, Host, Attrs>>(Liss: T,
-															    withCstrParams: Readonly<Record<string, any>> = {}) {
+					   Params  extends Record<string,any>,
+					   T extends LISSReturnType<Extends, Host, Attrs, Params>>(Liss: T, _params: Partial<Params> = {}) {
 	const {
 		host,
 		attributes,
-		shadow,
+		content,
 		stylesheets,
-		content
+		shadow,
 	} = Liss.Parameters;
 
 	const alreadyDeclaredCSS = new Set();
@@ -245,11 +257,11 @@ function buildLISSHost<Extends extends Class,
 	// @ts-ignore : because TS is stupid.
 	class LISSHostBase extends host {
 
-		readonly #options?: Readonly<Record<string, any>>;
+		readonly #params: Params;
 
-		constructor(options?: Readonly<Record<string, any>>) {
+		constructor(params: Partial<Params> = {}) {
 			super();
-			this.#options = options;
+			this.#params = Object.assign({}, Liss.Parameters.params, _params, params);
 
 			this.#waitInit = new Promise( (resolve) => {
 				if(this.isInit)
@@ -263,12 +275,14 @@ function buildLISSHost<Extends extends Class,
 		get isInit() {
 			return this.#API !== null;
 		}
-		async initialize() {
+		async initialize(params: Partial<Params> = {}) {
 
-			if( ! this.isInit )
-				await this.force_init();
+			if( this.isInit )
+				throw new Error('Element already initialized!');
 
-			return this.#API!;
+			Object.assign(this.#params, params);
+
+			return await this.init();
 		}
 
 		get LISSSync() {
@@ -286,10 +300,12 @@ function buildLISSHost<Extends extends Class,
 		#API: InstanceType<T> | null = null;
 
 		connectedCallback() {
-			this.initialize();
+	
+			if( ! this.isInit )
+				this.init();
 		}
 
-		private async force_init(options: Readonly<Record<string, any>>|undefined = this.#options) {
+		private async init() {
 			
 			customElements.upgrade(this);
 			
@@ -343,11 +359,9 @@ function buildLISSHost<Extends extends Class,
 	    	}
 
 	    	// build
-	    	options = Object.assign({}, options, withCstrParams);
 
 	    	// h4ck, okay because JS is monothreaded.
 			__cstr_host   = this;
-			__cstr_params = options;
 
 	    	let obj = new Liss();
 	    	if( obj instanceof Promise)
@@ -360,7 +374,13 @@ function buildLISSHost<Extends extends Class,
 				this.#content.append( document.createElement('slot') );
 
 			if( this.#resolve !== null)
-				this.#resolve(this.#API!);
+				this.#resolve(this.#API);
+
+			return this.#API;
+		}
+
+		get params(): Params {
+			return this.#params;
 		}
 
 
@@ -457,13 +477,14 @@ const _DOMContentLoaded = new Promise<void>( (resolve) => {
 LISS.define = async function<Extends extends Class,
 							 Host    extends HTMLElement,
 						     Attrs   extends string,
-						   	 T extends LISSReturnType<Extends, Host, Attrs>>(
+						     Params  extends Record<string,any>,
+						   	 T extends LISSReturnType<Extends, Host, Attrs, Params>>(
 						   	tagname: string,
 							ComponentClass: T,
-							{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: readonly Promise<string>[]} = {}) {
+							{dependancies, params}: {params?: Partial<Params>, dependancies?: readonly Promise<string>[]} = {}) {
 
 	dependancies??=[];
-	withCstrParams ??= {};
+	params      ??= {};
 
 	const Class = ComponentClass.Parameters.host;
 	let LISSBase: any = ComponentClass;
@@ -471,7 +492,7 @@ LISS.define = async function<Extends extends Class,
 
 	await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
 
-	const LISSclass = buildLISSHost<Extends, Host, Attrs, T>(ComponentClass, withCstrParams);
+	const LISSclass = buildLISSHost<Extends, Host, Attrs, Params, T>(ComponentClass, params);
 	customElements.define(tagname, LISSclass, {extends: htmltag});
 };
 
@@ -479,8 +500,10 @@ LISS.define = async function<Extends extends Class,
 // =============== LISS helpers ===================
 // ================================================
 
-type BUILD_OPTIONS = Partial<{
-					  	withCstrParams: Readonly<Record<string, any>>,
+type inferParams<T> = T extends LISSBase<any,any,any, infer P extends Record<string,any>> ? P : never;
+
+type BUILD_OPTIONS<T extends LISSBase<any,any,any,any>> = Partial<{
+					  	params    : Partial<inferParams<T>>,
 					  	content	  : string|Node|readonly Node[],
 						id 		  : string,
 					  	classes	  : readonly string[],
@@ -495,8 +518,8 @@ type BUILD_OPTIONS = Partial<{
 						initialize?: true,
 						parent?: HTMLElement
 					});
-LISS.build = async function <T extends LISSBase<any,any,any>>(tagname: string, {
-		withCstrParams = {},
+LISS.build = async function <T extends LISSBase<any,any,any,any>>(tagname: string, {
+		params    = {},
 		initialize= true,
 		content   = [],
 		parent    = undefined,
@@ -506,13 +529,13 @@ LISS.build = async function <T extends LISSBase<any,any,any>>(tagname: string, {
 		attrs     = {},
 		data 	  = {},
 		listeners = {}
-	}: BUILD_OPTIONS = {}): Promise<T> {
+	}: BUILD_OPTIONS<T> = {}): Promise<T> {
 
 	if( ! initialize && parent === null)
 		throw new Error("A parent must be given if initialize is false");
 
 	let CustomClass = await customElements.whenDefined(tagname);
-	let elem = new CustomClass(withCstrParams) as LISSHost<T>;	
+	let elem = new CustomClass(params) as LISSHost<T>;	
 
 	if( id !== undefined )
 		elem.id = id;
@@ -582,13 +605,13 @@ LISS.isDefined = function(name: string) {
 }
 
 
-LISS.getLISS    = async function<T extends LISSBase<any,any,any>>( element: HTMLElement ) {
+LISS.getLISS    = async function<T extends LISSBase<any,any,any,any>>( element: HTMLElement ) {
 
 	await LISS.whenDefined( LISS.getName(element) );
 
 	return (element as LISSHost<T>).LISS; // ensure initialized.
 }
-LISS.getLISSSync= function<T extends LISSBase<any,any,any>>( element: HTMLElement ) {
+LISS.getLISSSync= function<T extends LISSBase<any,any,any,any>>( element: HTMLElement ) {
 
 	if( ! LISS.isDefined( LISS.getName(element) ) )
 		throw new Error(`${name} hasn't been defined yet.`);
@@ -600,7 +623,7 @@ LISS.getLISSSync= function<T extends LISSBase<any,any,any>>( element: HTMLElemen
 
 	return host.LISSSync;
 }
-LISS.initialize = async function<T extends LISSBase<any,any,any>>( element: HTMLElement) {
+LISS.initialize = async function<T extends LISSBase<any,any,any,any>>( element: HTMLElement) {
 
 	await LISS.whenDefined( LISS.getName(element) );
 
@@ -618,7 +641,7 @@ LISS.getName = function( element: HTMLElement ): string {
 }
 
 
-LISS.qs  = async function<T extends LISSBase<any,any,any>>(	selector: string,
+LISS.qs  = async function<T extends LISSBase<any,any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	let result = await LISS.qso<T>(selector, parent);
@@ -627,7 +650,7 @@ LISS.qs  = async function<T extends LISSBase<any,any,any>>(	selector: string,
 
 	return result!
 }
-LISS.qso = async function<T extends LISSBase<any,any,any>>(	selector: string,
+LISS.qso = async function<T extends LISSBase<any,any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	if(selector === '')
@@ -639,7 +662,7 @@ LISS.qso = async function<T extends LISSBase<any,any,any>>(	selector: string,
 
 	return await LISS.getLISS( element );
 }
-LISS.qsa = async function<T extends LISSBase<any,any,any>>(	selector: string,
+LISS.qsa = async function<T extends LISSBase<any,any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 	
 
@@ -656,7 +679,7 @@ LISS.qsa = async function<T extends LISSBase<any,any,any>>(	selector: string,
 	return await Promise.all(promises);
 }
 
-LISS.closest = async function<T extends LISSBase<any,any,any>>(selector:string, currentElement: Element) {
+LISS.closest = async function<T extends LISSBase<any,any,any,any>>(selector:string, currentElement: Element) {
 	
 	const element = currentElement.closest<LISSHost<T>>(selector);
 	if(element === null)
@@ -665,7 +688,7 @@ LISS.closest = async function<T extends LISSBase<any,any,any>>(selector:string, 
 	return await LISS.getLISS(element);
 }
 
-LISS.qsSync  = function<T extends LISSBase<any,any,any>>(	selector: string,
+LISS.qsSync  = function<T extends LISSBase<any,any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 
 	const element = parent.querySelector<LISSHost<T>>(selector);
@@ -675,7 +698,7 @@ LISS.qsSync  = function<T extends LISSBase<any,any,any>>(	selector: string,
 
 	return LISS.getLISSSync( element );
 }
-LISS.qsaSync = function<T extends LISSBase<any,any,any>>(	selector: string,
+LISS.qsaSync = function<T extends LISSBase<any,any,any,any>>(	selector: string,
 						parent  : Element|DocumentFragment|Document = document) {
 	
 
@@ -692,7 +715,7 @@ LISS.qsaSync = function<T extends LISSBase<any,any,any>>(	selector: string,
 	return result;
 }
 
-LISS.closestSync = async function<T extends LISSBase<any,any,any>>(selector:string, currentElement: Element) {
+LISS.closestSync = async function<T extends LISSBase<any,any,any,any>>(selector:string, currentElement: Element) {
 	
 	const element = currentElement.closest<LISSHost<T>>(selector);
 	if(element === null)
@@ -712,7 +735,7 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 	readonly #sw: Promise<void>;
 
 	constructor() {
-		
+
 		super();
 
 		this.#sw = new Promise( async (resolve) => {
