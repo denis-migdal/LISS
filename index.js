@@ -368,10 +368,10 @@ LISS.closest = async function (selector, currentElement) {
     return await LISS.getLISS(element);
 };
 LISS.whenDefined = async function (tagname, callback) {
-    let cstr = await customElements.whenDefined(tagname);
+    await customElements.whenDefined(tagname);
     if (callback !== undefined)
-        callback(cstr);
-    return cstr;
+        callback();
+    return;
 };
 LISS.whenAllDefined = async function (tagnames, callback) {
     await Promise.all(tagnames.map(t => customElements.whenDefined(t)));

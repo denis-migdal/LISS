@@ -203,6 +203,18 @@ Internally, `_host` is an instance of `LISSHost<>` which, once the custom elemen
 | `options.dependancies`   | `readonly Promise<string>[]`           | Promises to wait before declaring the component.     |
 | `options.withCstrParams` | `Readonly<Record<string, any>>`        | Parameters to add to the component constructor call. |
 
+LISS also provides functions to follow the component definition process/status:
+
+```typescript
+LISS.isDefined  (tagname: string): boolean;
+LISS.whenDefined(tagname: string, 
+callback ?: () => void): Promise<void>
+LISS.whenAllDefined(tagnames: readonly string[], 
+callback ?: () => void): Promise<void>
+```
+
+
+
 #### LISS< *Extends, Host, Attrs* >(options)
 
 | Name      | Type                                   |
@@ -248,6 +260,16 @@ Internally, `_host` is an instance of `LISSHost<>` which, once the custom elemen
 type LISSBase<E,H,A> = InstanceType<LISSReturnType<E,H,A>>
 ```
 
+#### LISS.build&lt;*T*&gt;(tagname, options)
+
+
+
+#### LISS.getLISS()
+
+#### LISS.getName()
+
+#### LISS.initialize()
+
 #### Query selectors
 
 LISS provides several fonctions to get fully intialized LISS components from a query string:
@@ -257,7 +279,7 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 | `LISS.qs<T>(query, parent?)`       | `Promise<T>`       | Throws an exception if not found.                               |
 | `LISS.qso<T>(query, parent?)`      | `Promise<T>\|null` | `null` if not found.                                            |
 | `LISS.qsa<T>(query, parent?)`      | `Promise<T[]>`     |                                                                 |
-| `LISS.closest(query, element?)`    | `Promise<T>\|null` |                                                                 |
+| `LISS.closest(query, element)`     | `Promise<T>\|null` |                                                                 |
 | `LISS.qsSync(query, parent?)`      | `T`                | Throws an exception if component not yet initialized.           |
 | `LISS.qsaSync(query, parent?)`     | `T[]`              | Throws an exception if any found component not yet initialized. |
 | `LISS.closestSync(query, element)` | `T`                | Throws an exception if component not yet initialized.           |

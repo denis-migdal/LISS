@@ -618,18 +618,18 @@ LISS.closest = async function<T extends LISSBase<any,any,any>>(selector:string, 
 	return await LISS.getLISS(element);
 }
 
-LISS.whenDefined    = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagname: string, callback?: (cstr: T) => void ) : Promise<T> {
+LISS.whenDefined    = async function(tagname: string, callback?: () => void ) : Promise<void> {
 
-	let cstr = await customElements.whenDefined(tagname) as T;
+	await customElements.whenDefined(tagname);
 
 	if( callback !== undefined)
-		callback(cstr);
+		callback();
 
-	return cstr;
+	return;
 }
-LISS.whenAllDefined = async function<T extends CustomElementConstructor = CustomElementConstructor>(tagnames: readonly string[], callback?: () => void ) : Promise<void> {
+LISS.whenAllDefined = async function(tagnames: readonly string[], callback?: () => void ) : Promise<void> {
 
-	await Promise.all( tagnames.map( t => customElements.whenDefined(t) as Promise<T>) )
+	await Promise.all( tagnames.map( t => customElements.whenDefined(t) ) )
 
 	if( callback !== undefined)
 		callback();
