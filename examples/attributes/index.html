@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>LISS Example (Attributes)</title>
+	<title>Attributes</title>
 	<script type="importmap">
 		{
 			"imports": {
@@ -15,38 +15,39 @@
 		import LISS from 'LISS';
 
 		class MyComponent extends LISS({
-											attributes: ["content"] // attributes to observe.
+											attributes: ["counter"] // observed attributes.
 										}) {
 
-			constructor(htmltag) {
+			#interval = null;
 
-				super(htmltag);
+			constructor() {
+				super();
 
 				// this.attrs contains the current values of the observed attributes.
-				console.log("Attributes (init)", {...this.attrs});
-
+				console.log("Attributes (initial)", {...this.attrs});
 				// you can validate this.attrs here.
-				this.content.textContent = this.attrs.content;
 
-				setTimeout( () => {
-					this.host.setAttribute("content", 1); // will triggers onAttrChanged
+				this.#interval = setInterval( () => {
+		            // will trigger onAttrChanged
+					this.host.setAttribute("counter", +this.attrs.counter+1);
 				}, 1000);
-				setTimeout( () => {
-					this.host.setAttribute("content", 2); // will triggers onAttrChanged
-				}, 2000);
+
+		        // will NOT trigger onAttrChanged.
+		        this.content.textContent = this.attrs.counter = 0;
 			}
 
 			onAttrChanged(name, oldValue, newValue) {
 
 				console.log("AttrChanged", name, oldValue, "->", newValue);
-				console.log("Attributes:", {...this.attrs});
+				console.log("Attributes (now):", {...this.attrs});
 
 				// you can validate this.attrs here.
-				if( this.attrs.content === "2" )
+				if( this.attrs.counter === "5" ) {
+					clearInterval(this.#interval);
 					return false; // cancel the change.
+				}
 
-				this.content.textContent = this.attrs.content;
-				this.attrs.content = "done"; // will NOT trigger onAttrChanged.
+				this.content.textContent += this.attrs.counter;
 			}
 		}
 
@@ -54,6 +55,6 @@
 	</script>
 </head>
 <body>
-	<my-component content="0"></my-component>
+	<my-component counter="null"></my-component>
 </body>
 </html>

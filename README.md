@@ -21,8 +21,15 @@ To create a new components, simply create a class extending `LISS()` and registe
 <!DOCTYPE html>
 <html>
   <head>
+    <script type="importmap">
+	{
+		"imports": {
+			"LISS": "$LISS/index.js"
+		}
+    }
+	</script>
     <script type="module">
-      import LISS from '$LISS';
+      import LISS from 'LISS';
 
       class MyComponent extends LISS() {
 
@@ -79,6 +86,61 @@ You can see all examples below in the [`LISS/examples/` directory](./examples/).
 - **[LISS full API](liss-full-API)**
 
 ### Manage HTML attributes
+
+LISS enables to observe the host HTML attributes, simply by specifying their names when building the component (`extends LISS({attributes:[...]})`).
+
+Then, `this.onAttrChanged()` will be called at each modification of the observed attributes. If `this.onAttrChanged()` returns false, the changed attribute will be reverted to its previous value.
+
+`this.attrs` enables to access them in an efficient way, i.e. without requiring multiples access to the DOM. Modification of an attribute through `this.attrs` will update the HTML attributes without firing `this.onAttrChanged()`.
+
+
+
+```typescript
+// /examples/attributes
+import LISS from 'LISS';
+
+class MyComponent extends LISS({
+									attributes: ["counter"] // observed attributes.
+								}) {
+    #interval = null;
+
+	constructor() {
+		super();
+
+		// this.attrs contains the current values of the observed attributes.
+		console.log("Attributes (initial)", {...this.attrs});
+		// you can validate this.attrs here.
+
+		this.#counter = setInterval( () => {
+            // will trigger onAttrChanged
+			this.host.setAttribute("counter", +this.attrs.counter+1);
+		}, 1000);
+
+        // will NOT trigger onAttrChanged.
+        this.content.textContent = this.attrs.counter = 0;
+	}
+
+	onAttrChanged(name, oldValue, newValue) {
+
+		console.log("AttrChanged", name, oldValue, "->", newValue);
+		console.log("Attributes (now):", {...this.attrs});
+
+		// you can validate this.attrs here.
+		if( this.attrs.counter === "5" ) {
+            clearInterval(this.#interval);
+			return false; // cancel the change.
+        }      
+
+		this.content.textContent += this.attrs.counter;
+	}
+}
+
+LISS.define('my-component', MyComponent);
+```
+
+```html
+<my-component counter="null"></my-component><!-- prints 01234 -->
+```
 
 ### Use HTML/CSS files/strings
 
