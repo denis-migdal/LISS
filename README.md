@@ -17,7 +17,7 @@ In order to use LISS in your project, copy either the `/index.ts` or `/index.js`
 To create a new components, simply create a class extending `LISS()` and register it using `LISS.define()`:
 
 ```html
-<!-- $LISS/examples/basic.html -->
+<!-- $LISS/examples/basic -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -54,9 +54,65 @@ To create a new components, simply create a class extending `LISS()` and registe
 </html>
 ```
 
+[📖 See the auto mode for easier usage.](#auto-mode)
+
 [📖 And a lot more features and examples below.](#features-and-examples)
 
-## LISS (auto mode)
+
+## Features and examples
+
+You can see all examples below in the [`LISS/examples/` directory](./examples/).
+
+- **[Basic features](#basic-features)**
+  - [Management of HTML attributes](#manage-html-attributes)
+  - [Use HTML/CSS files/strings](#use-htmlcss-filesstrings)
+  - [Auto mode](#auto-mode)
+- **Advanced features**
+  - extend a JS class.
+  - extend an existing HTML element.
+  - ShadowRoot mode.
+  - parts.
+  - constructor parameters
+- **Helpers**
+  - builders
+  - query selectors
+  - dependancies
+  - EvtTarget [TODO]
+- **[LISS full API](liss-full-API)**
+
+### Basic features
+
+
+#### Manage HTML attributes
+
+#### Use HTML/CSS files/strings
+
+`LISS()` allows to inject HTML and CSS files/strings into your component thanks to the `content` and `css` options:
+
+```javascript
+// cf $LISS/examples/inject-html-css/
+import LISS from "$LISS"
+
+const CSS_RULES = `
+    :host {
+      color: blue;
+    }
+`;
+
+export default class Component extends LISS({
+    content: "./component.html",            // string|URL|HTMLTemplateElement
+    css    : ['./component.css', CSS_RULES] // string|URL|HTMLStyleElement|CSSStyleSheet (or an array)
+  }) {
+    //...
+}
+
+LISS.define("my-component", Component);
+```
+
+📖 By default, LISS assumes `string` values to be HTML or CSS content.
+However, if the `string` starts with `./`, it will be processed as a relative path to the current file.
+
+#### Auto mode
 
 LISS can also automatically build and import your components, making them even easier to use.
 This feature is enabled simply by adding a `<liss-auto src='$COMPONENTS_DIR'></liss-auto>` HTML tag into your webpage:
@@ -90,7 +146,7 @@ An optionnal `index.css` file can also be provided.
 
 ⚠ In order to suppress 404 errors in the console, auto-mode requires to put the file `$LISS/sw.js` in the same directory than your webpage.
 
-### LISS auto-mode with an HTML file
+##### LISS auto-mode with an HTML file
 
 Defining a component with only an HTML file is very easy with LISS: simply create a `$COMPONENTS_DIR/$name/index.html` file with the component's HTML content:
 
@@ -113,7 +169,7 @@ You can also add a CSS file to your component, simple by adding a `$COMPONENTS_D
 }
 ```
 
-### LISS auto-mode with an JS file
+##### LISS auto-mode with an JS file
 
 You can also define a component with only a JS file, by creating a `$COMPONENTS_DIR/$name/index.js` file default exporting a function returning a class extending `LISS()`:
 
@@ -136,56 +192,6 @@ export default function(options) {
 
 You can also add an `index.html` and a `index.css` files to your component. LISS will then automatically use them to define your component's initial content. Their content are given by the `options` parameter.
 
-## Features and examples
-
-You can see all examples below in the [`LISS/examples/` directory](./examples/).
-
-- **[Basic features](#basic-features)**
-  - [Use HTML/CSS files/strings](#use-htmlcss-filesstrings)
-  - [Management of HTML attributes](#manage-html-attributes)
-- **Advanced features**
-  - extend a JS class.
-  - extend an existing HTML element.
-  - ShadowRoot mode.
-  - parts.
-  - constructor parameters
-- **Helpers**
-  - builders
-  - query selectors
-  - dependancies
-  - EvtTarget [TODO]
-- **[LISS full API](liss-full-API)**
-
-### Basic features
-
-#### Use HTML/CSS files/strings
-
-`LISS()` allows to inject HTML and CSS files/strings into your component thanks to the `content` and `css` options:
-
-```javascript
-// cf $LISS/examples/inject-html-css/
-import LISS from "$LISS"
-
-const CSS_RULES = `
-    :host {
-      color: blue;
-    }
-`;
-
-export default class Component extends LISS({
-    content: "./component.html",            // string|URL|HTMLTemplateElement
-    css    : ['./component.css', CSS_RULES] // string|URL|HTMLStyleElement|CSSStyleSheet (or an array)
-  }) {
-    //...
-}
-
-LISS.define("my-component", Component);
-```
-
-📖 By default, LISS assumes `string` values to be HTML or CSS content.
-However, if the `string` starts with `./`, it will be processed as a relative path to the current file.
-
-#### Manage HTML attributes
 
 ### LISS full API
 
