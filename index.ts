@@ -4,13 +4,15 @@
 
 export type CSS_Source = string|URL|HTMLStyleElement|CSSStyleSheet;
 
-export type LISSOptions<T extends HTMLElement, U extends Class, ATTRS extends string> = {
+export type LISSOptions<Extends extends Class,
+						Host extends HTMLElement,
+						Attrs extends string> = {
 
-	htmlclass?: Constructor<T>|null,
-	inherit  ?: Constructor<U>|null,
+	extends?: Constructor<Extends>,
+	host   ?: Constructor<Host>,
 
 	dependancies?: readonly Promise<any>[],
-	attributes  ?: readonly ATTRS[],
+	attributes  ?: readonly Attrs[],
 
 	content?: string|URL|HTMLTemplateElement,
 	css    ?: readonly CSS_Source[] | CSS_Source,
@@ -18,7 +20,7 @@ export type LISSOptions<T extends HTMLElement, U extends Class, ATTRS extends st
 };
 
 export enum ShadowCfg {
-	NONE = 0,
+	NONE = 'none',
 	OPEN = 'open', 
 	CLOSE= 'closed'
 };
@@ -37,34 +39,35 @@ const CAN_HAVE_SHADOW = [
 	'nav', 'p', 'section', 'span'
 	
 ];
+function _canHasShadow(tag: typeof HTMLElement) {
+	return CAN_HAVE_SHADOW.includes( _element2tagname(tag) );
+}
 
-export default function LISS<T extends HTMLElement,
-							 U extends Class,
-							 ATTRS extends string>(
-							{   attributes,
-								htmlclass = null,
-								inherit   = null,
-								dependancies,
+export default function LISS<Extends extends Class = Class,
+							 Host    extends HTMLElement = HTMLElement,
+							 Attrs   extends string = never>(
+							{   attributes  : p_attrs,
+								extends     : p_extends,
+								host        : p_host,
+								dependancies: p_deps,
 								content,
 								css,
-								shadow}: LISSOptions<T, U, ATTRS> = {}) {
+								shadow      : p_shadow,
+							}: LISSOptions<Extends, Host, Attrs> = {}) {
 
-	const inheritClass    = htmlclass ?? HTMLElement as Constructor<T>;
-	const inheritObjClass = inherit   ?? Object      as unknown as Constructor<U>;
+	const host        = p_host    ?? HTMLElement as Constructor<Host>;
+	const _extends    = p_extends ?? Object      as unknown as Constructor<Extends>;
+	const attributes  = p_attrs   ?? [];
+	const dependancies= p_deps    ? [...p_deps] : [];
+	const canHasShadow= _canHasShadow(host);
+	const shadow      = p_shadow  ?? canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
 
-	attributes ??= [];
-	const deps = [...dependancies ?? []];
-
-	const canHasShadow = CAN_HAVE_SHADOW.includes( _element2tagname(inheritClass) );
-	shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
-
-	if( ! canHasShadow && shadow !== ShadowCfg.NONE) {
-		console.warn('This element does not support ShadowRoot');
-		shadow = ShadowCfg.NONE;
-	}
+	if( ! canHasShadow && shadow !== ShadowCfg.NONE)
+		throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
 
 	const cwd = _getCallerDir();
 
+	// CONTENT processing
 	if( content !== undefined ) {
 
 		if(content instanceof HTMLTemplateElement) {
@@ -79,7 +82,7 @@ export default function LISS<T extends HTMLElement,
 			if( typeof content === 'string' )
 				content = `${cwd}/${content}`;
 
-			deps.push( new Promise( async (resolve) => {
+			dependancies.push( new Promise( async (resolve) => {
 
 				content = await _fetchText(content as URL|string);
 
@@ -88,6 +91,7 @@ export default function LISS<T extends HTMLElement,
 		}
 	}
 
+	// CSS processing
 	let stylesheets: readonly CSSStyleSheet[] = [];
 	if( css !== undefined ) {
 
@@ -112,7 +116,7 @@ export default function LISS<T extends HTMLElement,
 			if( typeof c === 'string' )
 				c = `${cwd}/${c}`;
 
-			deps.push( new Promise<void>( async (resolve) => {
+			dependancies.push( new Promise<void>( async (resolve) => {
 
 				const text = await _fetchText(c as string|URL);
 
@@ -127,30 +131,30 @@ export default function LISS<T extends HTMLElement,
 
 
 	// @ts-ignore
-	class LISSBase extends inheritObjClass {
+	class LISSBase extends _extends {
 
-		readonly #htmltag: LISSHost<LISSBase>;
+		readonly #host: LISSHost<LISSBase>;
 
-		constructor(htmltag  :  any,
+		constructor(host     :  any,
 					_options?: Readonly<Record<string, any>>) {
 			super();
-			this.#htmltag = htmltag as LISSHost<LISSBase>;
+			this.#host = host as LISSHost<LISSBase>;
 		}
 
-		public get host(): T {
-			return this.#htmltag as unknown as T; // because TS stupid.
+		public get host(): Host {
+			return this.#host as unknown as Host; // because TS stupid.
 		}
 		protected get content() {
-			return this.#htmltag.content!;
+			return this.#host.content!;
 		}
 		protected get attrs() {
-			return this.#htmltag.attrs;
+			return this.#host.attrs;
 		}
 
 		static readonly Parameters = {
-			tagclass: inheritClass,
-			attributes: attributes!,
-			dependancies: deps,
+			host,
+			attributes,
+			dependancies,
 			shadow,
 			stylesheets,
 			content,
@@ -169,28 +173,33 @@ export default function LISS<T extends HTMLElement,
 // =============== LISS type helpers ==============
 // ================================================
 
-type buildLISSHostReturnType<U>  = U extends LISSReturnType<infer T extends HTMLElement, infer SC extends Class, infer ATTRS extends string> ? ReturnType<typeof buildLISSHost<T, SC, ATTRS, U>> : never;
+type buildLISSHostReturnType<T>  = T extends LISSReturnType<infer Extends extends Class, infer Host extends HTMLElement, infer Attrs extends string> ? ReturnType<typeof buildLISSHost<Extends, Host, Attrs, T>> : never;
 
-export type LISSReturnType<T extends HTMLElement, SuperClass extends Class, ATTRS extends string> = ReturnType<typeof LISS<T, SuperClass, ATTRS>>;
-export type LISSBase      <T extends HTMLElement, SuperClass extends Class, ATTRS extends string> = InstanceType<LISSReturnType<T, SuperClass, ATTRS>>;
+export type LISSReturnType<
+	Extends extends Class,
+	Host    extends HTMLElement,
+	Attrs   extends string> = ReturnType<typeof LISS<Extends, Host, Attrs>>;
+export type LISSBase<Extends extends Class,
+					 Host    extends HTMLElement,
+					 Attrs   extends string> = InstanceType<LISSReturnType<Extends, Host, Attrs>>;
 export type LISSHost<LISS extends LISSBase<any,any,any> > = InstanceType<buildLISSHostReturnType<Constructor<LISS> & {Parameters: any}>>;
 
 // ================================================
 // =============== LISSHost class =================
 // ================================================
 
-
-function buildLISSHost<T extends HTMLElement,
-					   SuperClass extends Class,
-					   ATTRS extends string,
-					   U extends LISSReturnType<T, SuperClass, ATTRS>>(Liss: U,
+function buildLISSHost<Extends extends Class,
+					   Host    extends HTMLElement,
+					   Attrs   extends string,
+					   T extends LISSReturnType<Extends, Host, Attrs>>(Liss: T,
 															    withCstrParams: Readonly<Record<string, any>> = {}) {
-	
-	const tagclass 	  = Liss.Parameters.tagclass;
-	const attributes  = Liss.Parameters.attributes;
-	const shadow	  = Liss.Parameters.shadow;
-	const stylesheets = Liss.Parameters.stylesheets;
-	const template    = Liss.Parameters.content;
+	const {
+		host,
+		attributes,
+		shadow,
+		stylesheets,
+		content
+	} = Liss.Parameters;
 
 	const alreadyDeclaredCSS = new Set();
 
@@ -204,7 +213,7 @@ function buildLISSHost<T extends HTMLElement,
 		set: function(value: string) { return this[SET](n, value); }
 	}]) );
 
-	class Attrs {
+	class Attributes {
         [x: string]: string|null;
 
         #data  : Record<string, string|null>;
@@ -227,11 +236,8 @@ function buildLISSHost<T extends HTMLElement,
         }
 	}
 
-
-	//Object.defineProperties(Attrs.prototype, properties);
-
 	// @ts-ignore : because TS is stupid.
-	class LISSHostBase extends tagclass {
+	class LISSHostBase extends host {
 
 		readonly #options?: Readonly<Record<string, any>>;
 
@@ -269,9 +275,9 @@ function buildLISSHost<T extends HTMLElement,
 		}
 
 		/*** init ***/
-		#waitInit: Promise<InstanceType<U>>;
-		#resolve: ((u: InstanceType<U>) => void) | null = null;
-		#API: InstanceType<U> | null = null;
+		#waitInit: Promise<InstanceType<T>>;
+		#resolve: ((u: InstanceType<T>) => void) | null = null;
+		#API: InstanceType<T> | null = null;
 
 		connectedCallback() {
 			this.initialize();
@@ -283,7 +289,7 @@ function buildLISSHost<T extends HTMLElement,
 			
 			// shadow
 			this.#content = this;
-			if( shadow ) {
+			if( shadow !== 'none') {
 				this.#content = this.attachShadow({mode: shadow})
 			}
 
@@ -294,7 +300,7 @@ function buildLISSHost<T extends HTMLElement,
 			// css
 			if( stylesheets.length ) {
 
-				if( shadow )
+				if( shadow !== 'none')
 					(this.#content as ShadowRoot).adoptedStyleSheets.push(...stylesheets);
 				else {
 
@@ -322,10 +328,10 @@ function buildLISSHost<T extends HTMLElement,
 				}
 			}
 
-			// template
-			if( template !== undefined ) {
+			// content
+			if( content !== undefined ) {
 				let template_elem = document.createElement('template');
-				let str = (template as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
+				let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
 	    		template_elem.innerHTML = str;
 	    		this.#content.append(...template_elem.content.childNodes);
 	    	}
@@ -337,14 +343,14 @@ function buildLISSHost<T extends HTMLElement,
 	    	if( obj instanceof Promise)
 	    		obj = await obj;
 
-			this.#API = obj as InstanceType<U>;
+			this.#API = obj as InstanceType<T>;
 
 			// default slot
 			if( this.hasShadow && this.#content.childNodes.length === 0 )
 				this.#content.append( document.createElement('slot') );
 
 			if( this.#resolve !== null)
-				this.#resolve(this.#API);
+				this.#resolve(this.#API!);
 		}
 
 
@@ -367,7 +373,7 @@ function buildLISSHost<T extends HTMLElement,
 		}
 
 		protected get hasShadow(): boolean {
-			return !!shadow;
+			return shadow !== 'none';
 		}
 
 		/*** CSS ***/
@@ -381,8 +387,8 @@ function buildLISSHost<T extends HTMLElement,
 		/*** attrs ***/
 		#attrs_flag = false;
 
-		#attributes = {} as Record<ATTRS, string|null>;
-		#attrs = new Attrs(
+		#attributes = {} as Record<Attrs, string|null>;
+		#attrs = new Attributes(
 			this.#attributes,
 			(name: string, value:string|null) => {
 
@@ -394,15 +400,15 @@ function buildLISSHost<T extends HTMLElement,
 				else
 					this.setAttribute(name, value);
 			}
-		) as unknown as Record<ATTRS, string|null>;
+		) as unknown as Record<Attrs, string|null>;
 
-		get attrs(): Readonly<Record<ATTRS, string|null>> {
+		get attrs(): Readonly<Record<Attrs, string|null>> {
 
 			return this.#attrs;
 		}
 
 		static observedAttributes = attributes;
-		attributeChangedCallback(name    : ATTRS,
+		attributeChangedCallback(name    : Attrs,
 								 oldValue: string,
 								 newValue: string) {
 
@@ -438,10 +444,10 @@ const _DOMContentLoaded = new Promise<void>( (resolve) => {
 	}, true);
 });
 
-LISS.define = async function<U extends HTMLElement,
-						   CL extends Class,
-						   ATTRS extends string,
-						   T extends LISSReturnType<U, CL, ATTRS>>(
+LISS.define = async function<Extends extends Class,
+							 Host    extends HTMLElement,
+						     Attrs   extends string,
+						   	 T extends LISSReturnType<Extends, Host, Attrs>>(
 						   	tagname: string,
 							CustomClass: T,
 							{dependancies, withCstrParams}: {withCstrParams?: Readonly<Record<string, any>>, dependancies?: string[]} = {}) {
@@ -449,13 +455,13 @@ LISS.define = async function<U extends HTMLElement,
 	dependancies??=[];
 	withCstrParams ??= {};
 
-	const Class = CustomClass.Parameters.tagclass;
+	const Class = CustomClass.Parameters.host;
 	let LISSBase: any = CustomClass;
 	let htmltag = _element2tagname(Class)??undefined;
 
 	await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
 
-	const LISSclass = buildLISSHost(CustomClass, withCstrParams);
+	const LISSclass = buildLISSHost<Extends, Host, Attrs, T>(CustomClass, withCstrParams);
 	customElements.define(tagname, LISSclass, {extends: htmltag});
 };
 
@@ -698,14 +704,9 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 	constructor(htmltag: any) {
 		super(htmltag);
 
-		// remove 404 errors.
-		// 
-		//const cwd = _getCallerDir(1);
-		//this.#sw = navigator.serviceWorker.register(`${cwd}/sw.js`, { scope: location.pathname });
-		// Because FF stupid.
-		
 		this.#sw = new Promise( async (resolve) => {
-			let sw = await navigator.serviceWorker.register(`./sw.js`);
+			
+			await navigator.serviceWorker.register(`./sw.js`);
 
 			if( navigator.serviceWorker.controller )
 				resolve();

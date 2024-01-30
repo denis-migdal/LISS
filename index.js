@@ -3,7 +3,7 @@
 // ================================================
 export var ShadowCfg;
 (function (ShadowCfg) {
-    ShadowCfg[ShadowCfg["NONE"] = 0] = "NONE";
+    ShadowCfg["NONE"] = "none";
     ShadowCfg["OPEN"] = "open";
     ShadowCfg["CLOSE"] = "closed";
 })(ShadowCfg || (ShadowCfg = {}));
@@ -14,18 +14,20 @@ const CAN_HAVE_SHADOW = [
     'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'main',
     'nav', 'p', 'section', 'span'
 ];
-export default function LISS({ attributes, htmlclass = null, inherit = null, dependancies, content, css, shadow } = {}) {
-    const inheritClass = htmlclass ?? HTMLElement;
-    const inheritObjClass = inherit ?? Object;
-    attributes ??= [];
-    const deps = [...dependancies ?? []];
-    const canHasShadow = CAN_HAVE_SHADOW.includes(_element2tagname(inheritClass));
-    shadow ??= canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
-    if (!canHasShadow && shadow !== ShadowCfg.NONE) {
-        console.warn('This element does not support ShadowRoot');
-        shadow = ShadowCfg.NONE;
-    }
+function _canHasShadow(tag) {
+    return CAN_HAVE_SHADOW.includes(_element2tagname(tag));
+}
+export default function LISS({ attributes: p_attrs, extends: p_extends, host: p_host, dependancies: p_deps, content, css, shadow: p_shadow, } = {}) {
+    const host = p_host ?? HTMLElement;
+    const _extends = p_extends ?? Object;
+    const attributes = p_attrs ?? [];
+    const dependancies = p_deps ? [...p_deps] : [];
+    const canHasShadow = _canHasShadow(host);
+    const shadow = p_shadow ?? canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
+    if (!canHasShadow && shadow !== ShadowCfg.NONE)
+        throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
     const cwd = _getCallerDir();
+    // CONTENT processing
     if (content !== undefined) {
         if (content instanceof HTMLTemplateElement) {
             content = content.innerHTML;
@@ -36,12 +38,13 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
         else if (content instanceof URL || content.startsWith('./')) {
             if (typeof content === 'string')
                 content = `${cwd}/${content}`;
-            deps.push(new Promise(async (resolve) => {
+            dependancies.push(new Promise(async (resolve) => {
                 content = await _fetchText(content);
                 resolve(LISSBase.Parameters.content = content);
             }));
         }
     }
+    // CSS processing
     let stylesheets = [];
     if (css !== undefined) {
         if (!Array.isArray(css))
@@ -58,7 +61,7 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
             }
             if (typeof c === 'string')
                 c = `${cwd}/${c}`;
-            deps.push(new Promise(async (resolve) => {
+            dependancies.push(new Promise(async (resolve) => {
                 const text = await _fetchText(c);
                 stylesheets[idx].replace(text);
                 resolve();
@@ -67,25 +70,25 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
         });
     }
     // @ts-ignore
-    class LISSBase extends inheritObjClass {
-        #htmltag;
-        constructor(htmltag, _options) {
+    class LISSBase extends _extends {
+        #host;
+        constructor(host, _options) {
             super();
-            this.#htmltag = htmltag;
+            this.#host = host;
         }
         get host() {
-            return this.#htmltag; // because TS stupid.
+            return this.#host; // because TS stupid.
         }
         get content() {
-            return this.#htmltag.content;
+            return this.#host.content;
         }
         get attrs() {
-            return this.#htmltag.attrs;
+            return this.#host.attrs;
         }
         static Parameters = {
-            tagclass: inheritClass,
-            attributes: attributes,
-            dependancies: deps,
+            host,
+            attributes,
+            dependancies,
             shadow,
             stylesheets,
             content,
@@ -98,11 +101,7 @@ export default function LISS({ attributes, htmlclass = null, inherit = null, dep
 // =============== LISSHost class =================
 // ================================================
 function buildLISSHost(Liss, withCstrParams = {}) {
-    const tagclass = Liss.Parameters.tagclass;
-    const attributes = Liss.Parameters.attributes;
-    const shadow = Liss.Parameters.shadow;
-    const stylesheets = Liss.Parameters.stylesheets;
-    const template = Liss.Parameters.content;
+    const { host, attributes, shadow, stylesheets, content } = Liss.Parameters;
     const alreadyDeclaredCSS = new Set();
     const GET = Symbol('get');
     const SET = Symbol('set');
@@ -111,7 +110,7 @@ function buildLISSHost(Liss, withCstrParams = {}) {
             get: function () { return this[GET](n); },
             set: function (value) { return this[SET](n, value); }
         }]));
-    class Attrs {
+    class Attributes {
         #data;
         #setter;
         [GET](name) {
@@ -127,9 +126,8 @@ function buildLISSHost(Liss, withCstrParams = {}) {
             Object.defineProperties(this, properties);
         }
     }
-    //Object.defineProperties(Attrs.prototype, properties);
     // @ts-ignore : because TS is stupid.
-    class LISSHostBase extends tagclass {
+    class LISSHostBase extends host {
         #options;
         constructor(options) {
             super();
@@ -168,7 +166,7 @@ function buildLISSHost(Liss, withCstrParams = {}) {
             customElements.upgrade(this);
             // shadow
             this.#content = this;
-            if (shadow) {
+            if (shadow !== 'none') {
                 this.#content = this.attachShadow({ mode: shadow });
             }
             // attrs
@@ -176,7 +174,7 @@ function buildLISSHost(Liss, withCstrParams = {}) {
                 this.#attributes[obs] = this.getAttribute(obs);
             // css
             if (stylesheets.length) {
-                if (shadow)
+                if (shadow !== 'none')
                     this.#content.adoptedStyleSheets.push(...stylesheets);
                 else {
                     const cssselector = this.CSSSelector;
@@ -194,10 +192,10 @@ function buildLISSHost(Liss, withCstrParams = {}) {
                     }
                 }
             }
-            // template
-            if (template !== undefined) {
+            // content
+            if (content !== undefined) {
                 let template_elem = document.createElement('template');
-                let str = template.replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match) ?? '');
+                let str = content.replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match) ?? '');
                 template_elem.innerHTML = str;
                 this.#content.append(...template_elem.content.childNodes);
             }
@@ -229,7 +227,7 @@ function buildLISSHost(Liss, withCstrParams = {}) {
                 : this.#content?.querySelectorAll(`[part="${name}"]`);
         }
         get hasShadow() {
-            return !!shadow;
+            return shadow !== 'none';
         }
         /*** CSS ***/
         get CSSSelector() {
@@ -240,7 +238,7 @@ function buildLISSHost(Liss, withCstrParams = {}) {
         /*** attrs ***/
         #attrs_flag = false;
         #attributes = {};
-        #attrs = new Attrs(this.#attributes, (name, value) => {
+        #attrs = new Attributes(this.#attributes, (name, value) => {
             this.#attributes[name] = value;
             this.#attrs_flag = true; // do not trigger onAttrsChanged.
             if (value === null)
@@ -281,7 +279,7 @@ const _DOMContentLoaded = new Promise((resolve) => {
 LISS.define = async function (tagname, CustomClass, { dependancies, withCstrParams } = {}) {
     dependancies ??= [];
     withCstrParams ??= {};
-    const Class = CustomClass.Parameters.tagclass;
+    const Class = CustomClass.Parameters.host;
     let LISSBase = CustomClass;
     let htmltag = _element2tagname(Class) ?? undefined;
     await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
@@ -422,13 +420,8 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
     #sw;
     constructor(htmltag) {
         super(htmltag);
-        // remove 404 errors.
-        // 
-        //const cwd = _getCallerDir(1);
-        //this.#sw = navigator.serviceWorker.register(`${cwd}/sw.js`, { scope: location.pathname });
-        // Because FF stupid.
         this.#sw = new Promise(async (resolve) => {
-            let sw = await navigator.serviceWorker.register(`./sw.js`);
+            await navigator.serviceWorker.register(`./sw.js`);
             if (navigator.serviceWorker.controller)
                 resolve();
             navigator.serviceWorker.addEventListener('controllerchange', () => {

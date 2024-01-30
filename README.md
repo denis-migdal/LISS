@@ -12,7 +12,6 @@ In order to use LISS in your project, copy either the `/index.ts` or `/index.js`
 
 💡 If you need to rebuild the JS file, use the command: `tsc index.ts --target esnext --module esnext`.
 
-
 ## LISS (basic usage)
 
 To create a new components, simply create a class extending `LISS()` and register it using `LISS.define()`:
@@ -58,6 +57,7 @@ To create a new components, simply create a class extending `LISS()` and registe
 
 LISS can also automatically build and import your components, making them even easier to use.
 This feature is enabled simply by adding a `<liss-auto src='$COMPONENTS_DIR'></liss-auto>` HTML tag into your webpage:
+
 ```html
 <!-- cf $LISS/examples/liss-auto/ -->
 <!DOCTYPE html>
@@ -95,12 +95,15 @@ Defining a component with only an HTML file is very easy with LISS: simply creat
 <!-- cf $LISS/examples/liss-auto/components/liss-html/index.html -->
 Hello World
 ```
+
 Will define the component `<liss-html></liss-html>` containing `Hello World`:
+
 ```html
 <liss-html></liss-html> <!-- will print "Hello World" -->
 ```
 
 You can also add a CSS file to your component, simple by adding a `$COMPONENTS_DIR/$name/index.css` file containing rules starting with `:host`:
+
 ```css
 :host {
   color: blue;
@@ -110,6 +113,7 @@ You can also add a CSS file to your component, simple by adding a `$COMPONENTS_D
 ### LISS auto-mode with an JS file
 
 You can also define a component with only a JS file, by creating a `$COMPONENTS_DIR/$name/index.js` file default exporting a function returning a class extending `LISS()`:
+
 ```javascript
 // cf $LISS/examples/liss-auto/components/liss-js/index.js
 import LISS from "$LISS";
@@ -129,7 +133,6 @@ export default function(options) {
 
 You can also add an `index.html` and a `index.css` files to your component. LISS will then automatically use them to define your component's initial content. Their content are given by the `options` parameter.
 
-
 ## Features and examples
 
 You can see all examples below in the [`LISS/examples/` directory](./examples/).
@@ -148,13 +151,14 @@ You can see all examples below in the [`LISS/examples/` directory](./examples/).
   - query selectors
   - dependancies
   - EvtTarget [TODO]
-- **LISS full API**
+- **[LISS full API](liss-full-API)**
 
 ### Basic features
 
 #### Use HTML/CSS files/strings
 
 `LISS()` allows to inject HTML and CSS files/strings into your component thanks to the `content` and `css` options:
+
 ```javascript
 // cf $LISS/examples/inject-html-css/
 import LISS from "$LISS"
@@ -180,8 +184,41 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
 
 #### Manage HTML attributes
 
+### LISS full API
+
+#### LISS()
 
 
+
+
+
++ how it works (LISS vs Host)
+
++ parameters + generic parameters (extends vs inherit)
+
++ return type
+
+##### LISSOptions<Extends, Host, Attrs>
+
+| Name           | Type                                  | Default            | Description                                       |
+| -------------- | ------------------------------------- | ------------------ | ------------------------------------------------- |
+| `extends`      | `Constructor<Extends>`                | `Object`           | The JS class the component extends.               |
+| `host`         | `Constructor<Host>`                   | `HTMLElement`      | The host HTML Element class.                      |
+| `attributes`   | `readonly Attrs[]`                    | `[]`               | The names of the host HTML attributes to observe. |
+| `dependancies` | `readonly Promise<any>[]`             | `[]`               | Promises to wait before declaring the component.  |
+| `content`      | `string\|URL\|HTMLTemplateElement`    | `undefined`        | The component default HTML content.               |
+| `css`          | `readonly CSS_Source[] \| CSS_Source` | `[]`               | CSS rules for the component.                      |
+| `shadow`       | `ShadowCfg`                           | `closed` or `none` | ShadowRoot configuration (0 if none).             |
+
+
+
+
+
+#### Helpers
+
+
+
+TODO: + how it works
 
 ## Features and examples [OLD]
 
@@ -306,7 +343,6 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
 
 ### Dynamically build instances
 
-
 ```html
 <!-- LISS/examples/dynamic-build.html -->
 <script type="module">
@@ -327,7 +363,7 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
   const elem = await LISS.buildElement('my-component', {
     // withCstrParams: {}       // constructor parameters
     // init: true,            // force initialization of element before insertion.
-    
+
     content: "Hello ;)",        // set element children
     // or
     content: ["Hello", "World"],
@@ -438,18 +474,24 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
 ## TODO
 
 - [ ] Explain better the principles.
+
 - [ ] LISS.qs and LISS.qsa +qso + closest for TS (+fix)
+
 - [ ] now inherit and htmlclass.
+
 - [ ] new Shadow opts : None.
 
 - [ ] whenInit promise.
+
 - [ ] Documentation/usage
+  
   - [ ] this.API
   - [ ] ShadowRoot (open/close)
 
 - [ ] npm package
 
 - [ ] ShadowRoot
+  
   - [ ] Slots
     - [ ] createSlot(name), if no shadow : returns this.#content, if name = throw an exception.
     - [ ] getSlot(name) : if not found : throws.
@@ -457,5 +499,7 @@ However, if the `string` starts with `./`, it will be processed as a relative pa
       - [ ] added/removed (events)
 
 - [ ] LISS parameter Custom Element (mutation observer + event parents)
+
 - [ ] Ressources : finalize+destroy (?)
+  
   - [ ] declare ressource
