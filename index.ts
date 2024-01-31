@@ -576,9 +576,10 @@ LISS.build = async function <T extends LISSBase<any,any,any,any>>(tagname: strin
 	if( parent !== undefined )
 		parent.append(elem);
 
-	return initialize
-			? await LISS.initialize(elem)
-			: await LISS.getLISS(elem); // will never be called...
+	if( ! elem.isInit && initialize )
+		return await LISS.initialize(elem);
+
+	return await LISS.getLISS(elem);
 }
 
 

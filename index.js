@@ -335,9 +335,9 @@ LISS.build = async function (tagname, { params = {}, initialize = true, content 
         elem.addEventListener(name, listeners[name]);
     if (parent !== undefined)
         parent.append(elem);
-    return initialize
-        ? await LISS.initialize(elem)
-        : await LISS.getLISS(elem); // will never be called...
+    if (!elem.isInit && initialize)
+        return await LISS.initialize(elem);
+    return await LISS.getLISS(elem);
 };
 LISS.whenDefined = async function (tagname, callback) {
     await customElements.whenDefined(tagname);

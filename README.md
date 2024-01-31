@@ -40,14 +40,16 @@ To create a new components, simply create a class extending `LISS()` and registe
           // Use this.content to initialize your component's content
           this.content.append('Hello World ;)');
 
-          // Use this.host to access the component's host:
-          console.log("Host", this.host); // <my-component></my-component>
-
-          // Use this.attrs to efficiently access the component's host's attributes:
-          console.log("Attributes", {...this.attrs}); // {}
-
-          // Use this.params to access the component parameters.
-          console.log("Parameters", this.params); // {}
+          console.log('State (initial)', {
+	           // Use this.content to access your component's content:
+	           Content: this.content, // ShadowRoot
+	           // Use this.host to access the component's host:
+	           Host   : this.host,    // <my-component></my-component>
+	           // Use this.attrs to efficiently access the component's host's attributes:
+	           Attributes: {...this.attrs}, // {}
+	           // Use this.params to access the component parameters.
+	           Parameters: this.params      // {}
+          });
         }
       }
 
@@ -199,8 +201,12 @@ class MyComponent extends LISS({
     constructor() {
         super();
 
-        console.log("Attrs:", {...this.attrs});
-        console.log("Params:", this.params);
+        console.log('State (initial)', {
+          Content: this.content, // ShadowRoot
+          Host: this.host,       // <my-component></my-component>
+          Attributes: {...this.attrs}, // {}
+          Parameters: this.params      // {foo:1,faa:2,fuu:3}
+        });
     }
 }
 

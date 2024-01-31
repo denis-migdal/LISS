@@ -26,8 +26,12 @@
 			constructor() {
 				super();
 
-				console.log("Attrs:", {...this.attrs});
-				console.log("Params:", this.params);
+				console.log('State (initial)', {
+					Content: this.content,
+					Host   : this.host, // <my-component></my-component>
+					Attributes: {...this.attrs},
+					Parameters: this.params
+				});
 			}
 		}
 
