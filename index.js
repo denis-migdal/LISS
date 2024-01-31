@@ -197,7 +197,7 @@ function buildLISSHost(Liss, _params = {}) {
                         for (let style of stylesheets)
                             for (let rule of style.cssRules)
                                 html_stylesheets += rule.cssText + '\n';
-                        style.innerHTML = html_stylesheets.replace(':host', cssselector);
+                        style.innerHTML = html_stylesheets.replace(':host', `:is(${cssselector})`);
                         document.head.append(style);
                         alreadyDeclaredCSS.add(cssselector);
                     }
@@ -352,6 +352,9 @@ LISS.whenAllDefined = async function (tagnames, callback) {
 };
 LISS.isDefined = function (name) {
     return customElements.get(name);
+};
+LISS.selector = function (name) {
+    return `:is(${name}, [is="${name}"])`;
 };
 LISS.getLISS = async function (element) {
     await LISS.whenDefined(LISS.getName(element));

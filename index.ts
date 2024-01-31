@@ -341,7 +341,7 @@ function buildLISSHost<Extends extends Class,
 							for(let rule of style.cssRules)
 								html_stylesheets += rule.cssText + '\n';
 
-						style.innerHTML = html_stylesheets.replace(':host', cssselector);
+						style.innerHTML = html_stylesheets.replace(':host', `:is(${cssselector})`);
 
 						document.head.append(style);
 
@@ -605,6 +605,9 @@ LISS.isDefined = function(name: string) {
 	return customElements.get(name);
 }
 
+LISS.selector = function(name: string) {
+	return `:is(${name}, [is="${name}"])`;
+}
 
 LISS.getLISS    = async function<T extends LISSBase<any,any,any,any>>( element: HTMLElement ) {
 
