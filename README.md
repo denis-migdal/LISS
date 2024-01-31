@@ -72,9 +72,9 @@ To create a new components, simply create a class extending `LISS()` and registe
 You can see all examples below in the [`LISS/examples/` directory](./examples/).
 
 - [Management of HTML attributes](#manage-html-attributes)
-- DOM manipulation (qs/getLISS)
 - [Extend JS and HTML classes](#extend-js-and-html-classes)
 - [Dynamically build component instances](#dynamically-build-component-instances)
+- [Access components through the DOM](#access-components-through-the-dom)
 - [Use HTML/CSS files/strings to fill the component](#use-htmlcss-filesstrings-to-fill-the-component)
 - [Auto mode](#auto-mode)
 - **Advanced features**
@@ -238,6 +238,28 @@ const elem = await LISS.build('my-component', {
 💡 Parameters can also be specified in `LISS()` and `LISS.define()` options.
 
 [📖 See also the full API documentation](#lissbuildttagname-options-promiset)
+
+### Access components through the DOM
+
+LISS provides several tools to securly manipulate components through the DOM:
+
+- from an `HTMLElement`:
+  
+  ```typescript
+  LISS.getLISS<T extends LISSBase<>>(elem: HTMLElement): Promise<T>
+  ```
+  
+  [📖 See HTMLElement manipulations for more](#htmlelement-manipulations)
+
+- from a query string:
+  
+  ```typescript
+  LISS.qs<T extends LISSBase<>>('...'): Promise<T>
+  ```
+  
+  💡 LISS also provide a function overload enabling better type checking in TS.
+  
+  [📖 See Query selectors for more](#query-selectors)
 
 ### Use HTML/CSS files/strings to fill the component
 
@@ -487,9 +509,9 @@ LISS.qs<T extends keyof Components>(selector: string,
 // To use your own components, declare them:
  LISS.define('my-component', Component);
  declare module '$LISS' {
- 		interface Components {
-  			'my-component': Component
- 		}
+         interface Components {
+              'my-component': Component
+         }
  }
  // selector = `${selector}${LISS.selector('my-component')}`
  // selector = "body > :is(my-component,[is="my-component"])"
