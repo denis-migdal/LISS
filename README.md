@@ -421,18 +421,20 @@ type LISSBase<E,I,A,P> = InstanceType<LISSReturnType<E,I,A,P>>
 
 Build a new component instance.
 
-| Name                 | Type                                            | Default     | Description            |
-| -------------------- | ----------------------------------------------- | ----------- | ---------------------- |
-| `T`                  | `extends LISSBase<E,I,A,P>`                     |             |                        |
-| `tagname`            | `string`                                        |             |                        |
-| `options.params?`    | `Partial<Params>`                               | `{}`        | Component parameters.  |
-| `options.content?`   | `string\|Node\|readonly Node[]`                 | `undefined` | Host default content.  |
-| `options.id?`        | `string`                                        | `undefined` | Host id attribute      |
-| `options.classes?`   | `readonly string[]`                             | `[]`        | Host class list.       |
-| `options.cssvars?`   | `Readonly<Record<string, string>>`              | `{}`        | Host CSS variables.    |
-| `options.attrs?`     | `Readonly<Record<string, string\|boolean>>`     | `{}`        | Host HTML attributes.  |
-| `options.data?`      | `Readonly<Record<string, string\|boolean>>`     | `{}`        | Host dataset.          |
-| `options.listeners?` | `Readonly<Record<string, (ev: Event) => void>>` | `{}`        | Host events listeners. |
+| Name                 | Type                                            | Default     | Description                            |
+| -------------------- | ----------------------------------------------- | ----------- | -------------------------------------- |
+| `T`                  | `extends LISSBase<E,I,A,P>`                     |             |                                        |
+| `tagname`            | `string`                                        |             |                                        |
+| `options.initialize` | `boolean`                                       | `true`      | Force the compoment initialization.    |
+| `options.params?`    | `Partial<Params>`                               | `{}`        | Component parameters.                  |
+| `options.content?`   | `string\|Node\|readonly Node[]`                 | `undefined` | Host default content.                  |
+| `options.id?`        | `string`                                        | `undefined` | Host id attribute                      |
+| `options.classes?`   | `readonly string[]`                             | `[]`        | Host class list.                       |
+| `options.cssvars?`   | `Readonly<Record<string, string>>`              | `{}`        | Host CSS variables.                    |
+| `options.attrs?`     | `Readonly<Record<string, string\|boolean>>`     | `{}`        | Host HTML attributes.                  |
+| `options.data?`      | `Readonly<Record<string, string\|boolean>>`     | `{}`        | Host dataset.                          |
+| `options.listeners?` | `Readonly<Record<string, (ev: Event) => void>>` | `{}`        | Host events listeners.                 |
+| `options.parent?`    | `HTMLElement`                                   | `undefined` | Element to which append the component. |
 
 #### HTMLElement manipulations
 
