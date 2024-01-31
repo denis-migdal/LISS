@@ -41,14 +41,14 @@ To create a new components, simply create a class extending `LISS()` and registe
           this.content.append('Hello World ;)');
 
           console.log('State (initial)', {
-	           // Use this.content to access your component's content:
-	           Content: this.content, // ShadowRoot
-	           // Use this.host to access the component's host:
-	           Host   : this.host,    // <my-component></my-component>
-	           // Use this.attrs to efficiently access the component's host's attributes:
-	           Attributes: {...this.attrs}, // {}
-	           // Use this.params to access the component parameters.
-	           Parameters: this.params      // {}
+               // Use this.content to access your component's content:
+               Content: this.content, // ShadowRoot
+               // Use this.host to access the component's host:
+               Host   : this.host,    // <my-component></my-component>
+               // Use this.attrs to efficiently access the component's host's attributes:
+               Attributes: {...this.attrs}, // {}
+               // Use this.params to access the component parameters.
+               Parameters: this.params      // {}
           });
         }
       }
@@ -473,6 +473,25 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 | `query`   | `string`                              |            |
 | `parent?` | `Element\|Document\|DocumentFragment` | `document` |
 | `element` | `Element`                             |            |
+
+💡 For better type checking in TS, we provide an overload for each of these functions enabling to use a compoment name as a 2nd parameter:
+
+```typescript
+LISS.qs<T extends keyof Components>(selector: string,
+                                    tagname: T,
+                                    parent ?: ...): Promise<Components[T]>
+
+// To use your own components, declare them:
+ LISS.define('my-component', Component);
+ declare module '$LISS' {
+ 		interface Components {
+  			'my-component': Component
+ 		}
+ }
+ // selector = `${selector}${LISS.selector('my-component')}`
+ // selector = "body > :is(my-component,[is="my-component"])"
+ LISS.qs('body > ', 'my-component'); // Promise<Component>
+```
 
 ## Features and examples [OLD]
 
