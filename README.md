@@ -72,13 +72,13 @@ You can see all examples below in the [`LISS/examples/` directory](./examples/).
 - [Management of HTML attributes](#manage-html-attributes)
 - DOM manipulation (qs/getLISS)
 - [Extend JS and HTML classes](#extend-js-and-html-classes)
-- DOM manipulation (build/parameters)
+- [Dynamically build component instances](#dynamically-build-component-instances)
 - [Use HTML/CSS files/strings to fill the component](#use-htmlcss-filesstrings-to-fill-the-component)
 - [Auto mode](#auto-mode)
 - **Advanced features**
   - ShadowRoot mode / parts.
   - dependancies / async constructor
-- **[LISS full API](liss-full-API)**
+- **[LISS full API](#liss-full-API)**
 
 ### Manage HTML attributes
 
@@ -178,6 +178,62 @@ component.addEventListener('click', () => {
 	<tr is="my-component"></tr>
 </table>
 ```
+
+### Dynamically build component instances
+
+`LISS.build()` enables you to build new compoment instances through many options:
+
+```typescript
+// cf /examples/build
+import LISS from 'LISS';
+
+class MyComponent extends LISS({
+	css: ":host{ color: var(--color) }",
+	params: { // default values
+		foo: 1, // in TS add: as number
+		faa: 1,
+		fuu: 1
+	}
+}) {
+
+	constructor() {
+		super();
+
+		console.log("Attrs:", {...this.attrs});
+		console.log("Params:", this.params);
+	}
+}
+
+LISS.define('my-component', MyComponent, {params: {faa: 2}});
+
+
+const elem = await LISS.build('my-component', {
+	params: {fuu: 3}, 		  	  // component parameters
+	// initialize: true, 		  // force initialization of element before insertion.
+	
+	content: "Hello ;)",   		  // set host children
+	// or
+	// content: ["Hello", "World"],
+	parent : document.body,		  // add component to the parent
+
+	id 	   : "myWebComponent", 	  // set host ID.
+	classes: ["c1", "c2"],		  // set host classes
+	cssvars: {"color": "blue"},	  // set host CSS variables
+
+	attrs: {attrname: "value"},   // set host attributes
+	data : {name    : "value"},
+
+	listeners: {				  // set host listeners
+		"click": () => { alert('click!') }
+	}
+});
+```
+
+💡 Parameters can also be specified in `LISS()` and `LISS.define()` options.
+
+
+
+[📖 See also the full API documentation](#lissbuildttagname-options-promiset)
 
 ### Use HTML/CSS files/strings to fill the component
 
