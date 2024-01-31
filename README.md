@@ -147,19 +147,19 @@ import LISS from 'LISS';
 
 // Give the inherited HTML element as the first parameter of LISS
 class MyComponent extends LISS({
-	host   : HTMLTableRowElement,
-	extends: EventTarget, // the component is able to send events.
-	// in TS, to ensure events types, add: as EventsTarget<{"event_name": detail_type}>
-	content: "<td>Hello World ;)</td>"
+    host   : HTMLTableRowElement,
+    extends: EventTarget, // the component is able to send events.
+    // in TS, to ensure events types, add: as EventsTarget<{"event_name": detail_type}>
+    content: "<td>Hello World ;)</td>"
 }) {
 
-	constructor() {
-		super();
-		
-		this.host.addEventListener('click', () => {
-			this.dispatchEvent(new CustomEvent('click'), {detail: null});
-		})
-	}
+    constructor() {
+        super();
+
+        this.host.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('click', {detail: null}));
+        })
+    }
 }
 
 // Define your WebComponent
@@ -169,13 +169,13 @@ LISS.define('my-component', MyComponent);
 const component = await LISS.qs('tr[is="my-component"]');
 
 component.addEventListener('click', () => {
-	alert('click');
+    alert('click');
 });
 ```
 
 ```html
 <table>
-	<tr is="my-component"></tr>
+    <tr is="my-component"></tr>
 </table>
 ```
 
@@ -188,50 +188,48 @@ component.addEventListener('click', () => {
 import LISS from 'LISS';
 
 class MyComponent extends LISS({
-	css: ":host{ color: var(--color) }",
-	params: { // default values
-		foo: 1, // in TS add: as number
-		faa: 1,
-		fuu: 1
-	}
+    css: ":host{ color: var(--color) }",
+    params: { // default values
+        foo: 1, // in TS add: as number
+        faa: 1,
+        fuu: 1
+    }
 }) {
 
-	constructor() {
-		super();
+    constructor() {
+        super();
 
-		console.log("Attrs:", {...this.attrs});
-		console.log("Params:", this.params);
-	}
+        console.log("Attrs:", {...this.attrs});
+        console.log("Params:", this.params);
+    }
 }
 
 LISS.define('my-component', MyComponent, {params: {faa: 2}});
 
 
 const elem = await LISS.build('my-component', {
-	params: {fuu: 3}, 		  	  // component parameters
-	// initialize: true, 		  // force initialization of element before insertion.
-	
-	content: "Hello ;)",   		  // set host children
-	// or
-	// content: ["Hello", "World"],
-	parent : document.body,		  // add component to the parent
+    params: {fuu: 3},                 // component parameters
+    // initialize: true,           // force initialization of element before insertion.
 
-	id 	   : "myWebComponent", 	  // set host ID.
-	classes: ["c1", "c2"],		  // set host classes
-	cssvars: {"color": "blue"},	  // set host CSS variables
+    content: "Hello ;)",             // set host children
+    // or
+    // content: ["Hello", "World"],
+    parent : document.body,          // add component to the parent
 
-	attrs: {attrname: "value"},   // set host attributes
-	data : {name    : "value"},
+    id        : "myWebComponent",       // set host ID.
+    classes: ["c1", "c2"],          // set host classes
+    cssvars: {"color": "blue"},      // set host CSS variables
 
-	listeners: {				  // set host listeners
-		"click": () => { alert('click!') }
-	}
+    attrs: {attrname: "value"},   // set host attributes
+    data : {name    : "value"},
+
+    listeners: {                  // set host listeners
+        "click": () => { alert('click!') }
+    }
 });
 ```
 
 💡 Parameters can also be specified in `LISS()` and `LISS.define()` options.
-
-
 
 [📖 See also the full API documentation](#lissbuildttagname-options-promiset)
 
@@ -471,8 +469,6 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 | `element` | `Element`                             |            |
 
 ## Features and examples [OLD]
-
-- 
 
 ### Parts
 
