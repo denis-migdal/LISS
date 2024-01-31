@@ -71,7 +71,7 @@ You can see all examples below in the [`LISS/examples/` directory](./examples/).
 
 - [Management of HTML attributes](#manage-html-attributes)
 - DOM manipulation (qs/getLISS)
-- Extend JS and HTML classes
+- [Extend JS and HTML classes](#extend-js-and-html-classes)
 - DOM manipulation (build/parameters)
 - [Use HTML/CSS files/strings to fill the component](#use-htmlcss-filesstrings-to-fill-the-component)
 - [Auto mode](#auto-mode)
