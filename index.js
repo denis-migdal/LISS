@@ -303,7 +303,7 @@ LISS.define = async function (tagname, ComponentClass, { dependancies, params } 
     const LISSclass = buildLISSHost(ComponentClass, params);
     customElements.define(tagname, LISSclass, { extends: htmltag });
 };
-LISS.build = async function (tagname, { params = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
+async function build(tagname, { params = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
     if (!initialize && parent === null)
         throw new Error("A parent must be given if initialize is false");
     let CustomClass = await customElements.whenDefined(tagname);
@@ -339,7 +339,8 @@ LISS.build = async function (tagname, { params = {}, initialize = true, content 
     if (!elem.isInit && initialize)
         return await LISS.initialize(elem);
     return await LISS.getLISS(elem);
-};
+}
+LISS.build = build;
 LISS.whenDefined = async function (tagname, callback) {
     await customElements.whenDefined(tagname);
     if (callback !== undefined)

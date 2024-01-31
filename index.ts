@@ -519,7 +519,10 @@ type BUILD_OPTIONS<T extends LISSBase<any,any,any,any>> = Partial<{
 						initialize?: true,
 						parent?: HTMLElement
 					});
-LISS.build = async function <T extends LISSBase<any,any,any,any>>(tagname: string, {
+
+async function build<T extends keyof Components>(tagname: T, options?: BUILD_OPTIONS<Components[T]>): Promise<Components[T]>;
+async function build<T extends LISSBase<any,any,any,any>>(tagname: string, options?: BUILD_OPTIONS<T>): Promise<T>;
+async function build<T extends LISSBase<any,any,any,any>>(tagname: string, {
 		params    = {},
 		initialize= true,
 		content   = [],
@@ -582,6 +585,7 @@ LISS.build = async function <T extends LISSBase<any,any,any,any>>(tagname: strin
 
 	return await LISS.getLISS(elem);
 }
+LISS.build = build;
 
 
 LISS.whenDefined    = async function(tagname: string, callback?: () => void ) : Promise<void> {
