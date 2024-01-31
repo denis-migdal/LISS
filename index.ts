@@ -139,6 +139,7 @@ export default function LISS<Extends    extends Class              = Class,
 	// @ts-ignore
 	class LISSBase extends _extends {
 
+		//@ts-ignore: strict mode TS2502, '#host' is referenced directly or indirectly in its own type annotation.
 		readonly #host: LISSHost<LISSBase>;
 
 		constructor() {
@@ -227,25 +228,25 @@ function buildLISSHost<Extends extends Class,
 	const properties = Object.fromEntries( attributes.map(n => [n, {
 
 		enumerable: true,
-		get: function(): string      { return this[GET](n); },
-		set: function(value: string) { return this[SET](n, value); }
+		get: function(): string|null      { return (this as unknown as Attributes)[GET](n); },
+		set: function(value: string|null) { return (this as unknown as Attributes)[SET](n, value); }
 	}]) );
 
 	class Attributes {
         [x: string]: string|null;
 
-        #data  : Record<string, string|null>;
-        #setter: (name: string, value: string|null) => void;
+        #data  : Record<Attrs, string|null>;
+        #setter: (name: Attrs, value: string|null) => void;
 
-        [GET](name: string) {
+        [GET](name: Attrs) {
         	return this.#data[name];
         };
-        [SET](name: string, value: string|null){
+        [SET](name: Attrs, value: string|null){
         	return this.#setter(name, value); // required to get a clean object when doing {...attrs}
         }
 
-        constructor(data: Record<string, string|null>,
-        			setter: (name: string, value: string|null) => void) {
+        constructor(data: Record<Attrs, string|null>,
+        			setter: (name: Attrs, value: string|null) => void) {
 
         	this.#data   = data;
         	this.#setter = setter;
@@ -420,7 +421,7 @@ function buildLISSHost<Extends extends Class,
 		#attributes = {} as Record<Attrs, string|null>;
 		#attrs = new Attributes(
 			this.#attributes,
-			(name: string, value:string|null) => {
+			(name: Attrs, value:string|null) => {
 
 				this.#attributes[name] = value;
 

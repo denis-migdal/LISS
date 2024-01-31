@@ -10,7 +10,7 @@ Web Components are simple to use... but, due to a multitude of non-intuitives be
 
 In order to use LISS in your project, copy either the `/index.ts` or `/index.js` file into your project.
 
-💡 If you need to rebuild the JS file, use the command: `tsc index.ts --target esnext --module esnext`.
+💡 If you need to rebuild the JS file, use the command: `tsc index.ts --strict --target esnext --module esnext`.
 
 ## Basic usage
 

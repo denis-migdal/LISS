@@ -75,6 +75,7 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
     }
     // @ts-ignore
     class LISSBase extends _extends {
+        //@ts-ignore: strict mode TS2502, '#host' is referenced directly or indirectly in its own type annotation.
         #host;
         constructor() {
             super();
