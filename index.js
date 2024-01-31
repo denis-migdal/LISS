@@ -354,6 +354,8 @@ LISS.isDefined = function (name) {
     return customElements.get(name);
 };
 LISS.selector = function (name) {
+    if (name === undefined) // just an h4ck
+        return "";
     return `:is(${name}, [is="${name}"])`;
 };
 LISS.getLISS = async function (element) {
@@ -378,58 +380,73 @@ LISS.getName = function (element) {
         throw new Error(`Element ${name} is not a WebComponent`);
     return name;
 };
-LISS.qs = async function (selector, parent = document) {
+function _buildQS(selector, tagname_or_parent, parent = document) {
+    if (tagname_or_parent !== undefined && typeof tagname_or_parent !== 'string') {
+        parent = tagname_or_parent;
+        tagname_or_parent = undefined;
+    }
+    return [`${selector}${LISS.selector(tagname_or_parent)}`, parent];
+}
+async function qs(selector, tagname_or_parent, parent = document) {
+    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
     let result = await LISS.qso(selector, parent);
     if (result === null)
         throw new Error(`Element ${selector} not found`);
     return result;
-};
-LISS.qso = async function (selector, parent = document) {
-    if (selector === '')
-        return null;
+}
+LISS.qs = qs;
+async function qso(selector, tagname_or_parent, parent = document) {
+    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
     const element = parent.querySelector(selector);
     if (element === null)
         return null;
     return await LISS.getLISS(element);
-};
-LISS.qsa = async function (selector, parent = document) {
-    if (selector === '')
-        return [];
+}
+LISS.qso = qso;
+async function qsa(selector, tagname_or_parent, parent = document) {
+    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
     const elements = parent.querySelectorAll(selector);
     let idx = 0;
     const promises = new Array(elements.length);
     for (let element of elements)
         promises[idx++] = LISS.getLISS(element);
     return await Promise.all(promises);
-};
-LISS.closest = async function (selector, currentElement) {
-    const element = currentElement.closest(selector);
-    if (element === null)
+}
+LISS.qsa = qsa;
+async function closest(selector, tagname_or_parent, element) {
+    const res = _buildQS(selector, tagname_or_parent, element);
+    const result = res[1].closest(res[0]);
+    if (result === null)
         return null;
-    return await LISS.getLISS(element);
-};
-LISS.qsSync = function (selector, parent = document) {
+    return await LISS.getLISS(result);
+}
+LISS.closest = closest;
+function qsSync(selector, tagname_or_parent, parent = document) {
+    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
     const element = parent.querySelector(selector);
     if (element === null)
         throw new Error(`Element ${selector} not found`);
     return LISS.getLISSSync(element);
-};
-LISS.qsaSync = function (selector, parent = document) {
-    if (selector === '')
-        return [];
+}
+LISS.qsSync = qsSync;
+function qsaSync(selector, tagname_or_parent, parent = document) {
+    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
     const elements = parent.querySelectorAll(selector);
     let idx = 0;
     const result = new Array(elements.length);
     for (let element of elements)
         result[idx++] = LISS.getLISSSync(element);
     return result;
-};
-LISS.closestSync = async function (selector, currentElement) {
-    const element = currentElement.closest(selector);
-    if (element === null)
+}
+LISS.qsaSync = qsaSync;
+function closestSync(selector, tagname_or_parent, element) {
+    const res = _buildQS(selector, tagname_or_parent, element);
+    const result = res[1].closest(res[0]);
+    if (result === null)
         return null;
-    return LISS.getLISSSync(element);
-};
+    return LISS.getLISSSync(result);
+}
+LISS.closestSync = closestSync;
 // ================================================
 // =============== LISS Auto ======================
 // ================================================
@@ -490,6 +507,7 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
     }
 }
 LISS.define("liss-auto", LISS_Auto);
+;
 //let ev = new EventTarget() as EventsTarget<{"ok": boolean}>;
 //ev.addEventListener("ok",)
 // ================================================

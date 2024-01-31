@@ -605,7 +605,9 @@ LISS.isDefined = function(name: string) {
 	return customElements.get(name);
 }
 
-LISS.selector = function(name: string) {
+LISS.selector = function(name?: string) {
+	if(name === undefined) // just an h4ck
+		return "";
 	return `:is(${name}, [is="${name}"])`;
 }
 
@@ -644,9 +646,26 @@ LISS.getName = function( element: HTMLElement ): string {
 	return name;
 }
 
+function _buildQS(selector: string, tagname_or_parent?: string | Element|DocumentFragment|Document, parent: Element|DocumentFragment|Document = document) {
+	
+	if( tagname_or_parent !== undefined && typeof tagname_or_parent !== 'string') {
+		parent = tagname_or_parent;
+		tagname_or_parent = undefined;
+	}
 
-LISS.qs  = async function<T extends LISSBase<any,any,any,any>>(	selector: string,
+	return [`${selector}${LISS.selector(tagname_or_parent as string|undefined)}`, parent] as const;
+}
+
+async function qs<T extends LISSBase<any,any,any,any>>(selector: string,
+						parent  ?: Element|DocumentFragment|Document): Promise<T>;
+async function qs<N extends keyof Components>(selector: string,
+						tagname  : N,
+						parent  ?: Element|DocumentFragment|Document): Promise< Components[N] >;
+async function qs<T extends LISSBase<any,any,any,any>>(	selector: string,
+						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
 						parent  : Element|DocumentFragment|Document = document) {
+
+	[selector, parent] = _buildQS(selector, tagname_or_parent, parent);
 
 	let result = await LISS.qso<T>(selector, parent);
 	if(result === null)
@@ -654,11 +673,18 @@ LISS.qs  = async function<T extends LISSBase<any,any,any,any>>(	selector: string
 
 	return result!
 }
-LISS.qso = async function<T extends LISSBase<any,any,any,any>>(	selector: string,
+LISS.qs  = qs
+
+async function qso<T extends LISSBase<any,any,any,any>>(selector: string,
+						parent  ?: Element|DocumentFragment|Document): Promise<T>;
+async function qso<N extends keyof Components>(selector: string,
+						tagname  : N,
+						parent  ?: Element|DocumentFragment|Document): Promise< Components[N] >;
+async function qso<T extends LISSBase<any,any,any,any>>(	selector: string,
+						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
 						parent  : Element|DocumentFragment|Document = document) {
 
-	if(selector === '')
-		return null;
+	[selector, parent] = _buildQS(selector, tagname_or_parent, parent);
 
 	const element = parent.querySelector<LISSHost<T>>(selector);
 	if( element === null )
@@ -666,12 +692,18 @@ LISS.qso = async function<T extends LISSBase<any,any,any,any>>(	selector: string
 
 	return await LISS.getLISS( element );
 }
-LISS.qsa = async function<T extends LISSBase<any,any,any,any>>(	selector: string,
-						parent  : Element|DocumentFragment|Document = document) {
-	
+LISS.qso = qso
 
-	if(selector === '')
-		return [];
+async function qsa<T extends LISSBase<any,any,any,any>>(selector: string,
+						parent  ?: Element|DocumentFragment|Document): Promise<T[]>;
+async function qsa<N extends keyof Components>(selector: string,
+						tagname  : N,
+						parent  ?: Element|DocumentFragment|Document): Promise< Components[N][] >;
+async function qsa<T extends LISSBase<any,any,any,any>>(	selector: string,
+						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
+						parent  : Element|DocumentFragment|Document = document) {
+
+	[selector, parent] = _buildQS(selector, tagname_or_parent, parent);
 
 	const elements = parent.querySelectorAll<LISSHost<T>>(selector);
 
@@ -682,18 +714,37 @@ LISS.qsa = async function<T extends LISSBase<any,any,any,any>>(	selector: string
 
 	return await Promise.all(promises);
 }
+LISS.qsa = qsa;
 
-LISS.closest = async function<T extends LISSBase<any,any,any,any>>(selector:string, currentElement: Element) {
+async function closest<T extends LISSBase<any,any,any,any>>(selector: string,
+						element  : Element): Promise<T>;
+async function closest<N extends keyof Components>(selector: string,
+						tagname  : N,
+						element  : Element): Promise< Components[N] >;
+async function closest<T extends LISSBase<any,any,any,any>>(	selector: string,
+						tagname_or_parent?: keyof Components | Element,
+						element  ?: Element) {
+
+	const res = _buildQS(selector, tagname_or_parent, element);
 	
-	const element = currentElement.closest<LISSHost<T>>(selector);
-	if(element === null)
+	const result = (res[1] as unknown as Element).closest<LISSHost<T>>(res[0]);
+	if(result === null)
 		return null;
 
-	return await LISS.getLISS(element);
+	return await LISS.getLISS(result);
 }
+LISS.closest = closest;
 
-LISS.qsSync  = function<T extends LISSBase<any,any,any,any>>(	selector: string,
+function qsSync<T extends LISSBase<any,any,any,any>>(selector: string,
+						parent  ?: Element|DocumentFragment|Document): T;
+function qsSync<N extends keyof Components>(selector: string,
+						tagname  : N,
+						parent  ?: Element|DocumentFragment|Document): Components[N];
+function qsSync<T extends LISSBase<any,any,any,any>>(	selector: string,
+						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
 						parent  : Element|DocumentFragment|Document = document) {
+
+	[selector, parent] = _buildQS(selector, tagname_or_parent, parent);
 
 	const element = parent.querySelector<LISSHost<T>>(selector);
 
@@ -702,12 +753,18 @@ LISS.qsSync  = function<T extends LISSBase<any,any,any,any>>(	selector: string,
 
 	return LISS.getLISSSync( element );
 }
-LISS.qsaSync = function<T extends LISSBase<any,any,any,any>>(	selector: string,
-						parent  : Element|DocumentFragment|Document = document) {
-	
+LISS.qsSync = qsSync;
 
-	if(selector === '')
-		return [];
+function qsaSync<T extends LISSBase<any,any,any,any>>(selector: string,
+						parent  ?: Element|DocumentFragment|Document): T[];
+function qsaSync<N extends keyof Components>(selector: string,
+						tagname  : N,
+						parent  ?: Element|DocumentFragment|Document): Components[N][];
+function qsaSync<T extends LISSBase<any,any,any,any>>(	selector: string,
+						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
+						parent  : Element|DocumentFragment|Document = document) {
+
+	[selector, parent] = _buildQS(selector, tagname_or_parent, parent);
 
 	const elements = parent.querySelectorAll<LISSHost<T>>(selector);
 
@@ -718,15 +775,26 @@ LISS.qsaSync = function<T extends LISSBase<any,any,any,any>>(	selector: string,
 
 	return result;
 }
+LISS.qsaSync = qsaSync;
 
-LISS.closestSync = async function<T extends LISSBase<any,any,any,any>>(selector:string, currentElement: Element) {
+function closestSync<T extends LISSBase<any,any,any,any>>(selector: string,
+						element  : Element): T;
+function closestSync<N extends keyof Components>(selector: string,
+						tagname  : N,
+						element  : Element): Components[N];
+function closestSync<T extends LISSBase<any,any,any,any>>(	selector: string,
+						tagname_or_parent?: keyof Components | Element,
+						element  ?: Element) {
+
+	const res = _buildQS(selector, tagname_or_parent, element);
 	
-	const element = currentElement.closest<LISSHost<T>>(selector);
-	if(element === null)
+	const result = (res[1] as unknown as Element).closest<LISSHost<T>>(res[0]);
+	if(result === null)
 		return null;
 
-	return LISS.getLISSSync(element);
+	return LISS.getLISSSync(result);
 }
+LISS.closestSync = closestSync;
 
 // ================================================
 // =============== LISS Auto ======================
@@ -814,6 +882,17 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 	}
 }
 LISS.define("liss-auto", LISS_Auto);
+
+export interface Components {
+	"liss-auto": LISS_Auto
+};
+/*
+ * declare module '$LISS' {
+ * 		interface Components {
+ * 			"name": class
+ * 		}
+ * }
+ */
 
 // ================================================
 // =============== LISS EventsTarget ==============
