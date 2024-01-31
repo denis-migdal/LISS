@@ -70,10 +70,9 @@ To create a new components, simply create a class extending `LISS()` and registe
 You can see all examples below in the [`LISS/examples/` directory](./examples/).
 
 - [Management of HTML attributes](#manage-html-attributes)
-- events
-- DOM manipulation (build/parameters)
 - DOM manipulation (qs/getLISS)
-- Extend existing classes (JS and HTMLElement)
+- Extend JS and HTML classes
+- DOM manipulation (build/parameters)
 - [Use HTML/CSS files/strings to fill the component](#use-htmlcss-filesstrings-to-fill-the-component)
 - [Auto mode](#auto-mode)
 - **Advanced features**
@@ -134,6 +133,50 @@ LISS.define('my-component', MyComponent);
 
 ```html
 <my-component counter="null"></my-component><!-- prints 01234 -->
+```
+
+### Extend JS and HTML classes
+
+`LISS()` allows you to extends existing classes thanks to the `extends` (JS classes) and `host` (HTMLElement classes) options.
+
+💡 We also provide an interface `EventsTarget` to better ensure events types when using events and listeners.
+
+```typescript
+// cf /examples/extend
+import LISS from 'LISS';
+
+// Give the inherited HTML element as the first parameter of LISS
+class MyComponent extends LISS({
+	host   : HTMLTableRowElement,
+	extends: EventTarget, // the component is able to send events.
+	// in TS, to ensure events types, add: as EventsTarget<{"event_name": detail_type}>
+	content: "<td>Hello World ;)</td>"
+}) {
+
+	constructor() {
+		super();
+		
+		this.host.addEventListener('click', () => {
+			this.dispatchEvent(new CustomEvent('click'), {detail: null});
+		})
+	}
+}
+
+// Define your WebComponent
+LISS.define('my-component', MyComponent);
+
+// TODO: ensure qs type + CSS Selector.
+const component = await LISS.qs('tr[is="my-component"]');
+
+component.addEventListener('click', () => {
+	alert('click');
+});
+```
+
+```html
+<table>
+	<tr is="my-component"></tr>
+</table>
 ```
 
 ### Use HTML/CSS files/strings to fill the component
@@ -552,7 +595,9 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 - `document.createElement()` doesn't allow you to pass parameters to your Web Component ([more info](https://github.com/WICG/webcomponents/issues/605))
   
   - ***Solution :*** `LISS.createElement()` enables you to give parameters to your WebComponent, and `LISS.define()` third argument to set values to be given to the WebComponent constructor.
+
 - WebComponent's DOM should not be accessed/modified until the first call of `connectedCallback()`.
+  
   - ***Solution 1:*** Use `this.self` (protected) instead of `this` to access the WebComponent attribute/children. Throws an exception if the Web Component still hasn't be initialized.
   - ***Solution 2:*** Use `this.content` (protected) to access the Web Component's content.
   - ***Solution 3:*** You may also use `this.assertInit()` (protected) at the start of your methods, to throw an exception if called while the WebComponent still hasn't be initialized.
@@ -564,7 +609,9 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 - Web Component's children might not be yet upgraded when `connectedCallback()` is called. Then, `customElements.upgrade(this)` need to be called.
   
   - ***Solution:*** LISS automatically calls it before calling `this.init()`.
+
 - `attributeChangedCallback()` is called each time an attribute is modified, even when the Web Component hasn't been initialized yet !
+  
   - ***Solution:*** Use `onAttrChanged()` instead, it won't be called if an attribute is modified before the Web Component has finished its initialization. Set the list of listened attributes in the second argument of `LISS()`.
 
 ### Uniformisation
@@ -586,9 +633,11 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 ### Definition
 
 - `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)).
+  
   - ***Solution :*** We provide `LISS.define()`, that takes care of the third argument for you.
 
 - `customElements.define()` should be called only once the DOM has finished to load in order to prevent issues of childs not being present when custom elements are being initialized.
+  
   - ***Solution :*** `LISS.define()`, takes care of that for you, calling `customElements.define()` once the DOM is loaded or immediately if the DOM is already loaded.
 
 - For some reasons, some of your Web Components might be requires some other Web Components to be defined.
@@ -598,9 +647,11 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 ### Helpers
 
 - building a tag with its attribute, children, etc. takes too many lines.
+  
   - ***Solution:*** Use `LISS.buildElement()` to build a WebComponent, insert attributes, classes, datasets values, children, etc. before its initialization. The option `init` will force the element initialization before returning it.
 
 - Accessing to the HTML attributes in order to get their values is costly. Even more when we want to gather all values to validate them altogether.
+  
   - ***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
 
 ## TODO
