@@ -44,7 +44,7 @@ To create a new components, simply create a class extending `LISS()` and registe
           console.log("Host", this.host); // <my-component></my-component>
 
           // Use this.attrs to efficiently access the component's host's attributes:
-          console.log("Attributes", {...this.attrs}); // {foo: "42"}
+          console.log("Attributes", {...this.attrs}); // {}
 
           // Use this.params to access the component parameters.
           console.log("Parameters", this.params); // {}
@@ -56,7 +56,7 @@ To create a new components, simply create a class extending `LISS()` and registe
     </script>
   </head>
   <body>
-    <my-component foo="42"></my-component> <!-- Prints "Hello World ;)" -->
+    <my-component></my-component> <!-- Prints "Hello World ;)" -->
   </body>
 </html>
 ```
