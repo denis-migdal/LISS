@@ -442,6 +442,7 @@ Build a new component instance.
 | `LISS.getLISSSync<T>(element)`         | `T`          | Throws an exception if component not yet initialized.      |
 | `LISS.initialize<T>(element, params?)` | `Promise<T>` | Force the compoment initialization.                        |
 | `LISS.getName(element)`                | `string`     | Returns the component name.                                |
+| `LISS.selector(name)`                  | `string`     | Returns the CSS selector for the given component name.     |
 
 **`parameters`**
 
