@@ -152,18 +152,58 @@ LISS uniformalizes usage independantly of the `ShadowRoot` support:
 
 - LISS provides methods to simulate `part` and `slot` in components without `ShadowRoot` (WIP).
 
-# 
+### Components and DOM manipulations
 
-### Helpers
+When manipulating the DOM, we manipulate `Element` instances that may or may not correspond to a component, which may or may not be defined or initialized. LISS offers some helpers to facilitate `Element` manipulation :
 
-- building a tag with its attribute, children, etc. takes too many lines.
-  
-  - ***Solution:*** Use `LISS.buildElement()` to build a WebComponent, insert attributes, classes, datasets values, children, etc. before its initialization. The option `init` will force the element initialization before returning it.
+**Without LISS:**
 
-- Accessing to the HTML attributes in order to get their values is costly. Even more when we want to gather all values to validate them altogether.
-  
-  - ***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
-- qs / getLISS
+```typescript
+const element = querySelector('...');
+if( element === undefined)
+    throw new Error('...');
+await customElement.whenDefined('....')
+customElements.upgrade(element); // ensure it is upgraded.
+if( element instanceof Component ) {
+    if( ! element.isInit )
+        await element.whenInit;
+}
+```
+
+**With LISS:**
+
+```typescript
+const component = await LISS.qs<Component>('....');
+// or
+const component = await LISS.qs('....', 'my-component'); // for TS
+```
+
+### Building components
+
+In vanilla JavaScript, building component is troublesome, doesn't allow for parameters, and might lead to errors:
+
+**Without LISS:**
+
+```typescript
+const element = document.createElement<Component>('tr', {is: 'my-component'});
+element.setAttribute('foo', "24");
+// SHOULDN'T USE "element"" YET: STILL NOT INITIALIZED!
+document.body.append(element); // will initialize it...
+element.setAttribute('faa', "42"); // too late for parameters.
+```
+
+**With LISS:**
+
+```typescript
+const Element = await LISS.build('my-component', {
+    params: {...},
+    attrs: {
+        foo: "24",
+        faa: "42"
+    },
+    parent: document.body
+});
+```
 
 ## Features and examples
 
