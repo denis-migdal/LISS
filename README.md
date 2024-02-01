@@ -69,7 +69,7 @@ To create a new components, simply create a class extending `LISS()` and registe
 
 ## List of issues solved by LISS
 
-### Component initialisation
+### Component initialization
 
 In vanilla JavaScript, components shouldn't access the DOM before the first call of `connectedCallback()`. This often leads to the creation of an `init()` method which is a really bad practice and hampers TS type checking of attributes. Indeed, the component can have its method called *before* being initialized, requiring safe guards at the start of each methods. For example, `attributeChangedCallback()` can be called before initialization, even though attributes shouldn't be accessed before initialization.
 
@@ -136,21 +136,21 @@ class Component extends LISS() {
 LISS.define('my-component', Component);
 ```
 
-### Uniformisation
+### Uniformization
 
-- Web Components should use `ShadowRoot` for its content. However some custom elements inheriting builtin elements doesn't support having one. ([more info](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow)).
-  
-  - ***Solution:*** Use `this.content` to set the Web Component content. LISS attaches a `ShadowRoot` if supported, else `this` is used. In your webcomponent, use `super(true/false)` to indicate whether you want the `ShadowRoot` to be open (true) or closed (false).
+In vanilla Javascript, use of `ShadowRoot` is recommanded, however, some custom element inheriting builtin elements doesn't support having one ([more info](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow)). This leads to different ways of doing things whether the component supports or not `ShadowRoot`.
 
-- Depending whether the Web Component uses a ShadowRoot or not, they way to declare and add the CSS rules differs.
-  
-  - ***Solution:*** If the element doesn't support `ShadowRoot`, LISS creates `HTMLStyleElement` that are appened to the `HTMLHeadElement`. Rules are modified to replace ":host" by the Web Component tagname.
+LISS uniformalizes usage independantly of the `ShadowRoot` support:
 
-- `::part()` is chaotic. It can only be used on open `ShadowRoot`.
-  
-  - ***Solution:*** LISS provides `.getPart(name)` and `.getParts(name)` to offer a more consistant usage.
+- By default, `shadowRoot` is created if the component supports it. `LISS({shadow:...})` enables to explicitly set the `ShadowRoot` mode (`NONE`, `OPEN`, or `CLOSE`).
 
-- +CSS (shadow vs non-shadow)
+- `this.content` enables to access the component content, i.e. the `ShadowRoot` if exists or the host.
+
+- CSS rules are rewriten to enable usage of `:host` in components without `ShadowRoot`.
+
+- LISS provides methods to simulate `part` and `slot` in components without `ShadowRoot` (WIP).
+
+
 
 ### Definition
 
