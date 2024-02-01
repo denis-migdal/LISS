@@ -289,7 +289,7 @@ import LISS from 'LISS';
 class MyComponent extends LISS({
     host   : HTMLTableRowElement,
     extends: EventTarget, // the component is able to send events.
-    // in TS, to ensure events types, add: as EventsTarget<{"event_name": detail_type}>
+    // in TS, to ensure events types, add: as EventsTargetCstr<{"event_name": detail_type}>
     content: "<td>Hello World ;)</td>"
 }) {
 

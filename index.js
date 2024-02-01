@@ -510,15 +510,12 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
 }
 LISS.define("liss-auto", LISS_Auto);
 ;
-//let ev = new EventTarget() as EventsTarget<{"ok": boolean}>;
-//ev.addEventListener("ok",)
-// ================================================
-// =============== LISS CstrParams ================
-// ================================================
-let vars = {
-    "foo": 4,
-    "faa": 7,
-};
+export class CstmEvent extends CustomEvent {
+    get type() { return super.type; }
+    constructor(type, args) {
+        super(type, { detail: args });
+    }
+}
 // ================================================
 // =============== LISS internal tools ============
 // ================================================

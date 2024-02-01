@@ -918,18 +918,16 @@ export interface EventsTarget<Events extends Record<string, any>>{
 													options?: boolean|AddEventListenerOptions): void;
 }
 
-//let ev = new EventTarget() as EventsTarget<{"ok": boolean}>;
-//ev.addEventListener("ok",)
+export class CstmEvent<Event extends string, Args> extends CustomEvent<Args> {
 
+	get type(): Event { return super.type as Event; }
 
-// ================================================
-// =============== LISS CstrParams ================
-// ================================================
-
-let vars = {
-	"foo": 4 as number,
-	"faa": 7 as number|string,
+	constructor(type: Event, args: Args) {
+		super(type, {detail: args});
+	}
 }
+
+export type EventsTargetCstr<Events extends Record<string,any>> = Constructor<EventsTarget<Events>>;
 
 
 // ================================================
