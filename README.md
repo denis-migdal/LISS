@@ -73,14 +73,16 @@ To create a new components, simply create a class extending `LISS()` and registe
 
 In vanilla JavaScript, components shouldn't access the DOM before the first call of `connectedCallback()`. This often leads to the creation of an `init()` method which is a really bad practice and hampers TS type checking of attributes. Indeed, the component can have its method called *before* being initialized, requiring safe guards at the start of each methods. For example, `attributeChangedCallback()` can be called before initialization, even though attributes shouldn't be accessed before initialization.
 
-Even with an `init()` method and safeguards, errors can still occurs. If the component is defined before the DOM has finished loading, some children can be missing during initialization. `customElements.upgrade(this)` might also be required to ensure the children are upgraded.
+Even with safeguards, and an `init()` method, errors can still occurs. If the component is defined before the DOM has finished loading, some children can be missing during initialization. `customElements.upgrade(this)` might also be required to ensure the children are upgraded. Also, `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)) which is redoundant information, can lead to errors, and may be in some cases troublesome to handle.
 
-LISS tacles this issue by constructing the component only when it is fully ready and allows to declare dependancies. LISS also supports asynchronous constructors, and giving parameters to the component.
+
+
+LISS tacles these issues by constructing the component only when it is fully ready and allows to declare dependancies. LISS also supports asynchronous constructors, and giving parameters to the component.
 
 **Without LISS:**
 
 ```typescript
-class Component extends HTMLElement {
+class Component extends HTMLTableRowElement {
 
     someAttrs?: string; // is undefined before initialization.
 
@@ -106,7 +108,7 @@ class Component extends HTMLElement {
 }
 
 function define() {
-    customElements.define('my-component', Component);
+    customElements.define('my-component', Component, {extends: "tr"});
 }
 
 if(document.readyState === "interactive" || document.readyState === "complete")
@@ -120,7 +122,7 @@ else
 ```typescript
 import LISS from "LISS";
 
-class Component extends LISS() {
+class Component extends LISS({host: HTMLTableRowElement}) {
 
     someAttrs: string;
 
@@ -150,21 +152,7 @@ LISS uniformalizes usage independantly of the `ShadowRoot` support:
 
 - LISS provides methods to simulate `part` and `slot` in components without `ShadowRoot` (WIP).
 
-
-
-### Definition
-
-- `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)).
-  
-  - ***Solution :*** We provide `LISS.define()`, that takes care of the third argument for you.
-
-- `customElements.define()` should be called only once the DOM has finished to load in order to prevent issues of childs not being present when custom elements are being initialized.
-  
-  - ***Solution :*** `LISS.define()`, takes care of that for you, calling `customElements.define()` once the DOM is loaded or immediately if the DOM is already loaded.
-
-- For some reasons, some of your Web Components might be requires some other Web Components to be defined.
-  
-  - ***Solution :*** The third parameter of `LISS()` and `LISS.define()` allow you to define a list of dependancies when defining a component.
+# 
 
 ### Helpers
 
@@ -175,6 +163,7 @@ LISS uniformalizes usage independantly of the `ShadowRoot` support:
 - Accessing to the HTML attributes in order to get their values is costly. Even more when we want to gather all values to validate them altogether.
   
   - ***Solution:*** Use `this.attrs` to access the values of the observed attributes. LISS only access them once before the Web Component intialization, and update their values thanks to `attributeChangedCallback()`.
+- qs / getLISS
 
 ## Features and examples
 
@@ -187,7 +176,7 @@ You can see all examples below in the [`LISS/examples/` directory](./examples/).
 - [Use HTML/CSS files/strings to fill the component](#use-htmlcss-filesstrings-to-fill-the-component)
 - [Auto mode](#auto-mode)
 - **Advanced features**
-  - ShadowRoot mode / parts.
+  - ShadowRoot mode / parts / slots.
   - dependancies / async constructor
 - **[LISS full API](#liss-full-API)**
 
@@ -685,8 +674,6 @@ LISS.qs<T extends keyof Components>(selector: string,
 
 ## TODO
 
-- [ ] Documentation/usage
-
 - [ ] npm package
 
 - [ ] ShadowRoot
@@ -696,6 +683,7 @@ LISS.qs<T extends keyof Components>(selector: string,
     - [ ] getSlot(name) : if not found : throws.
     - [ ] observeSlot(name, options) ? : if not found : throws.
       - [ ] added/removed (events)
+  - [ ] parts (doc)
 
 - [ ] LISS parameter Custom Element (mutation observer + event parents)
 
