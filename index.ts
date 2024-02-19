@@ -542,12 +542,17 @@ async function build<T extends LISSBase<any,any,any,any>>(tagname: string, {
 		throw new Error("A parent must be given if initialize is false");
 
 	let CustomClass = await customElements.whenDefined(tagname);
-	let elem = new CustomClass(params) as LISSHost<T>;	
+	let elem = new CustomClass(params) as LISSHost<T>;
+
+	// Fix issue #2
+	if( elem.tagName.toLowerCase() !== tagname )
+		elem.setAttribute("is", tagname);
 
 	if( id !== undefined )
 		elem.id = id;
 
-	elem.classList.add(...classes);
+	if( classes.length > 0)
+		elem.classList.add(...classes);
 
 	for(let name in cssvars)
 		elem.style.setProperty(`--${name}`, cssvars[name]);
@@ -560,7 +565,6 @@ async function build<T extends LISSBase<any,any,any,any>>(tagname: string, {
 		else
 			elem.setAttribute(name, value);
 	}
-
 
 	for(let name in data) {
 

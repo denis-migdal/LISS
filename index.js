@@ -11,7 +11,7 @@ export var ShadowCfg;
 // ================================================
 // =============== LISS Class =====================
 // ================================================
-let __cstr_host;
+let __cstr_host = null;
 // https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
 const CAN_HAVE_SHADOW = [
     null, 'article', 'aside', 'blockquote', 'body', 'div',
@@ -79,7 +79,10 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
         constructor() {
             super();
             // h4ck, okay because JS is monothreaded.
+            if (__cstr_host === null)
+                throw new Error("Please do not directly call this constructor");
             this.#host = __cstr_host;
+            __cstr_host = null;
         }
         get host() {
             return this.#host;
@@ -307,9 +310,13 @@ async function build(tagname, { params = {}, initialize = true, content = [], pa
         throw new Error("A parent must be given if initialize is false");
     let CustomClass = await customElements.whenDefined(tagname);
     let elem = new CustomClass(params);
+    // Fix issue #2
+    if (elem.tagName.toLowerCase() !== tagname)
+        elem.setAttribute("is", tagname);
     if (id !== undefined)
         elem.id = id;
-    elem.classList.add(...classes);
+    if (classes.length > 0)
+        elem.classList.add(...classes);
     for (let name in cssvars)
         elem.style.setProperty(`--${name}`, cssvars[name]);
     for (let name in attrs) {
