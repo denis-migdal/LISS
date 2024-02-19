@@ -12,6 +12,8 @@ In order to use LISS in your project, copy either the `/index.ts` or `/index.js`
 
 💡 If you need to rebuild the JS file, use the command: `tsc index.ts --strict --target esnext --module esnext`.
 
+💡 To run the tests : `tsc --strict --noEmit --target esnext --module esnext $FILE`
+
 ## Basic usage
 
 To create a new components, simply create a class extending `LISS()` and register it using `LISS.define()`:

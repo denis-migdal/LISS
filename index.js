@@ -1,12 +1,15 @@
+"use strict";
 // ================================================
 // =============== LISS exported types ============
 // ================================================
-export var ShadowCfg;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CstmEvent = exports.ShadowCfg = void 0;
+var ShadowCfg;
 (function (ShadowCfg) {
     ShadowCfg["NONE"] = "none";
     ShadowCfg["OPEN"] = "open";
     ShadowCfg["CLOSE"] = "closed";
-})(ShadowCfg || (ShadowCfg = {}));
+})(ShadowCfg = exports.ShadowCfg || (exports.ShadowCfg = {}));
 ;
 // ================================================
 // =============== LISS Class =====================
@@ -21,7 +24,7 @@ const CAN_HAVE_SHADOW = [
 function _canHasShadow(tag) {
     return CAN_HAVE_SHADOW.includes(_element2tagname(tag));
 }
-export default function LISS({ extends: p_extends, host: p_host, dependancies: p_deps, attributes: p_attrs, params, content, css, shadow: p_shadow, } = {}) {
+function LISS({ extends: p_extends, host: p_host, dependancies: p_deps, attributes: p_attrs, params, content, css, shadow: p_shadow, } = {}) {
     const host = p_host ?? HTMLElement;
     const _extends = p_extends ?? Object;
     const attributes = p_attrs ?? [];
@@ -107,6 +110,7 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
     }
     return LISSBase;
 }
+exports.default = LISS;
 // ================================================
 // =============== LISSHost class =================
 // ================================================
@@ -510,12 +514,13 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
 }
 LISS.define("liss-auto", LISS_Auto);
 ;
-export class CstmEvent extends CustomEvent {
+class CstmEvent extends CustomEvent {
     get type() { return super.type; }
     constructor(type, args) {
         super(type, { detail: args });
     }
 }
+exports.CstmEvent = CstmEvent;
 // ================================================
 // =============== LISS internal tools ============
 // ================================================
