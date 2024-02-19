@@ -31,7 +31,7 @@ export enum ShadowCfg {
 // =============== LISS Class =====================
 // ================================================
 
-let __cstr_host  : any;
+let __cstr_host  : any = null;
 
 type Constructor<T> = new () => T;
 interface Class {}
@@ -147,7 +147,10 @@ export default function LISS<Extends    extends Class              = Class,
 			super();
 
 			// h4ck, okay because JS is monothreaded.
+			if( __cstr_host === null )
+				throw new Error("Please do not directly call this constructor");
 			this.#host = __cstr_host;
+			__cstr_host = null;
 		}
 
 		public get host(): Host {
