@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Issue #2</title>
+		<script type="importmap">
+		{
+			"imports": {
+				"LISS": "/index.js"
+			}
+		}
+		</script>
+		<script type="module">
+			import LISS from 'LISS';
+
+			class MyComponent extends LISS({host: HTMLDivElement}) {}
+
+			// define the "my-component" component.
+			LISS.define('my-component', MyComponent);
+
+			let elem = await LISS.build('my-component');
+
+			document.body.append(elem);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

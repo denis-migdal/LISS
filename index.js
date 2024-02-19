@@ -1,15 +1,12 @@
-"use strict";
 // ================================================
 // =============== LISS exported types ============
 // ================================================
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CstmEvent = exports.ShadowCfg = void 0;
-var ShadowCfg;
+export var ShadowCfg;
 (function (ShadowCfg) {
     ShadowCfg["NONE"] = "none";
     ShadowCfg["OPEN"] = "open";
     ShadowCfg["CLOSE"] = "closed";
-})(ShadowCfg = exports.ShadowCfg || (exports.ShadowCfg = {}));
+})(ShadowCfg || (ShadowCfg = {}));
 ;
 // ================================================
 // =============== LISS Class =====================
@@ -24,7 +21,7 @@ const CAN_HAVE_SHADOW = [
 function _canHasShadow(tag) {
     return CAN_HAVE_SHADOW.includes(_element2tagname(tag));
 }
-function LISS({ extends: p_extends, host: p_host, dependancies: p_deps, attributes: p_attrs, params, content, css, shadow: p_shadow, } = {}) {
+export default function LISS({ extends: p_extends, host: p_host, dependancies: p_deps, attributes: p_attrs, params, content, css, shadow: p_shadow, } = {}) {
     const host = p_host ?? HTMLElement;
     const _extends = p_extends ?? Object;
     const attributes = p_attrs ?? [];
@@ -78,15 +75,14 @@ function LISS({ extends: p_extends, host: p_host, dependancies: p_deps, attribut
     }
     // @ts-ignore
     class LISSBase extends _extends {
-        //@ts-ignore: strict mode TS2502, '#host' is referenced directly or indirectly in its own type annotation.
-        #host;
+        #host; // prevents issue #1...
         constructor() {
             super();
             // h4ck, okay because JS is monothreaded.
             this.#host = __cstr_host;
         }
         get host() {
-            return this.#host; // because TS stupid.
+            return this.#host;
         }
         get attrs() {
             return this.#host.attrs;
@@ -110,7 +106,6 @@ function LISS({ extends: p_extends, host: p_host, dependancies: p_deps, attribut
     }
     return LISSBase;
 }
-exports.default = LISS;
 // ================================================
 // =============== LISSHost class =================
 // ================================================
@@ -492,8 +487,8 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
         this.#known_tag.add(tagname);
         await this.#sw; // ensure SW is installed.
         const results = await Promise.all([
-            _import(`${this.#directory}/${tagname}/index.js`, true),
-            _fetchText(`${this.#directory}/${tagname}/index.html`, true),
+            _import(`${this.#directory}/${tagname}/index.js`, true), // current page...
+            _fetchText(`${this.#directory}/${tagname}/index.html`, true), // TODO better
             _fetchText(`${this.#directory}/${tagname}/index.css`, true),
         ]);
         const js = results[0];
@@ -514,13 +509,12 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
 }
 LISS.define("liss-auto", LISS_Auto);
 ;
-class CstmEvent extends CustomEvent {
+export class CstmEvent extends CustomEvent {
     get type() { return super.type; }
     constructor(type, args) {
         super(type, { detail: args });
     }
 }
-exports.CstmEvent = CstmEvent;
 // ================================================
 // =============== LISS internal tools ============
 // ================================================
@@ -552,17 +546,17 @@ const HTMLCLASS_REGEX = /HTML(\w+)Element/;
 const elementNameLookupTable = {
     'UList': 'ul',
     'TableCaption': 'caption',
-    'TableCell': 'td',
-    'TableCol': 'col',
+    'TableCell': 'td', // th
+    'TableCol': 'col', //'colgroup',
     'TableRow': 'tr',
-    'TableSection': 'tbody',
+    'TableSection': 'tbody', //['thead', 'tbody', 'tfoot'],
     'Quote': 'q',
     'Paragraph': 'p',
     'OList': 'ol',
-    'Mod': 'ins',
-    'Media': 'video',
+    'Mod': 'ins', //, 'del'],
+    'Media': 'video', // 'audio'],
     'Image': 'img',
-    'Heading': 'h1',
+    'Heading': 'h1', //, 'h2', 'h3', 'h4', 'h5', 'h6'],
     'Directory': 'dir',
     'DList': 'dl',
     'Anchor': 'a'
