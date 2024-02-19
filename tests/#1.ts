@@ -4,6 +4,6 @@ import LISS from '../index';
 
 class MyComponent extends LISS({
 	host   : HTMLTableRowElement
-}) {}
+}) { }
 
 LISS.define('my-component', MyComponent);

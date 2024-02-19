@@ -135,32 +135,32 @@ export default function LISS<Extends    extends Class              = Class,
 		});
 	}
 
+	type LHost = LISSHost<LISSBase>;
 
 	// @ts-ignore
 	class LISSBase extends _extends {
 
-		//@ts-ignore: strict mode TS2502, '#host' is referenced directly or indirectly in its own type annotation.
-		readonly #host: LISSHost<LISSBase>;
+		readonly #host: any; // prevents issue #1...
 
 		constructor() {
 
 			super();
 
 			// h4ck, okay because JS is monothreaded.
-			this.#host = __cstr_host as LISSHost<LISSBase>;
+			this.#host = __cstr_host;
 		}
 
 		public get host(): Host {
-			return this.#host as unknown as Host; // because TS stupid.
+			return this.#host;
 		}
 		protected get attrs() {
-			return this.#host.attrs;
+			return (this.#host as LHost).attrs;
 		}
 		protected get params() {
-			return this.#host.params;
+			return (this.#host as LHost).params;
 		}
 		protected get content() {
-			return this.#host.content!;
+			return (this.#host as LHost).content!;
 		}
 
 		static readonly Parameters = {
@@ -311,7 +311,7 @@ function buildLISSHost<Extends extends Class,
 			customElements.upgrade(this);
 			
 			// shadow
-			this.#content = this;
+			this.#content = this as unknown as Host;
 			if( shadow !== 'none') {
 				this.#content = this.attachShadow({mode: shadow})
 			}
@@ -386,7 +386,7 @@ function buildLISSHost<Extends extends Class,
 
 
 		/*** content ***/
-		#content: HTMLElement|ShadowRoot|null = null;
+		#content: Host|ShadowRoot|null = null;
 
 		get content() {
 			return this.#content;
