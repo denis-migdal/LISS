@@ -1,0 +1,12 @@
+{
+    "tasks": {
+        "test": "deno test --allow-read --allow-env"
+    },
+    "imports": {
+        "LISS": "../index.ts",
+        "jsdom": "npm:jsdom"
+    },
+    "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
+  }
+}
