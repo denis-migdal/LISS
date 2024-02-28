@@ -497,7 +497,11 @@ LISS.define = async function<Extends extends Class,
 	await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
 
 	const LISSclass = buildLISSHost<Extends, Host, Attrs, Params, T>(ComponentClass, params);
-	customElements.define(tagname, LISSclass, {extends: htmltag});
+	
+	const opts = htmltag === undefined ? {}
+									   : {extends: htmltag};
+	
+	customElements.define(tagname, LISSclass, opts);
 };
 
 // ================================================
@@ -877,20 +881,23 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 		const content = results[1];
 		const css     = results[2];
 
+		const opts: Partial<{content: string, css: string}> = {};
+		if( content !== undefined )
+			opts.content = content;
+		if( css !== undefined )
+			opts.css = css;
+
 		if( js === undefined ) { // no JS
 
 			if( content === undefined )
 				throw new Error(`No JS or HTML files found for WebComponent ${tagname}.`);
 
-			class WebComponent extends LISS({
-				content,
-				css
-			}) {}
+			class WebComponent extends LISS(opts) {}
 
 			return LISS.define(tagname, WebComponent);
 		}
 
-		return LISS.define(tagname, js({content, css}) );
+		return LISS.define(tagname, js(opts) );
 	}
 }
 LISS.define("liss-auto", LISS_Auto);
@@ -927,7 +934,7 @@ export interface EventsTarget<Events extends Record<string, any>>{
 
 export class CstmEvent<Event extends string, Args> extends CustomEvent<Args> {
 
-	get type(): Event { return super.type as Event; }
+	override get type(): Event { return super.type as Event; }
 
 	constructor(type: Event, args: Args) {
 		super(type, {detail: args});
