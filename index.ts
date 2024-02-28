@@ -881,11 +881,10 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 		const content = results[1];
 		const css     = results[2];
 
-		const opts: Partial<{content: string, css: string}> = {};
-		if( content !== undefined )
-			opts.content = content;
-		if( css !== undefined )
-			opts.css = css;
+		const opts: Partial<{content: string, css: string}> = {
+			...content !== undefined && {content},
+			...css     !== undefined && {css},
+		};
 
 		if( js === undefined ) { // no JS
 
