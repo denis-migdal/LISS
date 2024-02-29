@@ -179,6 +179,12 @@ export default function LISS<Extends    extends Class              = Class,
 		protected onAttrChanged(_name: string,
 								_oldValue: string,
 								_newValue: string): void|false {}
+
+		protected get isInDOM() {
+			return (this.#host as LHost).isInDOM;
+		}
+		protected onDOMConnected() {}
+		protected onDOMDisconnected() {}
 	}
 
 	return LISSBase;
@@ -286,7 +292,12 @@ function buildLISSHost<Extends extends Class,
 
 			Object.assign(this.#params, params);
 
-			return await this.init();
+			const api = await this.init();
+
+			if( this.#isInDOM )
+				(api as any).onDOMConnected();
+
+			return api;
 		}
 
 		get LISSSync() {
@@ -303,10 +314,25 @@ function buildLISSHost<Extends extends Class,
 		#resolve: ((u: InstanceType<T>) => void) | null = null;
 		#API: InstanceType<T> | null = null;
 
+		#isInDOM = false;
+		get isInDOM() {
+			return this.#isInDOM;
+		}
+
+		disconnectedCallback() {
+			this.#isInDOM = false;
+			(this.#API! as any).onDOMDisconnected();
+		}
+
 		connectedCallback() {
+
+			this.#isInDOM = true;
 	
-			if( ! this.isInit )
+			if( ! this.isInit ) {
 				this.init();
+				return;
+			}
+			(this.#API! as any).onDOMConnected();
 		}
 
 		private async init() {
