@@ -353,7 +353,7 @@ function buildLISSHost<Extends extends Class,
 			if( stylesheets.length ) {
 
 				if( shadow !== 'none')
-					(this.#content as ShadowRoot).adoptedStyleSheets.push(...stylesheets);
+					(this.#content as ShadowRoot).adoptedStyleSheets.push(sharedCSS, ...stylesheets);
 				else {
 
 					const cssselector = this.CSSSelector;
@@ -531,6 +531,28 @@ LISS.define = async function<Extends extends Class,
 };
 
 // ================================================
+// =============== LISS CSS =======================
+// ================================================
+
+const sharedCSS = new CSSStyleSheet();
+document.adoptedStyleSheets.push(sharedCSS);
+
+LISS.insertGlobalCSSRules = function(css: CSS_Source) {
+
+	let css_style!: CSSStyleSheet;
+
+	if( css instanceof HTMLStyleElement )
+		css_style = css.sheet!;
+	if( typeof css === "string") {
+		css_style = new CSSStyleSheet();
+		css_style.replaceSync(css);
+	}
+
+	for(let rule of css_style.cssRules)
+		sharedCSS.insertRule(rule.cssText);
+}
+
+// ================================================
 // =============== LISS helpers ===================
 // ================================================
 
@@ -697,6 +719,10 @@ function _buildQS(selector: string, tagname_or_parent?: string | Element|Documen
 
 	return [`${selector}${LISS.selector(tagname_or_parent as string|undefined)}`, parent] as const;
 }
+
+// ================================================
+// =============== LISS QuerySelectors ============
+// ================================================
 
 async function qs<T extends LISSBase<any,any,any,any>>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): Promise<T>;

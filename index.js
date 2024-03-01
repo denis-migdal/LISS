@@ -106,6 +106,11 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
             shadow,
         };
         onAttrChanged(_name, _oldValue, _newValue) { }
+        get isInDOM() {
+            return this.#host.isInDOM;
+        }
+        onDOMConnected() { }
+        onDOMDisconnected() { }
     }
     return LISSBase;
 }
@@ -158,7 +163,10 @@ function buildLISSHost(Liss, _params = {}) {
             if (this.isInit)
                 throw new Error('Element already initialized!');
             Object.assign(this.#params, params);
-            return await this.init();
+            const api = await this.init();
+            if (this.#isInDOM)
+                api.onDOMConnected();
+            return api;
         }
         get LISSSync() {
             if (!this.isInit)
@@ -172,9 +180,21 @@ function buildLISSHost(Liss, _params = {}) {
         #waitInit;
         #resolve = null;
         #API = null;
+        #isInDOM = false;
+        get isInDOM() {
+            return this.#isInDOM;
+        }
+        disconnectedCallback() {
+            this.#isInDOM = false;
+            this.#API.onDOMDisconnected();
+        }
         connectedCallback() {
-            if (!this.isInit)
+            this.#isInDOM = true;
+            if (!this.isInit) {
                 this.init();
+                return;
+            }
+            this.#API.onDOMConnected();
         }
         async init() {
             customElements.upgrade(this);
@@ -189,7 +209,7 @@ function buildLISSHost(Liss, _params = {}) {
             // css
             if (stylesheets.length) {
                 if (shadow !== 'none')
-                    this.#content.adoptedStyleSheets.push(...stylesheets);
+                    this.#content.adoptedStyleSheets.push(sharedCSS, ...stylesheets);
                 else {
                     const cssselector = this.CSSSelector;
                     // if not yet inserted :
@@ -303,7 +323,25 @@ LISS.define = async function (tagname, ComponentClass, { dependancies, params } 
     let htmltag = _element2tagname(Class) ?? undefined;
     await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
     const LISSclass = buildLISSHost(ComponentClass, params);
-    customElements.define(tagname, LISSclass, { extends: htmltag });
+    const opts = htmltag === undefined ? {}
+        : { extends: htmltag };
+    customElements.define(tagname, LISSclass, opts);
+};
+// ================================================
+// =============== LISS CSS =======================
+// ================================================
+const sharedCSS = new CSSStyleSheet();
+document.adoptedStyleSheets.push(sharedCSS);
+LISS.insertGlobalCSSRules = function (css) {
+    let css_style;
+    if (css instanceof HTMLStyleElement)
+        css_style = css.sheet;
+    if (typeof css === "string") {
+        css_style = new CSSStyleSheet();
+        css_style.replaceSync(css);
+    }
+    for (let rule of css_style.cssRules)
+        sharedCSS.insertRule(rule.cssText);
 };
 async function build(tagname, { params = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
     if (!initialize && parent === null)
@@ -501,17 +539,18 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
         const js = results[0];
         const content = results[1];
         const css = results[2];
+        const opts = {
+            ...content !== undefined && { content },
+            ...css !== undefined && { css },
+        };
         if (js === undefined) { // no JS
             if (content === undefined)
                 throw new Error(`No JS or HTML files found for WebComponent ${tagname}.`);
-            class WebComponent extends LISS({
-                content,
-                css
-            }) {
+            class WebComponent extends LISS(opts) {
             }
             return LISS.define(tagname, WebComponent);
         }
-        return LISS.define(tagname, js({ content, css }));
+        return LISS.define(tagname, js(opts));
     }
 }
 LISS.define("liss-auto", LISS_Auto);
@@ -541,7 +580,7 @@ async function _import(uri, isLissAuto = false) {
     if (isLissAuto && await _fetchText(uri, isLissAuto) === undefined)
         return undefined;
     try {
-        return (await import(uri)).default;
+        return (await import(/* webpackIgnore: true */ uri)).default;
     }
     catch (e) {
         console.log(e);
