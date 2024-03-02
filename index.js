@@ -202,6 +202,10 @@ function buildLISSHost(Liss, _params = {}) {
             this.#content = this;
             if (shadow !== 'none') {
                 this.#content = this.attachShadow({ mode: shadow });
+                //@ts-ignore
+                this.#content.addEventListener('click', onClickEvent);
+                //@ts-ignore
+                this.#content.addEventListener('dblclick', onClickEvent);
             }
             // attrs
             for (let obs of attributes)
@@ -328,7 +332,7 @@ LISS.define = async function (tagname, ComponentClass, { dependancies, params } 
     customElements.define(tagname, LISSclass, opts);
 };
 // ================================================
-// =============== LISS CSS =======================
+// =============== LISS GLOBAL INSERT =============
 // ================================================
 const sharedCSS = new CSSStyleSheet();
 document.adoptedStyleSheets.push(sharedCSS);
@@ -343,6 +347,27 @@ LISS.insertGlobalCSSRules = function (css) {
     for (let rule of css_style.cssRules)
         sharedCSS.insertRule(rule.cssText);
 };
+const DELEGATED_EVENTS = {
+    "click": [],
+    "dblclick": []
+};
+const ALREADY_PROCESSED = Symbol();
+function onClickEvent(ev) {
+    if (ev[ALREADY_PROCESSED] === true)
+        return;
+    ev[ALREADY_PROCESSED] = true;
+    const handlers = DELEGATED_EVENTS[ev.type];
+    for (let [selector, handler] of handlers) {
+        var target = ev.target;
+        if (target.matches(selector))
+            handler(ev);
+    }
+}
+LISS.insertGlobalDelegatedListener = function (event_name, selector, handler) {
+    DELEGATED_EVENTS[event_name].push([selector, handler]);
+};
+document.addEventListener('click', onClickEvent);
+document.addEventListener('dblclick', onClickEvent);
 async function build(tagname, { params = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
     if (!initialize && parent === null)
         throw new Error("A parent must be given if initialize is false");

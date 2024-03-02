@@ -342,7 +342,12 @@ function buildLISSHost<Extends extends Class,
 			// shadow
 			this.#content = this as unknown as Host;
 			if( shadow !== 'none') {
-				this.#content = this.attachShadow({mode: shadow})
+				this.#content = this.attachShadow({mode: shadow});
+
+				//@ts-ignore
+				this.#content.addEventListener('click', onClickEvent);
+				//@ts-ignore
+				this.#content.addEventListener('dblclick', onClickEvent);
 			}
 
 			// attrs
@@ -531,7 +536,7 @@ LISS.define = async function<Extends extends Class,
 };
 
 // ================================================
-// =============== LISS CSS =======================
+// =============== LISS GLOBAL INSERT =============
 // ================================================
 
 const sharedCSS = new CSSStyleSheet();
@@ -551,6 +556,35 @@ LISS.insertGlobalCSSRules = function(css: CSS_Source) {
 	for(let rule of css_style.cssRules)
 		sharedCSS.insertRule(rule.cssText);
 }
+
+type DelegatedHandler = [string, (ev: MouseEvent) => void];
+const DELEGATED_EVENTS = {
+	"click": [] as DelegatedHandler[],
+	"dblclick": [] as DelegatedHandler[]
+};
+
+const ALREADY_PROCESSED = Symbol();
+
+function onClickEvent(ev: MouseEvent) {
+
+	if( (ev as any)[ALREADY_PROCESSED] === true )
+		return;
+	(ev as any)[ALREADY_PROCESSED] = true;
+
+	const handlers = DELEGATED_EVENTS[ev.type as keyof typeof DELEGATED_EVENTS];
+	for(let [selector, handler] of handlers) {
+		var target = ev.target as HTMLElement;
+		if( target.matches(selector) )
+			handler(ev);
+	}
+}
+
+LISS.insertGlobalDelegatedListener = function(event_name: keyof typeof DELEGATED_EVENTS, selector: string, handler: (ev: MouseEvent) => void ) {
+	DELEGATED_EVENTS[event_name].push([selector, handler])
+}
+
+document.addEventListener('click', onClickEvent);
+document.addEventListener('dblclick', onClickEvent);
 
 // ================================================
 // =============== LISS helpers ===================
