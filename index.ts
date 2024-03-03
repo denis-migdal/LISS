@@ -573,7 +573,7 @@ function onClickEvent(ev: MouseEvent) {
 
 	const handlers = DELEGATED_EVENTS[ev.type as keyof typeof DELEGATED_EVENTS];
 	for(let [selector, handler] of handlers) {
-		var target = ev.target as HTMLElement;
+		var target = ev.target as Element;
 		if( target.matches(selector) )
 			handler(ev);
 	}
@@ -619,10 +619,10 @@ type BUILD_OPTIONS<T extends LISSBase<any,any,any,any>> = Partial<{
 					  	listeners : Readonly<Record<string, (ev: Event) => void>>
 					}> & ({
 						initialize: false,
-						parent: HTMLElement
+						parent: Element
 					}|{
 						initialize?: true,
-						parent?: HTMLElement
+						parent?: Element
 					});
 
 async function build<T extends keyof Components>(tagname: T, options?: BUILD_OPTIONS<Components[T]>): Promise<Components[T]>;
@@ -725,13 +725,13 @@ LISS.selector = function(name?: string) {
 	return `:is(${name}, [is="${name}"])`;
 }
 
-LISS.getLISS    = async function<T extends LISSBase<any,any,any,any>>( element: HTMLElement ) {
+LISS.getLISS    = async function<T extends LISSBase<any,any,any,any>>( element: Element ) {
 
 	await LISS.whenDefined( LISS.getName(element) );
 
 	return (element as LISSHost<T>).LISS; // ensure initialized.
 }
-LISS.getLISSSync= function<T extends LISSBase<any,any,any,any>>( element: HTMLElement ) {
+LISS.getLISSSync= function<T extends LISSBase<any,any,any,any>>( element: Element ) {
 
 	if( ! LISS.isDefined( LISS.getName(element) ) )
 		throw new Error(`${name} hasn't been defined yet.`);
@@ -743,14 +743,14 @@ LISS.getLISSSync= function<T extends LISSBase<any,any,any,any>>( element: HTMLEl
 
 	return host.LISSSync;
 }
-LISS.initialize = async function<T extends LISSBase<any,any,any,any>>( element: HTMLElement) {
+LISS.initialize = async function<T extends LISSBase<any,any,any,any>>( element: Element) {
 
 	await LISS.whenDefined( LISS.getName(element) );
 
 	return await (element as LISSHost<T>).initialize(); // ensure initialization.
 }
 
-LISS.getName = function( element: HTMLElement ): string {
+LISS.getName = function( element: Element ): string {
 
 	const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
 	

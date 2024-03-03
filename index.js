@@ -332,7 +332,7 @@ LISS.define = async function (tagname, ComponentClass, { dependancies, params } 
     customElements.define(tagname, LISSclass, opts);
 };
 // ================================================
-// =============== LISS GLOBAL INSERT =============
+// =============== LISS ShadowRoot tools ==========
 // ================================================
 const sharedCSS = new CSSStyleSheet();
 document.adoptedStyleSheets.push(sharedCSS);
@@ -368,6 +368,17 @@ LISS.insertGlobalDelegatedListener = function (event_name, selector, handler) {
 };
 document.addEventListener('click', onClickEvent);
 document.addEventListener('dblclick', onClickEvent);
+LISS.closest = function closest(selector, element) {
+    while (true) {
+        var result = element.closest(selector);
+        if (result !== null)
+            return result;
+        const root = element.getRootNode();
+        if (!("host" in root))
+            return null;
+        element = root.host;
+    }
+};
 async function build(tagname, { params = {}, initialize = true, content = [], parent = undefined, id = undefined, classes = [], cssvars = {}, attrs = {}, data = {}, listeners = {} } = {}) {
     if (!initialize && parent === null)
         throw new Error("A parent must be given if initialize is false");
@@ -484,14 +495,14 @@ async function qsa(selector, tagname_or_parent, parent = document) {
     return await Promise.all(promises);
 }
 LISS.qsa = qsa;
-async function closest(selector, tagname_or_parent, element) {
+async function qsc(selector, tagname_or_parent, element) {
     const res = _buildQS(selector, tagname_or_parent, element);
     const result = res[1].closest(res[0]);
     if (result === null)
         return null;
     return await LISS.getLISS(result);
 }
-LISS.closest = closest;
+LISS.qsc = qsc;
 function qsSync(selector, tagname_or_parent, parent = document) {
     [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
     const element = parent.querySelector(selector);
@@ -510,14 +521,14 @@ function qsaSync(selector, tagname_or_parent, parent = document) {
     return result;
 }
 LISS.qsaSync = qsaSync;
-function closestSync(selector, tagname_or_parent, element) {
+function qscSync(selector, tagname_or_parent, element) {
     const res = _buildQS(selector, tagname_or_parent, element);
     const result = res[1].closest(res[0]);
     if (result === null)
         return null;
     return LISS.getLISSSync(result);
 }
-LISS.closestSync = closestSync;
+LISS.qscSync = qscSync;
 // ================================================
 // =============== LISS Auto ======================
 // ================================================
