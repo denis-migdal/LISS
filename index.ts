@@ -572,10 +572,18 @@ function onClickEvent(ev: MouseEvent) {
 	(ev as any)[ALREADY_PROCESSED] = true;
 
 	const handlers = DELEGATED_EVENTS[ev.type as keyof typeof DELEGATED_EVENTS];
-	for(let [selector, handler] of handlers) {
-		var target = ev.target as Element;
-		if( target.matches(selector) )
-			handler(ev);
+
+	for(let elem of ev.composedPath() ) {
+	
+		if( elem instanceof ShadowRoot || elem === document || elem === window )
+			continue;
+
+		var target = elem as Element;
+
+		for(let [selector, handler] of handlers) {
+			if( target.matches(selector) )
+				handler(ev);
+		}
 	}
 }
 

@@ -357,10 +357,14 @@ function onClickEvent(ev) {
         return;
     ev[ALREADY_PROCESSED] = true;
     const handlers = DELEGATED_EVENTS[ev.type];
-    for (let [selector, handler] of handlers) {
-        var target = ev.target;
-        if (target.matches(selector))
-            handler(ev);
+    for (let elem of ev.composedPath()) {
+        if (elem instanceof ShadowRoot || elem === document || elem === window)
+            continue;
+        var target = elem;
+        for (let [selector, handler] of handlers) {
+            if (target.matches(selector))
+                handler(ev);
+        }
     }
 }
 LISS.insertGlobalDelegatedListener = function (event_name, selector, handler) {
