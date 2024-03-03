@@ -536,7 +536,7 @@ LISS.define = async function<Extends extends Class,
 };
 
 // ================================================
-// =============== LISS GLOBAL INSERT =============
+// =============== LISS ShadowRoot tools ==========
 // ================================================
 
 const sharedCSS = new CSSStyleSheet();
@@ -585,6 +585,22 @@ LISS.insertGlobalDelegatedListener = function(event_name: keyof typeof DELEGATED
 
 document.addEventListener('click', onClickEvent);
 document.addEventListener('dblclick', onClickEvent);
+
+LISS.closest = function closest<E extends Element>(selector: string, element: Element) {
+
+	while(true) {
+		var result = element.closest<E>(selector);
+
+		if( result !== null)
+			return result;
+
+		const root = element.getRootNode();
+		if( ! ("host" in root) )
+			return null;
+
+		element = (root as ShadowRoot).host;
+	}
+}
 
 // ================================================
 // =============== LISS helpers ===================
@@ -818,12 +834,12 @@ async function qsa<T extends LISSBase<any,any,any,any>>(	selector: string,
 }
 LISS.qsa = qsa;
 
-async function closest<T extends LISSBase<any,any,any,any>>(selector: string,
+async function qsc<T extends LISSBase<any,any,any,any>>(selector: string,
 						element  : Element): Promise<T>;
-async function closest<N extends keyof Components>(selector: string,
+async function qsc<N extends keyof Components>(selector: string,
 						tagname  : N,
 						element  : Element): Promise< Components[N] >;
-async function closest<T extends LISSBase<any,any,any,any>>(	selector: string,
+async function qsc<T extends LISSBase<any,any,any,any>>(	selector: string,
 						tagname_or_parent?: keyof Components | Element,
 						element  ?: Element) {
 
@@ -835,7 +851,7 @@ async function closest<T extends LISSBase<any,any,any,any>>(	selector: string,
 
 	return await LISS.getLISS(result);
 }
-LISS.closest = closest;
+LISS.qsc = qsc;
 
 function qsSync<T extends LISSBase<any,any,any,any>>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): T;
@@ -879,12 +895,12 @@ function qsaSync<T extends LISSBase<any,any,any,any>>(	selector: string,
 }
 LISS.qsaSync = qsaSync;
 
-function closestSync<T extends LISSBase<any,any,any,any>>(selector: string,
+function qscSync<T extends LISSBase<any,any,any,any>>(selector: string,
 						element  : Element): T;
-function closestSync<N extends keyof Components>(selector: string,
+function qscSync<N extends keyof Components>(selector: string,
 						tagname  : N,
 						element  : Element): Components[N];
-function closestSync<T extends LISSBase<any,any,any,any>>(	selector: string,
+function qscSync<T extends LISSBase<any,any,any,any>>(	selector: string,
 						tagname_or_parent?: keyof Components | Element,
 						element  ?: Element) {
 
@@ -896,7 +912,7 @@ function closestSync<T extends LISSBase<any,any,any,any>>(	selector: string,
 
 	return LISS.getLISSSync(result);
 }
-LISS.closestSync = closestSync;
+LISS.qscSync = qscSync;
 
 // ================================================
 // =============== LISS Auto ======================

@@ -625,10 +625,10 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 | `LISS.qs<T>(query, parent?)`       | `Promise<T>`       | Throws an exception if not found.                               |
 | `LISS.qso<T>(query, parent?)`      | `Promise<T>\|null` | `null` if not found.                                            |
 | `LISS.qsa<T>(query, parent?)`      | `Promise<T[]>`     |                                                                 |
-| `LISS.closest(query, element)`     | `Promise<T>\|null` |                                                                 |
+| `LISS.qsc(query, element)`     | `Promise<T>\|null` |                                                                 |
 | `LISS.qsSync(query, parent?)`      | `T`                | Throws an exception if component not yet initialized.           |
 | `LISS.qsaSync(query, parent?)`     | `T[]`              | Throws an exception if any found component not yet initialized. |
-| `LISS.closestSync(query, element)` | `T`                | Throws an exception if component not yet initialized.           |
+| `LISS.qscSync(query, element)` | `T`                | Throws an exception if component not yet initialized.           |
 
 **`parameters`**
 
