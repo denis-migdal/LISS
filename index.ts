@@ -538,7 +538,7 @@ LISS.define = async function<Extends extends Class,
 const sharedCSS = new CSSStyleSheet();
 document.adoptedStyleSheets.push(sharedCSS);
 
-LISS.insertGlobalCSSRules = function(css: CSS_Source) {
+LISS.insertGlobalCSSRules = function(css: string|HTMLStyleElement) {
 
 	let css_style!: CSSStyleSheet;
 

@@ -77,8 +77,6 @@ In vanilla JavaScript, components shouldn't access the DOM before the first call
 
 Even with safeguards, and an `init()` method, errors can still occurs. If the component is defined before the DOM has finished loading, some children can be missing during initialization. `customElements.upgrade(this)` might also be required to ensure the children are upgraded. Also, `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)) which is redoundant information, can lead to errors, and may be in some cases troublesome to handle.
 
-
-
 LISS tacles these issues by constructing the component only when it is fully ready and allows to declare dependancies. LISS also supports asynchronous constructors, and giving parameters to the component.
 
 **Without LISS:**
@@ -218,7 +216,7 @@ You can see all examples below in the [`LISS/examples/` directory](./examples/).
 - [Use HTML/CSS files/strings to fill the component](#use-htmlcss-filesstrings-to-fill-the-component)
 - [Auto mode](#auto-mode)
 - **Advanced features**
-  - ShadowRoot mode / parts / slots.
+  - [ShadowRoot helpers](#shadowroot-helpers)
   - dependancies / async constructor
 - **[LISS full API](#liss-full-API)**
 
@@ -416,7 +414,7 @@ const CSS_RULES = `
 `;
 
 export default class Component extends LISS({
-      content:  fetch("./component.html"),		       // string|Response|HTMLTemplateElement or a Promise of it.
+      content:  fetch("./component.html"),               // string|Response|HTMLTemplateElement or a Promise of it.
       css    : [fetch('./component.css'), CSS_RULES] // string|Response|HTMLStyleElement|CSSStyleSheet or a Promise of it, or an array of it.
   }) {
     //...
@@ -504,6 +502,48 @@ export default function(options) {
 
 You can also add an `index.html` and a `index.css` files to your component. LISS will then automatically use them to define your component's initial content. Their content are given by the `options` parameter.
 
+### ShadowRoot helpers
+
+#### Global CSS rules and global delegated event listeners
+
+When using a close `ShadowRoot`, we still might want to use global CSS rules or global delegated event listeners.
+
+```html
+<div class="fullscreen-onclick"></div>
+```
+
+```tsconfig
+// applies tho CSS rules to all components and to the document.
+LISS.insertGlobalCSSRules(`.fullscreen-onclick {
+    //...
+}`);
+
+// listen to the click events inside all components and inside the document.
+LISS.insertGlobalDelegatedListener("click", ".fullscreen-onclick", (ev) =>
+                                   {
+                                        //...
+                                    }); 
+```
+
+#### LISS.closest()
+
+When using `elem.closest(selector)` inside a `ShadowRoot`, the ancestors of the `ShadowRoot` aren't checked. We provide `LISS.closest<T>(selector, elem)` in order to check them.
+
+```html
+<div class="fullscreen_target">
+    <my-toolbar>
+        <fullscreen-btn></fullscreen-btn>
+    </my-toolbar>
+</div>
+```
+
+```ts
+function onFullscreenBtnClicked(ev) {
+    ev.target.closest(".fullscreen_target"); // may not be found.
+    LISS.closest(".fullscreen_target", ev.target); // found.
+}
+```
+
 ### LISS full API
 
 #### LISS.define< *Extends, Host, Attrs, Params* >(tagname, ComponentClass, options)
@@ -537,21 +577,21 @@ LISS.whenAllDefined(tagnames: readonly string[], callback ?: () => void): Promis
 
 #### LISSOptions&lt; *Extends, Host, Attrs* &gt;
 
-| Name            | Type                                  | Default            | Description                                       |
-| --------------- | ------------------------------------- | ------------------ | ------------------------------------------------- |
-| `Extends`       | `extends Class`                       |                    |                                                   |
-| `Host`          | `extends HTMLElement`                 |                    |                                                   |
-| `Attrs`         | `extends string`                      |                    |                                                   |
-| `Params`        | `extends Record<string, any>`         |                    |                                                   |
-| `CSSSource`     | `string\|Response\|HTMLStyleElement\|CSSStyleSheet`         |                    |                                                   |
-| `extends?`      | `Constructor<Extends>`                | `Object`           | The JS class the component extends.               |
-| `host?`         | `Constructor<Host>`                   | `HTMLElement`      | The host HTML Element class.                      |
-| `attributes?`   | `readonly Attrs[]`                    | `[]`               | The names of the host HTML attributes to observe. |
-| `params?`       | `Params`                              | `{}`               | Default values for the component parameters.      |
-| `dependancies?` | `readonly Promise<any>[]`             | `[]`               | Promises to wait before declaring the component.  |
-| `content?`      | `string\|Response\|HTMLTemplateElement`    | `undefined`        | The component default HTML content.               |
-| `css?`          | `readonly CSS_Source[] \| CSS_Source` | `[]`               | CSS rules for the component.                      |
-| `shadow?`       | `ShadowCfg`                           | `closed` or `none` | ShadowRoot configuration (0 if none).             |
+| Name            | Type                                                | Default            | Description                                       |
+| --------------- | --------------------------------------------------- | ------------------ | ------------------------------------------------- |
+| `Extends`       | `extends Class`                                     |                    |                                                   |
+| `Host`          | `extends HTMLElement`                               |                    |                                                   |
+| `Attrs`         | `extends string`                                    |                    |                                                   |
+| `Params`        | `extends Record<string, any>`                       |                    |                                                   |
+| `CSSSource`     | `string\|Response\|HTMLStyleElement\|CSSStyleSheet` |                    |                                                   |
+| `extends?`      | `Constructor<Extends>`                              | `Object`           | The JS class the component extends.               |
+| `host?`         | `Constructor<Host>`                                 | `HTMLElement`      | The host HTML Element class.                      |
+| `attributes?`   | `readonly Attrs[]`                                  | `[]`               | The names of the host HTML attributes to observe. |
+| `params?`       | `Params`                                            | `{}`               | Default values for the component parameters.      |
+| `dependancies?` | `readonly Promise<any>[]`                           | `[]`               | Promises to wait before declaring the component.  |
+| `content?`      | `string\|Response\|HTMLTemplateElement`             | `undefined`        | The component default HTML content.               |
+| `css?`          | `readonly CSS_Source[] \| CSS_Source`               | `[]`               | CSS rules for the component.                      |
+| `shadow?`       | `ShadowCfg`                                         | `closed` or `none` | ShadowRoot configuration (0 if none).             |
 
 💡 `css` and `content` also accept a `Promise`.
 
@@ -620,14 +660,14 @@ Build a new component instance.
 
 LISS provides several fonctions to get fully intialized LISS components from a query string:
 
-| Function                           | Return             | Remarks                                                         |
-| ---------------------------------- | ------------------ | --------------------------------------------------------------- |
-| `LISS.qs<T>(query, parent?)`       | `Promise<T>`       | Throws an exception if not found.                               |
-| `LISS.qso<T>(query, parent?)`      | `Promise<T>\|null` | `null` if not found.                                            |
-| `LISS.qsa<T>(query, parent?)`      | `Promise<T[]>`     |                                                                 |
+| Function                       | Return             | Remarks                                                         |
+| ------------------------------ | ------------------ | --------------------------------------------------------------- |
+| `LISS.qs<T>(query, parent?)`   | `Promise<T>`       | Throws an exception if not found.                               |
+| `LISS.qso<T>(query, parent?)`  | `Promise<T>\|null` | `null` if not found.                                            |
+| `LISS.qsa<T>(query, parent?)`  | `Promise<T[]>`     |                                                                 |
 | `LISS.qsc(query, element)`     | `Promise<T>\|null` |                                                                 |
-| `LISS.qsSync(query, parent?)`      | `T`                | Throws an exception if component not yet initialized.           |
-| `LISS.qsaSync(query, parent?)`     | `T[]`              | Throws an exception if any found component not yet initialized. |
+| `LISS.qsSync(query, parent?)`  | `T`                | Throws an exception if component not yet initialized.           |
+| `LISS.qsaSync(query, parent?)` | `T[]`              | Throws an exception if any found component not yet initialized. |
 | `LISS.qscSync(query, element)` | `T`                | Throws an exception if component not yet initialized.           |
 
 **`parameters`**
@@ -657,6 +697,16 @@ LISS.qs<T extends keyof Components>(selector: string,
  // selector = "body > :is(my-component,[is="my-component"])"
  LISS.qs('body > ', 'my-component'); // Promise<Component>
 ```
+
+#### ShadowRoot helpers
+
+| Function                                                     | Return | Description                                                    |
+| ------------------------------------------------------------ | ------ | -------------------------------------------------------------- |
+| `LISS.closest<T>(css_selector, elem)`                        | `T`    | Like `elem.closest()` but traverses `ShadowRoot`.              |
+| `LISS.insertGlobalCSSRules(css)`                             |        | Add the `css` rules to all components and to the document.     |
+| `LISS.insertGlobalDelegatedListener(evt, selector, handler)` |        | Add a delegated listener to all componets and to the document. |
+
+
 
 ## Features and examples [OLD]
 
@@ -712,21 +762,12 @@ LISS.qs<T extends keyof Components>(selector: string,
 </table>
 ```
 
-
-
 ## TODO
 
 - [ ] npm package
 
-- [ ] ShadowRoot
-  
-  - [ ] Slots
-    - [ ] createSlot(name), if no shadow : returns this.#content, if name = throw an exception.
-    - [ ] getSlot(name) : if not found : throws.
-    - [ ] observeSlot(name, options) ? : if not found : throws.
-      - [ ] added/removed (events)
-  - [ ] parts (doc)
+- [ ] Write doc for onDOM(Dis)Connected
+
+- [ ] ShadowRoot parts
 
 - [ ] LISS parameter Custom Element (mutation observer + event parents)
-
-- [ ] LISS in DOM connected observer (for opti).
