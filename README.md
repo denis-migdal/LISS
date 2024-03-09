@@ -512,7 +512,7 @@ When using a close `ShadowRoot`, we still might want to use global CSS rules or 
 <div class="fullscreen-onclick"></div>
 ```
 
-```tsconfig
+```type
 // applies tho CSS rules to all components and to the document.
 LISS.insertGlobalCSSRules(`.fullscreen-onclick {
     //...
@@ -537,7 +537,7 @@ When using `elem.closest(selector)` inside a `ShadowRoot`, the ancestors of the 
 </div>
 ```
 
-```ts
+```typescript
 function onFullscreenBtnClicked(ev) {
     ev.target.closest(".fullscreen_target"); // may not be found.
     LISS.closest(".fullscreen_target", ev.target); // found.
@@ -705,8 +705,6 @@ LISS.qs<T extends keyof Components>(selector: string,
 | `LISS.closest<T>(css_selector, elem)`                        | `T`    | Like `elem.closest()` but traverses `ShadowRoot`.              |
 | `LISS.insertGlobalCSSRules(css)`                             |        | Add the `css` rules to all components and to the document.     |
 | `LISS.insertGlobalDelegatedListener(evt, selector, handler)` |        | Add a delegated listener to all componets and to the document. |
-
-
 
 ## Features and examples [OLD]
 
