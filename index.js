@@ -30,48 +30,44 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
     const shadow = p_shadow ?? canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
     if (!canHasShadow && shadow !== ShadowCfg.NONE)
         throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
-    const cwd = _getCallerDir();
     // CONTENT processing
     if (content !== undefined) {
-        if (content instanceof HTMLTemplateElement) {
-            content = content.innerHTML;
-            content = content.trim(); // Never return a text node of whitespace as the result
-            if (content === '')
-                content = undefined;
-        }
-        else if (content instanceof URL || content.startsWith('./')) {
-            if (typeof content === 'string')
-                content = `${cwd}/${content}`;
-            dependancies.push(new Promise(async (resolve) => {
-                content = await _fetchText(content);
-                resolve(LISSBase.Parameters.content = content);
-            }));
-        }
+        dependancies.push((async () => {
+            content = await content;
+            if (content instanceof HTMLTemplateElement)
+                content = content.innerHTML;
+            if (typeof content === "string") {
+                content = content.trim(); // Never return a text node of whitespace as the result
+                if (content === '')
+                    content = undefined;
+            }
+            if (content instanceof Response)
+                content = await content.text();
+            return LISSBase.Parameters.content = content;
+        })());
     }
     // CSS processing
     let stylesheets = [];
     if (css !== undefined) {
         if (!Array.isArray(css))
             css = [css];
-        stylesheets = css.map((c, idx) => {
-            if (c instanceof CSSStyleSheet)
-                return c;
-            if (c instanceof HTMLStyleElement)
-                return c.sheet;
+        const fetch_css = (async (css) => {
+            css = await css;
+            if (css instanceof CSSStyleSheet)
+                return css;
+            if (css instanceof HTMLStyleElement)
+                return css.sheet;
             let style = new CSSStyleSheet();
-            if (!(c instanceof URL) && !c.startsWith('./')) {
-                style.replace(c);
+            if (typeof css === "string") {
+                style.replace(css);
                 return style;
             }
-            if (typeof c === 'string')
-                c = `${cwd}/${c}`;
-            dependancies.push(new Promise(async (resolve) => {
-                const text = await _fetchText(c);
-                stylesheets[idx].replace(text);
-                resolve();
-            }));
+            //if( css instanceof Response )
+            style.replace(await css.text());
             return style;
         });
+        dependancies.push(...css.map(fetch_css));
+        stylesheets = new Array(css.length);
     }
     // @ts-ignore
     class LISSBase extends _extends {
@@ -604,6 +600,12 @@ export class CstmEvent extends CustomEvent {
 // ================================================
 // =============== LISS internal tools ============
 // ================================================
+async function fetchResource(resource) {
+    resource = await resource;
+    if (!(resource instanceof Response))
+        resource = await fetch(resource);
+    return await resource.text();
+}
 async function _fetchText(uri, isLissAuto = false) {
     const options = isLissAuto
         ? { headers: { "liss-auto": "true" } }
@@ -652,11 +654,4 @@ function _element2tagname(Class) {
         return null;
     let htmltag = HTMLCLASS_REGEX.exec(Class.name)[1];
     return elementNameLookupTable[htmltag] ?? htmltag.toLowerCase();
-}
-// cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
-function _getCallerDir(depth = 2) {
-    const line = new Error().stack.split('\n')[depth];
-    let beg = line.indexOf('@') + 1;
-    let end = line.lastIndexOf('/') + 1;
-    return line.slice(beg, end);
 }

@@ -416,17 +416,14 @@ const CSS_RULES = `
 `;
 
 export default class Component extends LISS({
-    content: "./component.html",            // string|URL|HTMLTemplateElement
-    css    : ['./component.css', CSS_RULES] // string|URL|HTMLStyleElement|CSSStyleSheet (or an array)
+      content:  fetch("./component.html"),		       // string|Response|HTMLTemplateElement or a Promise of it.
+      css    : [fetch('./component.css'), CSS_RULES] // string|Response|HTMLStyleElement|CSSStyleSheet or a Promise of it, or an array of it.
   }) {
     //...
 }
 
 LISS.define("my-component", Component);
 ```
-
-📖 By default, LISS assumes `string` values to be HTML or CSS content.
-However, if the `string` starts with `./`, it will be processed as a relative path to the current file.
 
 ### Auto mode
 
@@ -546,14 +543,17 @@ LISS.whenAllDefined(tagnames: readonly string[], callback ?: () => void): Promis
 | `Host`          | `extends HTMLElement`                 |                    |                                                   |
 | `Attrs`         | `extends string`                      |                    |                                                   |
 | `Params`        | `extends Record<string, any>`         |                    |                                                   |
+| `CSSSource`     | `string\|Response\|HTMLStyleElement\|CSSStyleSheet`         |                    |                                                   |
 | `extends?`      | `Constructor<Extends>`                | `Object`           | The JS class the component extends.               |
 | `host?`         | `Constructor<Host>`                   | `HTMLElement`      | The host HTML Element class.                      |
 | `attributes?`   | `readonly Attrs[]`                    | `[]`               | The names of the host HTML attributes to observe. |
 | `params?`       | `Params`                              | `{}`               | Default values for the component parameters.      |
 | `dependancies?` | `readonly Promise<any>[]`             | `[]`               | Promises to wait before declaring the component.  |
-| `content?`      | `string\|URL\|HTMLTemplateElement`    | `undefined`        | The component default HTML content.               |
+| `content?`      | `string\|Response\|HTMLTemplateElement`    | `undefined`        | The component default HTML content.               |
 | `css?`          | `readonly CSS_Source[] \| CSS_Source` | `[]`               | CSS rules for the component.                      |
 | `shadow?`       | `ShadowCfg`                           | `closed` or `none` | ShadowRoot configuration (0 if none).             |
+
+💡 `css` and `content` also accept a `Promise`.
 
 #### LISSReturnType< *Extends, Host, Attrs* >
 
