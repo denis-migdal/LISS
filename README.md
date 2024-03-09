@@ -512,7 +512,7 @@ When using a close `ShadowRoot`, we still might want to use global CSS rules or 
 <div class="fullscreen-onclick"></div>
 ```
 
-```type
+```typescript
 // applies tho CSS rules to all components and to the document.
 LISS.insertGlobalCSSRules(`.fullscreen-onclick {
     //...
