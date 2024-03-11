@@ -321,7 +321,7 @@ component.addEventListener('click', () => {
 
 ### Dynamically build component instances
 
-`LISS.build()` enables you to build new compoment instances through many options:
+`LISS.build()` enables you to build new component instances through many options:
 
 ```typescript
 // cf /examples/build
@@ -627,7 +627,7 @@ Build a new component instance.
 | -------------------- | ----------------------------------------------- | ----------- | -------------------------------------- |
 | `T`                  | `extends LISSBase<E,I,A,P>`                     |             |                                        |
 | `tagname`            | `string`                                        |             |                                        |
-| `options.initialize` | `boolean`                                       | `true`      | Force the compoment initialization.    |
+| `options.initialize` | `boolean`                                       | `true`      | Force the component initialization.    |
 | `options.params?`    | `Partial<Params>`                               | `{}`        | Component parameters.                  |
 | `options.content?`   | `string\|Node\|readonly Node[]`                 | `undefined` | Host default content.                  |
 | `options.id?`        | `string`                                        | `undefined` | Host id attribute                      |
@@ -644,7 +644,7 @@ Build a new component instance.
 | -------------------------------------- | ------------ | ---------------------------------------------------------- |
 | `LISS.getLISS<T>(element)`             | `Promise<T>` | Returns the LISS component associated to the HTML Element. |
 | `LISS.getLISSSync<T>(element)`         | `T`          | Throws an exception if component not yet initialized.      |
-| `LISS.initialize<T>(element, params?)` | `Promise<T>` | Force the compoment initialization.                        |
+| `LISS.initialize<T>(element, params?)` | `Promise<T>` | Force the component initialization.                        |
 | `LISS.getName(element)`                | `string`     | Returns the component name.                                |
 | `LISS.selector(name)`                  | `string`     | Returns the CSS selector for the given component name.     |
 
@@ -679,7 +679,7 @@ LISS provides several fonctions to get fully intialized LISS components from a q
 | `parent?` | `Element\|Document\|DocumentFragment` | `document` |
 | `element` | `Element`                             |            |
 
-💡 For better type checking in TS, we provide an overload for each of these functions enabling to use a compoment name as a 2nd parameter:
+💡 For better type checking in TS, we provide an overload for each of these functions enabling to use a component name as a 2nd parameter:
 
 ```typescript
 LISS.qs<T extends keyof Components>(selector: string,
