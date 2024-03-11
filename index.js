@@ -51,6 +51,7 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
     if (css !== undefined) {
         if (!Array.isArray(css))
             css = [css];
+        stylesheets = new Array(css.length);
         const fetch_css = (async (css) => {
             css = await css;
             if (css instanceof CSSStyleSheet)
@@ -66,8 +67,7 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
             style.replace(await css.text());
             return style;
         });
-        dependancies.push(...css.map(fetch_css));
-        stylesheets = new Array(css.length);
+        dependancies.push(...css.map(async (css, idx) => stylesheets[idx] = await fetch_css(css)));
     }
     // @ts-ignore
     class LISSBase extends _extends {

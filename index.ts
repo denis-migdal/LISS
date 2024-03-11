@@ -109,6 +109,8 @@ export default function LISS<Extends    extends Class              = Class,
 		if( ! Array.isArray(css) )
 			css = [css as CSS_Source];
 
+		stylesheets = new Array<CSSStyleSheet>(css.length);
+
 		const fetch_css = (async (css: CSS_Source) => {
 			css = await css;
 			if(css instanceof CSSStyleSheet)
@@ -127,8 +129,7 @@ export default function LISS<Extends    extends Class              = Class,
 			return style;
 		});
 
-		dependancies.push( ...css.map( fetch_css ) );
-		stylesheets = new Array<CSSStyleSheet>(css.length);
+		dependancies.push( ...css.map( async (css, idx) =>  (stylesheets as any)[idx] = await fetch_css(css) ) );
 	}
 
 	type LHost = LISSHost<LISSBase>;
