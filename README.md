@@ -285,7 +285,6 @@ LISS.define('my-component', MyComponent);
 // cf /examples/extend
 import LISS from 'LISS';
 
-// Give the inherited HTML element as the first parameter of LISS
 class MyComponent extends LISS({
     host   : HTMLTableRowElement,
     extends: EventTarget, // the component is able to send events.
@@ -305,8 +304,7 @@ class MyComponent extends LISS({
 // Define your WebComponent
 LISS.define('my-component', MyComponent);
 
-// TODO: ensure qs type + CSS Selector.
-const component = await LISS.qs('tr[is="my-component"]');
+const component = await LISS.qs( LISS.selector("my-component") );
 
 component.addEventListener('click', () => {
     alert('click');
@@ -379,7 +377,7 @@ const elem = await LISS.build('my-component', {
 
 ### Access components through the DOM
 
-LISS provides several tools to securly manipulate components through the DOM:
+LISS provides several tools to securely manipulate components through the DOM:
 
 - from an `HTMLElement`:
   
