@@ -579,7 +579,7 @@ export class LISS_Auto extends LISS({ attributes: ["src"] }) {
             };
         if (klass === null)
             throw new Error(`Missing files for WebComponent ${tagname}.`);
-        return this.define(tagname, klass);
+        return LISS.define(tagname, klass);
     }
     async #addTag(tagname) {
         tagname = tagname.toLowerCase();
@@ -593,7 +593,8 @@ export class LISS_Auto extends LISS({ attributes: ["src"] }) {
             : _fetchText(`${this.#directory}/${tagname}/${file}`, true)));
         const files = {};
         for (let i = 0; i < filenames.length; ++i)
-            files[filenames[i]] = resources[i];
+            if (resources[i] !== undefined)
+                files[filenames[i]] = resources[i];
         const content = files["index.html"];
         const css = files["index.css"];
         const opts = {
@@ -601,9 +602,6 @@ export class LISS_Auto extends LISS({ attributes: ["src"] }) {
             ...css !== undefined && { css },
         };
         return this.defineWebComponent(tagname, files, opts);
-    }
-    define(tagname, WebComponent) {
-        return LISS.define(tagname, WebComponent);
     }
 }
 LISS.define("liss-auto", LISS_Auto);
