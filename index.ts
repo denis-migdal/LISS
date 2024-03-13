@@ -1011,7 +1011,8 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 		const files: Record<string, any> = {};
 		for(let i = 0; i < filenames.length; ++i)
-			files[filenames[i]] = resources[i];
+			if( resources[i] !== undefined)
+				files[filenames[i]] = resources[i];
 
 		const content = files["index.html"];
 		const css     = files["index.css"];
