@@ -997,7 +997,7 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 		tagname = tagname.toLowerCase();
 
-		if( tagname === 'liss-auto' || ! tagname.includes('-') || this.#known_tag.has( tagname ) )
+		if( tagname === 'liss-auto' || tagname === 'bliss-auto' || ! tagname.includes('-') || this.#known_tag.has( tagname ) )
 			return;
 
 		this.#known_tag.add(tagname);
