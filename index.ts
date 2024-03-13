@@ -990,7 +990,7 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 		if(klass === null)
 			throw new Error(`Missing files for WebComponent ${tagname}.`);
 
-		return this.define(tagname, klass);
+		return LISS.define(tagname, klass);
 	}
 
 	async #addTag(tagname: string) {
@@ -1023,10 +1023,6 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 		return this.defineWebComponent(tagname, files, opts);
 		
-	}
-
-	protected define(tagname: string, WebComponent: any) {
-		return LISS.define(tagname, WebComponent);
 	}
 }
 LISS.define("liss-auto", LISS_Auto);
