@@ -532,7 +532,7 @@ LISS.qscSync = qscSync;
 // ================================================
 // =============== LISS Auto ======================
 // ================================================
-class LISS_Auto extends LISS({ attributes: ["src"] }) {
+export class LISS_Auto extends LISS({ attributes: ["src"] }) {
     #known_tag = new Set();
     #directory;
     #sw;
@@ -593,7 +593,6 @@ class LISS_Auto extends LISS({ attributes: ["src"] }) {
             files[filenames[i]] = resources[i];
         const content = files["index.html"];
         const css = files["index.css"];
-        console.log(files);
         const opts = {
             ...content !== undefined && { content },
             ...css !== undefined && { css },

@@ -923,7 +923,7 @@ LISS.qscSync = qscSync;
 // =============== LISS Auto ======================
 // ================================================
 
-class LISS_Auto extends LISS({attributes: ["src"]}) {
+export class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 	readonly #known_tag = new Set<string>();
 	readonly #directory: string;
@@ -1006,14 +1006,12 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 													? _import   (`${this.#directory}/${tagname}/${file}`, true)
 													: _fetchText(`${this.#directory}/${tagname}/${file}`, true) ) );
 
-		const files = {};
+		const files: Record<string, any> = {};
 		for(let i = 0; i < filenames.length; ++i)
 			files[filenames[i]] = resources[i];
-		
+
 		const content = files["index.html"];
 		const css     = files["index.css"];
-
-		console.log(files);
 
 		const opts: Partial<{content: string, css: string}> = {
 			...content !== undefined && {content},
