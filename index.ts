@@ -967,6 +967,29 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 			this.#addTag(elem.tagName);
 	}
 
+
+    protected resources() {
+		return [
+			"index.js",
+			"index.html",
+			"index.css"
+		];
+    }
+
+	protected buildWebComponentClass(files: Record<string, any>, opts: Partial<{content: string, css: string}>) {
+
+		const js = files["index.js"];
+		const content = files["index.html"];
+
+		if( js !== undefined )
+			return js(opts);
+
+		if( content !== undefined )
+			return class WebComponent extends LISS(opts) {};
+
+		return null;
+	}
+
 	async #addTag(tagname: string) {
 
 		tagname = tagname.toLowerCase();
@@ -978,32 +1001,30 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 		await this.#sw; // ensure SW is installed.
 
-		const results = await Promise.all([
-			_import(`${this.#directory}/${tagname}/index.js`, true), // current page...
-			_fetchText(`${this.#directory}/${tagname}/index.html`, true), // TODO better
-			_fetchText(`${this.#directory}/${tagname}/index.css`, true),
-		]);
+		const filenames = this.resources();
+		const resources = await Promise.all( filenames.map( file => file.endsWith('.js')
+													? _import   (`${this.#directory}/${tagname}/${file}`, true)
+													: _fetchText(`${this.#directory}/${tagname}/${file}`, true) ) );
 
-		const js	  = results[0];
-		const content = results[1];
-		const css     = results[2];
+		const files = {};
+		for(let i = 0; i < filenames.length; ++i)
+			files[filenames[i]] = resources[i];
+		
+		const content = files["index.html"];
+		const css     = files["index.css"];
+
+		console.log(files);
 
 		const opts: Partial<{content: string, css: string}> = {
 			...content !== undefined && {content},
 			...css     !== undefined && {css},
 		};
 
-		if( js === undefined ) { // no JS
+		let WebComponent = this.buildWebComponentClass(files, opts);
+		if(WebComponent === null)
+			throw new Error(`No JS or HTML files found for WebComponent ${tagname}.`);
 
-			if( content === undefined )
-				throw new Error(`No JS or HTML files found for WebComponent ${tagname}.`);
-
-			class WebComponent extends LISS(opts) {}
-
-			return LISS.define(tagname, WebComponent);
-		}
-
-		return LISS.define(tagname, js(opts) );
+		return LISS.define(tagname, WebComponent);
 	}
 }
 LISS.define("liss-auto", LISS_Auto);
