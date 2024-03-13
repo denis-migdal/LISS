@@ -976,18 +976,21 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 		];
     }
 
-	protected buildWebComponentClass(files: Record<string, any>, opts: Partial<{content: string, css: string}>) {
+	protected defineWebComponent(tagname: string, files: Record<string, any>, opts: Partial<{content: string, css: string}>) {
 
 		const js = files["index.js"];
 		const content = files["index.html"];
 
+		let klass: null| ReturnType<typeof LISS> = null;
 		if( js !== undefined )
-			return js(opts);
+			klass = js(opts);
+		else if( content !== undefined )
+			klass = class WebComponent extends LISS(opts) {};
 
-		if( content !== undefined )
-			return class WebComponent extends LISS(opts) {};
+		if(klass === null)
+			throw new Error(`Missing files for WebComponent ${tagname}.`);
 
-		return null;
+		return this.define(tagname, klass);
 	}
 
 	async #addTag(tagname: string) {
@@ -1018,11 +1021,8 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 			...css     !== undefined && {css},
 		};
 
-		let WebComponent = this.buildWebComponentClass(files, opts);
-		if(WebComponent === null)
-			throw new Error(`Missing files for WebComponent ${tagname}.`);
-
-		return this.define(tagname, WebComponent);
+		return this.defineWebComponent(tagname, files, opts);
+		
 	}
 
 	protected define(tagname: string, WebComponent: any) {

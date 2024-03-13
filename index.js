@@ -568,15 +568,18 @@ export class LISS_Auto extends LISS({ attributes: ["src"] }) {
             "index.css"
         ];
     }
-    buildWebComponentClass(files, opts) {
+    defineWebComponent(tagname, files, opts) {
         const js = files["index.js"];
         const content = files["index.html"];
+        let klass = null;
         if (js !== undefined)
-            return js(opts);
-        if (content !== undefined)
-            return class WebComponent extends LISS(opts) {
+            klass = js(opts);
+        else if (content !== undefined)
+            klass = class WebComponent extends LISS(opts) {
             };
-        return null;
+        if (klass === null)
+            throw new Error(`Missing files for WebComponent ${tagname}.`);
+        return this.define(tagname, klass);
     }
     async #addTag(tagname) {
         tagname = tagname.toLowerCase();
@@ -597,10 +600,7 @@ export class LISS_Auto extends LISS({ attributes: ["src"] }) {
             ...content !== undefined && { content },
             ...css !== undefined && { css },
         };
-        let WebComponent = this.buildWebComponentClass(files, opts);
-        if (WebComponent === null)
-            throw new Error(`Missing files for WebComponent ${tagname}.`);
-        return this.define(tagname, WebComponent);
+        return this.defineWebComponent(tagname, files, opts);
     }
     define(tagname, WebComponent) {
         return LISS.define(tagname, WebComponent);
