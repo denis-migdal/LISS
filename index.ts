@@ -1025,7 +1025,7 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 		return this.define(tagname, WebComponent);
 	}
 
-	protected define(tagname: string, WebComponent) {
+	protected define(tagname: string, WebComponent: any) {
 		return LISS.define(tagname, WebComponent);
 	}
 }

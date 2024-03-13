@@ -599,7 +599,10 @@ export class LISS_Auto extends LISS({ attributes: ["src"] }) {
         };
         let WebComponent = this.buildWebComponentClass(files, opts);
         if (WebComponent === null)
-            throw new Error(`No JS or HTML files found for WebComponent ${tagname}.`);
+            throw new Error(`Missing files for WebComponent ${tagname}.`);
+        return this.define(tagname, WebComponent);
+    }
+    define(tagname, WebComponent) {
         return LISS.define(tagname, WebComponent);
     }
 }
