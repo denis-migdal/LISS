@@ -105,7 +105,12 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
             stylesheets,
             shadow,
         };
-        onAttrChanged(_name, _oldValue, _newValue) { }
+        onAttrChanged(_name, _oldValue, _newValue) {
+            //@ts-ignore
+            if (super.onAttrChanged !== undefined)
+                //@ts-ignore
+                super.onAttrChanged(_name, _oldValue, _newValue);
+        }
         get isInDOM() {
             return this.#host.isInDOM;
         }

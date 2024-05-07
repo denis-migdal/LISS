@@ -178,7 +178,13 @@ export default function LISS<Extends    extends Class              = Class,
 
 		protected onAttrChanged(_name: string,
 								_oldValue: string,
-								_newValue: string): void|false {}
+								_newValue: string): void|false {
+
+			//@ts-ignore
+			if( super.onAttrChanged !== undefined )
+				//@ts-ignore
+				(super.onAttrChanged as any)(_name, _oldValue, _newValue);
+		}
 
 		protected get isInDOM() {
 			return (this.#host as LHost).isInDOM;
@@ -189,7 +195,6 @@ export default function LISS<Extends    extends Class              = Class,
 
 	return LISSBase;
 }
-
 
 // ================================================
 // =============== LISS type helpers ==============
