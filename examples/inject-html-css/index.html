@@ -21,8 +21,8 @@
 			`;
 
 			export default class Component extends LISS({
-			    content: "./component.html",			// string|URL|HTMLTemplateElement
-			    css    : ['./component.css', CSS_RULES] // string|URL|HTMLStyleElement|CSSStyleSheet (or an array)
+				content:  fetch("./component.html"),		       // string|Response|HTMLTemplateElement or a Promise of it.
+				css    : [fetch('./component.css'), CSS_RULES] // string|Response|HTMLStyleElement|CSSStyleSheet or a Promise of it, or an array of it.
 			  }) {
 			  	//...
 			}

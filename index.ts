@@ -2,7 +2,11 @@
 // =============== LISS exported types ============
 // ================================================
 
-export type CSS_Source = string|URL|HTMLStyleElement|CSSStyleSheet;
+export type CSS_Resource = string|Response|HTMLStyleElement|CSSStyleSheet;
+export type CSS_Source   = CSS_Resource | Promise<CSS_Resource>;
+
+export type HTML_Resource = string|Response|HTMLTemplateElement;
+export type HTML_Source   = HTML_Resource | Promise<HTML_Resource>;
 
 export type LISSOptions<Extends    extends Class,
 						Host       extends HTMLElement,
@@ -16,8 +20,8 @@ export type LISSOptions<Extends    extends Class,
 	attributes  ?: readonly Attrs[],
 	params      ?: Readonly<Parameters>,
 
-	content?: string|URL|HTMLTemplateElement,
-	css    ?: readonly CSS_Source[] | CSS_Source,
+	content?: HTML_Source,
+	css    ?:  CSS_Source | readonly CSS_Source[],
 	shadow ?:  ShadowCfg,
 };
 
@@ -47,6 +51,9 @@ function _canHasShadow(tag: typeof HTMLElement) {
 	return CAN_HAVE_SHADOW.includes( _element2tagname(tag) );
 }
 
+type Resource = URL|Response;
+
+
 export default function LISS<Extends    extends Class              = Class,
 							 Host       extends HTMLElement        = HTMLElement,
 							 Attrs      extends string             = never,
@@ -71,30 +78,28 @@ export default function LISS<Extends    extends Class              = Class,
 	if( ! canHasShadow && shadow !== ShadowCfg.NONE)
 		throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
 
-	const cwd = _getCallerDir();
-
 	// CONTENT processing
 	if( content !== undefined ) {
 
-		if(content instanceof HTMLTemplateElement) {
+		dependancies.push( ( async () => {
 
+			content = await content;
+
+			if(content instanceof HTMLTemplateElement)
 			content = content.innerHTML;
-			content = (content as string).trim(); // Never return a text node of whitespace as the result
-			if(content === '')
-				content = undefined;
 
-		} else if( content instanceof URL || content.startsWith('./') ) {
+			if( typeof content === "string") {
 
-			if( typeof content === 'string' )
-				content = `${cwd}/${content}`;
+				content = content.trim(); // Never return a text node of whitespace as the result
+				if(content === '')
+					content = undefined;
 
-			dependancies.push( new Promise( async (resolve) => {
+			}
+			if( content instanceof Response )
+				content = await content.text();
 
-				content = await _fetchText(content as URL|string);
-
-				resolve( LISSBase.Parameters.content = content );
-			}) );
-		}
+			return LISSBase.Parameters.content = content;
+		})() );
 	}
 
 	// CSS processing
@@ -104,35 +109,27 @@ export default function LISS<Extends    extends Class              = Class,
 		if( ! Array.isArray(css) )
 			css = [css as CSS_Source];
 
-		stylesheets = (css as CSS_Source[]).map( (c, idx) => {
+		stylesheets = new Array<CSSStyleSheet>(css.length);
 
-			if(c instanceof CSSStyleSheet)
-				return c;
-
-			if( c instanceof HTMLStyleElement)
-				return c.sheet!;
+		const fetch_css = (async (css: CSS_Source) => {
+			css = await css;
+			if(css instanceof CSSStyleSheet)
+				return css;
+			if( css instanceof HTMLStyleElement)
+				return css.sheet!;
 
 			let style = new CSSStyleSheet();
-
-			if( ! (c instanceof URL) && ! c.startsWith('./') ) {
-				style.replace(c);
+			if( typeof css === "string" ) {
+				style.replace(css);
 				return style;
 			}
 
-			if( typeof c === 'string' )
-				c = `${cwd}/${c}`;
-
-			dependancies.push( new Promise<void>( async (resolve) => {
-
-				const text = await _fetchText(c as string|URL);
-
-				stylesheets[idx].replace(text!);
-
-				resolve();
-			}));
-
+			//if( css instanceof Response )
+			style.replace(await css.text());
 			return style;
 		});
+
+		dependancies.push( ...css.map( async (css, idx) =>  (stylesheets as any)[idx] = await fetch_css(css) ) );
 	}
 
 	type LHost = LISSHost<LISSBase>;
@@ -547,7 +544,7 @@ LISS.define = async function<Extends extends Class,
 const sharedCSS = new CSSStyleSheet();
 document.adoptedStyleSheets.push(sharedCSS);
 
-LISS.insertGlobalCSSRules = function(css: CSS_Source) {
+LISS.insertGlobalCSSRules = function(css: string|HTMLStyleElement) {
 
 	let css_style!: CSSStyleSheet;
 
@@ -931,7 +928,7 @@ LISS.qscSync = qscSync;
 // =============== LISS Auto ======================
 // ================================================
 
-class LISS_Auto extends LISS({attributes: ["src"]}) {
+export class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 	readonly #known_tag = new Set<string>();
 	readonly #directory: string;
@@ -975,43 +972,63 @@ class LISS_Auto extends LISS({attributes: ["src"]}) {
 			this.#addTag(elem.tagName);
 	}
 
+
+    protected resources() {
+		return [
+			"index.js",
+			"index.html",
+			"index.css"
+		];
+    }
+
+	protected defineWebComponent(tagname: string, files: Record<string, any>, opts: Partial<{content: string, css: string}>) {
+
+		const js = files["index.js"];
+		const content = files["index.html"];
+
+		let klass: null| ReturnType<typeof LISS> = null;
+		if( js !== undefined )
+			klass = js(opts);
+		else if( content !== undefined )
+			klass = class WebComponent extends LISS(opts) {};
+
+		if(klass === null)
+			throw new Error(`Missing files for WebComponent ${tagname}.`);
+
+		return LISS.define(tagname, klass);
+	}
+
 	async #addTag(tagname: string) {
 
 		tagname = tagname.toLowerCase();
 
-		if( tagname === 'liss-auto' || ! tagname.includes('-') || this.#known_tag.has( tagname ) )
+		if( tagname === 'liss-auto' || tagname === 'bliss-auto' || ! tagname.includes('-') || this.#known_tag.has( tagname ) )
 			return;
 
 		this.#known_tag.add(tagname);
 
 		await this.#sw; // ensure SW is installed.
 
-		const results = await Promise.all([
-			_import(`${this.#directory}/${tagname}/index.js`, true), // current page...
-			_fetchText(`${this.#directory}/${tagname}/index.html`, true), // TODO better
-			_fetchText(`${this.#directory}/${tagname}/index.css`, true),
-		]);
+		const filenames = this.resources();
+		const resources = await Promise.all( filenames.map( file => file.endsWith('.js')
+													? _import   (`${this.#directory}/${tagname}/${file}`, true)
+													: _fetchText(`${this.#directory}/${tagname}/${file}`, true) ) );
 
-		const js	  = results[0];
-		const content = results[1];
-		const css     = results[2];
+		const files: Record<string, any> = {};
+		for(let i = 0; i < filenames.length; ++i)
+			if( resources[i] !== undefined)
+				files[filenames[i]] = resources[i];
+
+		const content = files["index.html"];
+		const css     = files["index.css"];
 
 		const opts: Partial<{content: string, css: string}> = {
 			...content !== undefined && {content},
 			...css     !== undefined && {css},
 		};
 
-		if( js === undefined ) { // no JS
-
-			if( content === undefined )
-				throw new Error(`No JS or HTML files found for WebComponent ${tagname}.`);
-
-			class WebComponent extends LISS(opts) {}
-
-			return LISS.define(tagname, WebComponent);
-		}
-
-		return LISS.define(tagname, js(opts) );
+		return this.defineWebComponent(tagname, files, opts);
+		
 	}
 }
 LISS.define("liss-auto", LISS_Auto);
@@ -1061,6 +1078,17 @@ export type EventsTargetCstr<Events extends Record<string,any>> = Constructor<Ev
 // ================================================
 // =============== LISS internal tools ============
 // ================================================
+
+async function fetchResource(resource: Resource|Promise<Resource>) {
+
+	resource = await resource;
+
+	if( ! (resource instanceof Response) )
+		resource = await fetch(resource);
+
+	return await resource.text();
+}
+
 
 async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
 
@@ -1119,15 +1147,4 @@ function _element2tagname(Class: typeof HTMLElement): string|null {
 	
 	let htmltag = HTMLCLASS_REGEX.exec(Class.name)![1];
 	return elementNameLookupTable[htmltag as keyof typeof elementNameLookupTable] ?? htmltag.toLowerCase()
-}
-
-// cf https://stackoverflow.com/questions/13227489/how-can-one-get-the-file-path-of-the-caller-function-in-node-js
-function _getCallerDir(depth = 2) {
-
-	const line = new Error().stack!.split('\n')[depth];
-
-	let beg = line.indexOf('@') + 1;
-	let end = line.lastIndexOf('/') + 1;
-
-	return line.slice(beg, end);
 }
