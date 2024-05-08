@@ -68,6 +68,8 @@ export default function LISS<Extends    extends Class              = Class,
 								shadow      : p_shadow,
 							}: LISSOptions<Extends, Host, Attrs, Parameters> = {}) {
 
+	//TODO merge prop if extends LISS...
+
 	const host        = p_host    ?? HTMLElement as Constructor<Host>;
 	const _extends    = p_extends ?? Object      as unknown as Constructor<Extends>;
 	const attributes  = p_attrs   ?? [];
@@ -175,13 +177,7 @@ export default function LISS<Extends    extends Class              = Class,
 
 		protected onAttrChanged(_name: string,
 								_oldValue: string,
-								_newValue: string): void|false {
-
-			//@ts-ignore
-			if( super.onAttrChanged !== undefined )
-				//@ts-ignore
-				(super.onAttrChanged as any)(_name, _oldValue, _newValue);
-		}
+								_newValue: string): void|false {}
 
 		protected get isInDOM() {
 			return (this.#host as LHost).isInDOM;
@@ -192,6 +188,36 @@ export default function LISS<Extends    extends Class              = Class,
 
 	return LISSBase;
 }
+
+//TODO: other options...
+function extendsLISS<Extends extends Class,
+	Host    extends HTMLElement,
+	Attrs1   extends string,
+	Attrs2   extends string,
+	Params  extends Record<string,any>,
+	T extends LISSReturnType<Extends, Host, Attrs1, Params>>(Liss: T, parameters: {attributes: readonly Attrs2[]}) {
+
+	// TODO: other options...
+	const attrs = [...Liss.Parameters.attributes, ...parameters.attributes!];
+	const params = Object.assign({}, Liss.Parameters, {attributes: attrs});
+
+	// @ts-ignore : because TS stupid
+	class ExtendedLISS extends Liss {
+		constructor(...t: any[]) {
+			// @ts-ignore : because TS stupid
+			super(...t);
+		}
+
+		protected override get attrs() {
+			return super.attrs as Record<Attrs2|Attrs1, string|null>;
+		}
+
+		static override Parameters = params;
+	}
+
+	return ExtendedLISS;
+}
+LISS.extendsLISS = extendsLISS;
 
 // ================================================
 // =============== LISS type helpers ==============

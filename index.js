@@ -22,6 +22,7 @@ function _canHasShadow(tag) {
     return CAN_HAVE_SHADOW.includes(_element2tagname(tag));
 }
 export default function LISS({ extends: p_extends, host: p_host, dependancies: p_deps, attributes: p_attrs, params, content, css, shadow: p_shadow, } = {}) {
+    //TODO merge prop if extends LISS...
     const host = p_host ?? HTMLElement;
     const _extends = p_extends ?? Object;
     const attributes = p_attrs ?? [];
@@ -101,12 +102,7 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
             stylesheets,
             shadow,
         };
-        onAttrChanged(_name, _oldValue, _newValue) {
-            //@ts-ignore
-            if (super.onAttrChanged !== undefined)
-                //@ts-ignore
-                super.onAttrChanged(_name, _oldValue, _newValue);
-        }
+        onAttrChanged(_name, _oldValue, _newValue) { }
         get isInDOM() {
             return this.#host.isInDOM;
         }
@@ -115,6 +111,25 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
     }
     return LISSBase;
 }
+//TODO: other options...
+function extendsLISS(Liss, parameters) {
+    // TODO: other options...
+    const attrs = [...Liss.Parameters.attributes, ...parameters.attributes];
+    const params = Object.assign({}, Liss.Parameters, { attributes: attrs });
+    // @ts-ignore : because TS stupid
+    class ExtendedLISS extends Liss {
+        constructor(...t) {
+            // @ts-ignore : because TS stupid
+            super(...t);
+        }
+        get attrs() {
+            return super.attrs;
+        }
+        static Parameters = params;
+    }
+    return ExtendedLISS;
+}
+LISS.extendsLISS = extendsLISS;
 // ================================================
 // =============== LISSHost class =================
 // ================================================
