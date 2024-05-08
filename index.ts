@@ -75,7 +75,7 @@ export default function LISS<Extends    extends Class              = Class,
 	const attributes  = p_attrs   ?? [];
 	const dependancies= p_deps    ? [...p_deps] : [];
 	const canHasShadow= _canHasShadow(host);
-	const shadow      = p_shadow  ?? canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
+	const shadow      = p_shadow  ?? (canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE);
 
 	if( ! canHasShadow && shadow !== ShadowCfg.NONE)
 		throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
