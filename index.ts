@@ -158,6 +158,10 @@ export default function LISS<Extends    extends Class              = Class,
 		protected get attrs() {
 			return (this.#host as LHost).attrs;
 		}
+		protected setAttrDefault( attr: Attrs, value: string|null) {
+			return (this.#host as LHost).setAttrDefault(attr, value);
+
+		}
 		protected get params() {
 			return (this.#host as LHost).params;
 		}
@@ -272,20 +276,23 @@ function buildLISSHost<Extends extends Class,
 	class Attributes {
         [x: string]: string|null;
 
-        #data  : Record<Attrs, string|null>;
-        #setter: (name: Attrs, value: string|null) => void;
+        #data     : Record<Attrs, string|null>;
+        #defaults : Record<Attrs, string|null>;
+        #setter   : (name: Attrs, value: string|null) => void;
 
         [GET](name: Attrs) {
-        	return this.#data[name];
+        	return this.#data[name] ?? this.#defaults[name] ?? null;
         };
         [SET](name: Attrs, value: string|null){
         	return this.#setter(name, value); // required to get a clean object when doing {...attrs}
         }
 
-        constructor(data: Record<Attrs, string|null>,
-        			setter: (name: Attrs, value: string|null) => void) {
+        constructor(data    : Record<Attrs, string|null>,
+					defaults: Record<Attrs, string|null>,
+        			setter  : (name: Attrs, value: string|null) => void) {
 
-        	this.#data   = data;
+        	this.#data     = data;
+			this.#defaults = defaults;
         	this.#setter = setter;
 
         	Object.defineProperties(this, properties);
@@ -480,9 +487,11 @@ function buildLISSHost<Extends extends Class,
 		/*** attrs ***/
 		#attrs_flag = false;
 
-		#attributes = {} as Record<Attrs, string|null>;
+		#attributes         = {} as Record<Attrs, string|null>;
+		#attributesDefaults = {} as Record<Attrs, string|null>;
 		#attrs = new Attributes(
 			this.#attributes,
+			this.#attributesDefaults,
 			(name: Attrs, value:string|null) => {
 
 				this.#attributes[name] = value;
@@ -494,6 +503,13 @@ function buildLISSHost<Extends extends Class,
 					this.setAttribute(name, value);
 			}
 		) as unknown as Record<Attrs, string|null>;
+
+		setAttrDefault(name: Attrs, value: string|null) {
+			if( value === null)
+				delete this.#attributesDefaults[name];
+			else
+				this.#attributesDefaults[name] = value;
+		}
 
 		get attrs(): Readonly<Record<Attrs, string|null>> {
 

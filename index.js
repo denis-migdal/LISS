@@ -28,7 +28,7 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
     const attributes = p_attrs ?? [];
     const dependancies = p_deps ? [...p_deps] : [];
     const canHasShadow = _canHasShadow(host);
-    const shadow = p_shadow ?? canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE;
+    const shadow = p_shadow ?? (canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE);
     if (!canHasShadow && shadow !== ShadowCfg.NONE)
         throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
     // CONTENT processing
@@ -86,6 +86,9 @@ export default function LISS({ extends: p_extends, host: p_host, dependancies: p
         }
         get attrs() {
             return this.#host.attrs;
+        }
+        setAttrDefault(attr, value) {
+            return this.#host.setAttrDefault(attr, value);
         }
         get params() {
             return this.#host.params;
@@ -145,16 +148,18 @@ function buildLISSHost(Liss, _params = {}) {
         }]));
     class Attributes {
         #data;
+        #defaults;
         #setter;
         [GET](name) {
-            return this.#data[name];
+            return this.#data[name] ?? this.#defaults[name] ?? null;
         }
         ;
         [SET](name, value) {
             return this.#setter(name, value); // required to get a clean object when doing {...attrs}
         }
-        constructor(data, setter) {
+        constructor(data, defaults, setter) {
             this.#data = data;
+            this.#defaults = defaults;
             this.#setter = setter;
             Object.defineProperties(this, properties);
         }
@@ -297,7 +302,8 @@ function buildLISSHost(Liss, _params = {}) {
         /*** attrs ***/
         #attrs_flag = false;
         #attributes = {};
-        #attrs = new Attributes(this.#attributes, (name, value) => {
+        #attributesDefaults = {};
+        #attrs = new Attributes(this.#attributes, this.#attributesDefaults, (name, value) => {
             this.#attributes[name] = value;
             this.#attrs_flag = true; // do not trigger onAttrsChanged.
             if (value === null)
@@ -305,6 +311,12 @@ function buildLISSHost(Liss, _params = {}) {
             else
                 this.setAttribute(name, value);
         });
+        setAttrDefault(name, value) {
+            if (value === null)
+                delete this.#attributesDefaults[name];
+            else
+                this.#attributesDefaults[name] = value;
+        }
         get attrs() {
             return this.#attrs;
         }
