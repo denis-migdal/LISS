@@ -232,9 +232,10 @@ function buildLISSHost(Liss, _params = {}) {
             for (let obs of attributes)
                 this.#attributes[obs] = this.getAttribute(obs);
             // css
+            this.#content.adoptedStyleSheets.push(sharedCSS);
             if (stylesheets.length) {
                 if (shadow !== 'none')
-                    this.#content.adoptedStyleSheets.push(sharedCSS, ...stylesheets);
+                    this.#content.adoptedStyleSheets.push(...stylesheets);
                 else {
                     const cssselector = this.CSSSelector;
                     // if not yet inserted :

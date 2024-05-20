@@ -762,7 +762,11 @@ LISS.qs<T extends keyof Components>(selector: string,
 
 - [ ] npm package
 
-- [ ] Write doc for onDOM(Dis)Connected
+- [ ] Write doc for
+   - [ ] onDOM(Dis)Connected
+   - [ ] LISS.extends
+    - [ ] attrs default value.
+   - [ ] setAttrDefault
 
 - [ ] ShadowRoot parts
 

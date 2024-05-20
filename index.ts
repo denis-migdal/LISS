@@ -390,10 +390,11 @@ function buildLISSHost<Extends extends Class,
 				this.#attributes[obs] = this.getAttribute(obs);
 
 			// css
+			(this.#content as ShadowRoot).adoptedStyleSheets.push(sharedCSS);
 			if( stylesheets.length ) {
 
 				if( shadow !== 'none')
-					(this.#content as ShadowRoot).adoptedStyleSheets.push(sharedCSS, ...stylesheets);
+					(this.#content as ShadowRoot).adoptedStyleSheets.push(...stylesheets);
 				else {
 
 					const cssselector = this.CSSSelector;
