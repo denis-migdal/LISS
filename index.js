@@ -232,7 +232,8 @@ function buildLISSHost(Liss, _params = {}) {
             for (let obs of attributes)
                 this.#attributes[obs] = this.getAttribute(obs);
             // css
-            this.#content.adoptedStyleSheets.push(sharedCSS);
+            if (shadow !== 'none')
+                this.#content.adoptedStyleSheets.push(sharedCSS);
             if (stylesheets.length) {
                 if (shadow !== 'none')
                     this.#content.adoptedStyleSheets.push(...stylesheets);
