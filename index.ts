@@ -248,6 +248,8 @@ export type LISSHost<LISS extends LISSBase<any,any,any,any> > = InstanceType<bui
 // =============== LISSHost class =================
 // ================================================
 
+let id = 0;
+
 function buildLISSHost<Extends extends Class,
 					   Host    extends HTMLElement,
 					   Attrs   extends string,
@@ -304,6 +306,8 @@ function buildLISSHost<Extends extends Class,
 
 		readonly #params: Params;
 
+		readonly #id = ++id; // for debug
+
 		constructor(params: Partial<Params> = {}) {
 			super();
 			this.#params = Object.assign({}, Liss.Parameters.params, _params, params);
@@ -320,14 +324,14 @@ function buildLISSHost<Extends extends Class,
 		get isInit() {
 			return this.#API !== null;
 		}
-		async initialize(params: Partial<Params> = {}) {
+		initialize(params: Partial<Params> = {}) {
 
 			if( this.isInit )
 				throw new Error('Element already initialized!');
 
 			Object.assign(this.#params, params);
 
-			const api = await this.init();
+			const api = this.init();
 
 			if( this.#isInDOM )
 				(api as any).onDOMConnected();
@@ -367,10 +371,11 @@ function buildLISSHost<Extends extends Class,
 				this.init();
 				return;
 			}
+
 			(this.#API! as any).onDOMConnected();
 		}
 
-		private async init() {
+		private init() {
 			
 			customElements.upgrade(this);
 			
@@ -436,8 +441,9 @@ function buildLISSHost<Extends extends Class,
 			__cstr_host   = this;
 
 	    	let obj = new Liss();
-	    	if( obj instanceof Promise)
-	    		obj = await obj;
+
+	    	/*if( obj instanceof Promise)
+	    		obj = await obj;*/
 
 			this.#API = obj as InstanceType<T>;
 

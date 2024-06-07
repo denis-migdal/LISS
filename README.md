@@ -77,7 +77,7 @@ In vanilla JavaScript, components shouldn't access the DOM before the first call
 
 Even with safeguards, and an `init()` method, errors can still occurs. If the component is defined before the DOM has finished loading, some children can be missing during initialization. `customElements.upgrade(this)` might also be required to ensure the children are upgraded. Also, `customElements.define()` third argument must match the class inherited by the Web Component ([more info](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define)) which is redoundant information, can lead to errors, and may be in some cases troublesome to handle.
 
-LISS tacles these issues by constructing the component only when it is fully ready and allows to declare dependancies. LISS also supports asynchronous constructors, and giving parameters to the component.
+LISS tacles these issues by constructing the component only when it is fully ready and allows to declare dependancies. LISS also supports giving parameters to the component.
 
 **Without LISS:**
 
@@ -217,7 +217,7 @@ You can see all examples below in the [`LISS/examples/` directory](./examples/).
 - [Auto mode](#auto-mode)
 - **Advanced features**
   - [ShadowRoot helpers](#shadowroot-helpers)
-  - dependancies / async constructor
+  - dependencies
 - **[LISS full API](#liss-full-API)**
 
 ### Manage HTML attributes
