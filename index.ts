@@ -16,7 +16,7 @@ export type LISSOptions<Extends    extends Class,
 	extends?: Constructor<Extends>,
 	host   ?: Constructor<Host>,
 
-	dependancies?: readonly Promise<any>[],
+	dependencies?: readonly Promise<any>[],
 	attributes  ?: readonly Attrs[],
 	params      ?: Readonly<Parameters>,
 
@@ -60,7 +60,7 @@ export default function LISS<Extends    extends Class              = Class,
 							 Parameters extends Record<string,any> = {}>({
 								extends     : p_extends,
 								host        : p_host,
-								dependancies: p_deps,
+								dependencies: p_deps,
 							    attributes  : p_attrs,
 							    params,
 								content,
@@ -73,7 +73,7 @@ export default function LISS<Extends    extends Class              = Class,
 	const host        = p_host    ?? HTMLElement as Constructor<Host>;
 	const _extends    = p_extends ?? Object      as unknown as Constructor<Extends>;
 	const attributes  = p_attrs   ?? [];
-	const dependancies= p_deps    ? [...p_deps] : [];
+	const dependencies= p_deps    ? [...p_deps] : [];
 	const canHasShadow= _canHasShadow(host);
 	const shadow      = p_shadow  ?? (canHasShadow ? ShadowCfg.CLOSE : ShadowCfg.NONE);
 
@@ -83,7 +83,7 @@ export default function LISS<Extends    extends Class              = Class,
 	// CONTENT processing
 	if( content !== undefined ) {
 
-		dependancies.push( ( async () => {
+		dependencies.push( ( async () => {
 
 			content = await content;
 
@@ -131,7 +131,7 @@ export default function LISS<Extends    extends Class              = Class,
 			return style;
 		});
 
-		dependancies.push( ...css.map( async (css, idx) =>  (stylesheets as any)[idx] = await fetch_css(css) ) );
+		dependencies.push( ...css.map( async (css, idx) =>  (stylesheets as any)[idx] = await fetch_css(css) ) );
 	}
 
 	type LHost = LISSHost<LISSBase>;
@@ -171,7 +171,7 @@ export default function LISS<Extends    extends Class              = Class,
 
 		static readonly Parameters = {
 			host,
-			dependancies,
+			dependencies,
 			attributes,
 			params,
 			content,
@@ -568,16 +568,16 @@ LISS.define = async function<Extends extends Class,
 						   	 T extends LISSReturnType<Extends, Host, Attrs, Params>>(
 						   	tagname: string,
 							ComponentClass: T,
-							{dependancies, params}: {params?: Partial<Params>, dependancies?: readonly Promise<string>[]} = {}) {
+							{dependencies, params}: {params?: Partial<Params>, dependencies?: readonly Promise<string>[]} = {}) {
 
-	dependancies??=[];
+	dependencies??=[];
 	params      ??= {};
 
 	const Class = ComponentClass.Parameters.host;
 	let LISSBase: any = ComponentClass;
 	let htmltag = _element2tagname(Class)??undefined;
 
-	await Promise.all([_DOMContentLoaded, ...dependancies, ...LISSBase.Parameters.dependancies]);
+	await Promise.all([_DOMContentLoaded, ...dependencies, ...LISSBase.Parameters.dependencies]);
 
 	const LISSclass = buildLISSHost<Extends, Host, Attrs, Params, T>(ComponentClass, params);
 	
