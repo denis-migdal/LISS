@@ -199,11 +199,13 @@ function extendsLISS<Extends extends Class,
 	Attrs1   extends string,
 	Attrs2   extends string,
 	Params  extends Record<string,any>,
-	T extends LISSReturnType<Extends, Host, Attrs1, Params>>(Liss: T, parameters: {attributes: readonly Attrs2[]}) {
+	T extends LISSReturnType<Extends, Host, Attrs1, Params>>(Liss: T, parameters: {shadow?: ShadowCfg, attributes: readonly Attrs2[]}) {
 
 	// TODO: other options...
 	const attrs = [...Liss.Parameters.attributes, ...parameters.attributes!];
 	const params = Object.assign({}, Liss.Parameters, {attributes: attrs});
+	if( parameters.shadow !== undefined)
+		params.shadow = parameters.shadow;
 
 	// @ts-ignore : because TS stupid
 	class ExtendedLISS extends Liss {
