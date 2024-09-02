@@ -870,7 +870,8 @@ LISS.getLISS    = async function<T extends LISSBase<any,any,any,any>>( element: 
 }
 LISS.getLISSSync= function<T extends LISSBase<any,any,any,any>>( element: Element ) {
 
-	if( ! LISS.isDefined( LISS.getName(element) ) )
+	const name = LISS.getName(element);
+	if( ! LISS.isDefined( name ) )
 		throw new Error(`${name} hasn't been defined yet.`);
 
 	let host = element as LISSHost<T>;
