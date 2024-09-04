@@ -378,10 +378,8 @@ function buildLISSHost<Extends extends Class,
 
 			this.#isInDOM = true;
 	
-			if( ! this.isInit ) {
+			if( ! this.isInit )
 				this.init();
-				return;
-			}
 
 			(this.#API! as any).onDOMConnected();
 		}
