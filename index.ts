@@ -122,12 +122,12 @@ export default function LISS<Extends    extends Class              = Class,
 
 			let style = new CSSStyleSheet();
 			if( typeof css === "string" ) {
-				style.replace(css);
+				await style.replace(css);
 				return style;
 			}
 
 			//if( css instanceof Response )
-			style.replace(await css.text());
+			await style.replace(await css.text());
 			return style;
 		});
 
@@ -162,8 +162,11 @@ export default function LISS<Extends    extends Class              = Class,
 			return (this.#host as LHost).setAttrDefault(attr, value);
 
 		}
-		protected get params() {
+		public get params(): Readonly<Parameters> {
 			return (this.#host as LHost).params;
+		}
+		public setParam<T extends keyof Parameters>(name: T, value: Parameters[T]) {
+			(this.#host as LHost).params[name] = value;
 		}
 		protected get content() {
 			return (this.#host as LHost).content!;
@@ -183,7 +186,7 @@ export default function LISS<Extends    extends Class              = Class,
 								_oldValue: string,
 								_newValue: string): void|false {}
 
-		protected get isInDOM() {
+		public get isInDOM() {
 			return (this.#host as LHost).isInDOM;
 		}
 		protected onDOMConnected() {}
@@ -468,6 +471,12 @@ function buildLISSHost<Extends extends Class,
 
 		get params(): Params {
 			return this.#params;
+		}
+		public setParam<T extends keyof Params>(name: T, value: Params[T]) {
+			if( this.isInit )
+				return this.#API!.setParam(name, value);
+
+			this.#params[name] = value; // will be given to constructor.
 		}
 
 
