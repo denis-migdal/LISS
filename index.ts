@@ -505,9 +505,11 @@ function buildLISSHost<Extends extends Class,
 		/*** CSS ***/
 
 		get CSSSelector() {
-			return this.hasShadow
-					? this.tagName
-					: `${this.tagName}[is="${this.getAttribute("is")}"]`;
+
+			if(this.hasShadow || ! this.hasAttribute("is") )
+				return this.tagName;
+
+			return `${this.tagName}[is="${this.getAttribute("is")}"]`;
 		}
 
 		/*** attrs ***/
