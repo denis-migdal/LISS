@@ -760,14 +760,19 @@ LISS.qs<T extends keyof Components>(selector: string,
 
 ## TODO
 
-- [ ] npm package
+- [ ] Dependancies : after Host decl.
+- [ ] Expect parents/children initialization options (2 incompatibles)
+  -> expect Host ?
+  -> DOM connect/disconnect => different life-cycle / upper life-cycle ?
+  -> add doc for init/life cycle
+
+- [ ] npm package / distribute
 
 - [ ] Write doc for
    - [ ] onDOM(Dis)Connected
    - [ ] LISS.extends
     - [ ] attrs default value.
    - [ ] setAttrDefault
+   - LISSParams
 
 - [ ] ShadowRoot parts
-
-- [ ] LISS parameter Custom Element (mutation observer + event parents)
