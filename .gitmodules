@@ -1,0 +1,3 @@
+[submodule "build/WebpackFramework"]
+	path = build/WebpackFramework
+	url = git@github.com:denis-migdal/Webpack-Framework.git

@@ -1,0 +1,28 @@
+{
+    "include": ["src"],
+    "compilerOptions": {
+        "rootDir": ".",
+        "outDir": "./dist/",
+        "baseUrl": "./",
+        "paths": {
+        "*": ["src/*", "libs/*"]
+        },
+        "sourceMap": true,
+        "alwaysStrict": true,
+
+        "strict": true,
+        "noErrorTruncation": true,
+        "exactOptionalPropertyTypes": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "allowImportingTsExtensions": true,
+
+        "module": "esnext",
+        "target": "esnext",
+        "allowJs": true,
+        "resolveJsonModule": true,
+        "moduleResolution": "node",
+        "incremental": true,
+    }
+}
