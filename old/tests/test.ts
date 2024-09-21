@@ -17,7 +17,7 @@ for(let key of Object.getOwnPropertyNames(window))
 		(globalThis as any)[key] = window[key];
 
 //@ts-ignore : causes issues
-let LISS = (await import(`LISS`)).default;
+let LISS = (await import(`../../index.ts`)).default;
 
 //@ts-ignore : causes issues
 Deno.test("Name", async () => {
