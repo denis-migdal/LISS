@@ -12,3 +12,10 @@
 ## TODO
 
 - Make Webpack output several JS lib exports.
+
+- Provide clone optimisation (e.g. for WebSlides) ?
+  -> clean state   (with/without Shadow ?) ?
+  -> do not reinit ?
+- Life cycle options -> Host vs Impl...
+
+- vanilla compat...
