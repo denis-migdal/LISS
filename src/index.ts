@@ -1,4 +1,4 @@
-import { LISS as __LISS } from "./LISSBase";
+import { LISS as _LISS } from "./LISSBase";
 
 import {define} from "./define";
 
@@ -6,8 +6,8 @@ interface ILISS {
     define: typeof define;
 }
 
-const _LISS = __LISS as typeof __LISS & ILISS;
+const LISS = _LISS as typeof _LISS & ILISS;
 
-_LISS.define = define;
+LISS.define = define;
 
-export const LISS = _LISS;
+export default LISS;

@@ -11,6 +11,15 @@
 
 ## TODO
 
+- [ ] test
+- [ ] helpers/shadowRoot/LISSAuto => helpers directory.
+- [ ] html``
+- [ ] liss[Sync]``
+
+-> updateParams : not known
+-> generic template extends issue... => review types
+  -> bad type deduction ?
+
 - Make Webpack output several JS lib exports.
 
 - Provide clone optimisation (e.g. for WebSlides) ?

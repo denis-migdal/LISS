@@ -2,9 +2,9 @@
 // =============== LISS define ====================
 // ================================================
 
-import { buildLISSHost } from "LISSHost";
-import { LISS_Opts, LISSReturnType } from "types";
-import { _element2tagname } from "utils";
+import { buildLISSHost } from "./LISSHost";
+import { LISS_Opts, LISSReturnType } from "./types";
+import { _element2tagname } from "./utils";
 
 
 export function define<Opts extends LISS_Opts,

@@ -1,8 +1,11 @@
-import { setCstrHost } from "LISSBase";
-import { LISS_Opts, LISSReturnType } from "types";
-import { isDOMContentLoaded, waitDOMContentLoaded } from "utils";
+import { setCstrHost } from "./LISSBase";
+import { LISS_Opts, LISSReturnType } from "./types";
+import { isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
 
 let id = 0;
+
+//TODO: shadow utils ?
+const sharedCSS = new CSSStyleSheet();
 
 export function buildLISSHost<Opts extends LISS_Opts,
                        T extends LISSReturnType<Opts>>(Liss: T, _params: Partial<Opts["params"]> = {}) {
@@ -70,7 +73,6 @@ export function buildLISSHost<Opts extends LISS_Opts,
     // No deps and DOM already loaded.
     let isReady = Liss.LISSCfg.deps.length == 0 && isDOMContentLoaded();
 
-	// @ts-ignore : because TS is stupid.
 	class LISSHostBase extends host {
 
 		readonly #params: Params;
@@ -179,9 +181,9 @@ export function buildLISSHost<Opts extends LISS_Opts,
 				this.#content = this.attachShadow({mode: shadow});
 
 				//@ts-ignore
-				this.#content.addEventListener('click', onClickEvent);
+				//this.#content.addEventListener('click', onClickEvent);
 				//@ts-ignore
-				this.#content.addEventListener('dblclick', onClickEvent);
+				//this.#content.addEventListener('dblclick', onClickEvent);
 			}
 
 			// attrs
@@ -251,9 +253,10 @@ export function buildLISSHost<Opts extends LISS_Opts,
 		get params(): Params {
 			return this.#params;
 		}
-        
+
         public updateParams(params: Partial<LISS_Opts["params"]>) {
 			if( this.isInit )
+                // @ts-ignore
 				return this.#API!.updateParams(params);
 
             // wil be given to constructor...

@@ -1,5 +1,5 @@
-import { HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "types";
-import { _element2tagname, isShadowSupported } from "utils";
+import { CSS_Source, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
+import { _element2tagname, isShadowSupported } from "./utils";
 
 let __cstr_host  : any = null;
 
@@ -24,7 +24,7 @@ export function LISS<Opts extends LISS_Opts>({
     content,
     css,
     shadow = isShadowSupported(host) ? ShadowCfg.CLOSE : ShadowCfg.NONE
-}: Opts) {
+}: Partial<Opts> = {}) {
 
     if( shadow !== ShadowCfg.OPEN && ! isShadowSupported(host) )
         throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
@@ -55,9 +55,11 @@ export function LISS<Opts extends LISS_Opts>({
 	if( css !== undefined ) {
 
 		if( ! Array.isArray(css) )
+			// @ts-ignore : todo: LISSOpts => should not be a generic ?
 			css = [css];
 
-		stylesheets = css.map( (c, idx) => {
+		// @ts-ignore
+		stylesheets = css.map( (c: CSS_Source, idx: number) => {
 
 			if( c instanceof Promise || c instanceof Response) {
 
@@ -81,8 +83,18 @@ export function LISS<Opts extends LISS_Opts>({
 	type LISSHost<T> = any; //TODO...
 	type LHost = LISSHost<LISSBase>; //<- config instead of LISSBase ?
 
-	// @ts-ignore
 	class LISSBase extends _extends {
+
+		constructor(..._: any[]) { // required by TS, we don't use it...
+
+			super();
+
+			// h4ck, okay because JS is monothreaded.
+			if( __cstr_host === null )
+				throw new Error("Please do not directly call this constructor");
+			this.#host = __cstr_host;
+			__cstr_host = null;
+		}
 
 		readonly #host: any; // prevents issue #1...
 
@@ -96,17 +108,6 @@ export function LISS<Opts extends LISS_Opts>({
 			stylesheets,
 			shadow,
 		};
-
-		constructor() {
-
-			super();
-
-			// h4ck, okay because JS is monothreaded.
-			if( __cstr_host === null )
-				throw new Error("Please do not directly call this constructor");
-			this.#host = __cstr_host;
-			__cstr_host = null;
-		}
 
 		public get host(): LISS_Opts["host"] {
 			return this.#host;

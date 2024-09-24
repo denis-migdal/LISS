@@ -1,8 +1,8 @@
-import { LISS } from "LISSBase";
+import { LISS } from "./LISSBase";
 
 interface Class {}
 
-export type Constructor<T> = { new(): T};
+export type Constructor<T> = { new(...args:any[]): T};
 
 export type CSS_Resource = string|Response|HTMLStyleElement|CSSStyleSheet;
 export type CSS_Source   = CSS_Resource | Promise<CSS_Resource>;
