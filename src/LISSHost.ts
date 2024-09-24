@@ -1,9 +1,6 @@
-// ================================================
-// =============== LISSHost class =================
-// ================================================
-
 import { setCstrHost } from "LISSBase";
 import { LISS_Opts, LISSReturnType } from "types";
+import { isDOMContentLoaded, waitDOMContentLoaded } from "utils";
 
 let id = 0;
 
@@ -60,6 +57,19 @@ export function buildLISSHost<Opts extends LISS_Opts,
 
 	const alreadyDeclaredCSS = new Set();
 
+    const waitReady = new Promise<void>( async (r) => {
+
+        await waitDOMContentLoaded();
+        await Promise.all(Liss.LISSCfg.deps);
+
+        isReady = true;
+
+        r();
+    });
+
+    // No deps and DOM already loaded.
+    let isReady = Liss.LISSCfg.deps.length == 0 && isDOMContentLoaded();
+
 	// @ts-ignore : because TS is stupid.
 	class LISSHostBase extends host {
 
@@ -67,7 +77,7 @@ export function buildLISSHost<Opts extends LISS_Opts,
 
 		readonly #id = ++id; // for debug
 
-		constructor(params: Partial<Params> = {}, deps: readonly Promise<any>[] = []) {
+		constructor(params: Partial<Params> = {}) {
 			super();
 			this.#params = Object.assign({}, Liss.LISSCfg.params, _params, params);
 
@@ -76,13 +86,23 @@ export function buildLISSHost<Opts extends LISS_Opts,
 					return resolve(this.#API!);*/
 				this.#resolve = resolve;
 			});
-
-            //TODO : wait for deps / isReady
-            // deps + Liss.LISSCfg.deps
-            // + is Doc ready
 		}
 
 		/**** public API *************/
+
+        static get waitReady() {
+            return waitReady;
+        }
+        static get isReady() {
+            return isReady;
+        }
+
+        get waitReady() {
+            return LISSHostBase.waitReady;
+        }
+        get isReady() {
+            return LISSHostBase.isReady;
+        }
 
 		get isInit() {
 			return this.#API !== null;
@@ -91,6 +111,8 @@ export function buildLISSHost<Opts extends LISS_Opts,
 
 			if( this.isInit )
 				throw new Error('Element already initialized!');
+            if( ! this.isReady )
+                throw new Error("Dependencies hasn't been loaded !");
 
 			Object.assign(this.#params, params);
 
@@ -130,8 +152,17 @@ export function buildLISSHost<Opts extends LISS_Opts,
 
 			this.#isInDOM = true;
 	
-			if( ! this.isInit ) // TODO: if option init each time...
-				this.init();
+			if( ! this.isInit ) {// TODO: if option init each time...
+				if( ! this.isReady ) {
+                    (async ()=>{
+                        await this.waitReady;
+                        if( this.isInDOM)
+                            (this.#API! as any).onDOMConnected();
+                    })();
+                    return;
+                }
+                this.init();
+            }
 
 			(this.#API! as any).onDOMConnected();
 		}
@@ -220,7 +251,7 @@ export function buildLISSHost<Opts extends LISS_Opts,
 		get params(): Params {
 			return this.#params;
 		}
-        //TODO...
+        
         public updateParams(params: Partial<LISS_Opts["params"]>) {
 			if( this.isInit )
 				return this.#API!.updateParams(params);

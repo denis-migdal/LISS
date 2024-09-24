@@ -1,6 +1,5 @@
 // functions required by LISS.
 
-
 // fix Array.isArray
 // cf https://github.com/microsoft/TypeScript/issues/17002#issuecomment-2366749050
 
@@ -60,4 +59,21 @@ const CAN_HAVE_SHADOW = [
 ];
 export function isShadowSupported(tag: typeof HTMLElement) {
 	return CAN_HAVE_SHADOW.includes( _element2tagname(tag) );
+}
+
+export function isDOMContentLoaded() {
+    return document.readyState === "interactive" || document.readyState === "complete";
+}
+
+export async function waitDOMContentLoaded() {
+    if( isDOMContentLoaded() )
+        return;
+
+    const {promise, resolve} = Promise.withResolvers<void>()
+
+	document.addEventListener('DOMContentLoaded', () => {
+		resolve();
+	}, true);
+
+    await promise;
 }
