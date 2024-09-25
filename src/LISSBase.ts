@@ -1,4 +1,4 @@
-import { CSS_Source, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
+import { Class, Constructor, CSS_Source, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
 import { _element2tagname, isShadowSupported } from "./utils";
 
 let __cstr_host  : any = null;
@@ -7,24 +7,35 @@ export function setCstrHost(_: any) {
 	__cstr_host = _;
 }
 
-export function LISS<Opts extends LISS_Opts>({
+
+type MyOpts<Attrs extends string> = {
+	attrs: Attrs[],
+};
+
+export function LISS<
+	ExtendsCtr extends Constructor<Class>  = Constructor<Class>,
+	Params     extends Record<string, any> = {}, //Record<string, unknown>, /* RO ? */
+	// HTML Base
+	HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
+	Attrs      extends string                   = never, //string,
+>({
 
     // JS Base
-    extends: _extends = Object, /* extends is a JS reserved keyword. */
-    params = {},
+    extends: _extends = Object as unknown as ExtendsCtr, /* extends is a JS reserved keyword. */
+    params            = {}     as unknown as Params,
     // non-generic
     deps   = [],
     life_cycle =  LifeCycle.DEFAULT,
 
     // HTML Base
-    host  = HTMLElement,
+    host  = HTMLElement as unknown as HostCstr,
 	observedAttributes = [], // for vanilla compat.
     attrs = observedAttributes,
     // non-generic
     content,
     css,
     shadow = isShadowSupported(host) ? ShadowCfg.CLOSE : ShadowCfg.NONE
-}: Partial<Opts> = {}) {
+}: Partial<LISS_Opts<ExtendsCtr, Params, HostCstr, Attrs>> = {}) {
 
     if( shadow !== ShadowCfg.OPEN && ! isShadowSupported(host) )
         throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
@@ -109,21 +120,22 @@ export function LISS<Opts extends LISS_Opts>({
 			shadow,
 		};
 
-		public get host(): LISS_Opts["host"] {
+		public get host(): InstanceType<HostCstr> {
 			return this.#host;
 		}
-		protected get content() {
+		//TODO: get the real type ?
+		protected get content(): InstanceType<HostCstr>|ShadowRoot {
 			return (this.#host as LHost).content!;
 		}
 
 		// attrs
-		protected get attrs() {
+		protected get attrs(): Record<Attrs, string|null> {
 			return (this.#host as LHost).attrs;
 		}
-		protected setAttrDefault( attr: LISS_Opts["attrs"], value: string|null) {
+		protected setAttrDefault( attr: Attrs, value: string|null) {
 			return (this.#host as LHost).setAttrDefault(attr, value);
 		}
-		protected onAttrChanged(_name: string,
+		protected onAttrChanged(_name: Attrs,
 			_oldValue: string,
 			_newValue: string): void|false {}
 
@@ -131,20 +143,20 @@ export function LISS<Opts extends LISS_Opts>({
 		protected get observedAttributes() {
 			return this.attrs;
 		}
-		protected attributeChangedCallback(...args: [string, string, string]) {
+		protected attributeChangedCallback(...args: [Attrs, string, string]) {
 			this.onAttrChanged(...args);
 		}
 
 		// parameters
-		public get params(): Readonly<LISS_Opts["params"]> {
+		public get params(): Readonly<Params> {
 			return (this.#host as LHost).params;
 		}
-		public updateParams(params: Partial<LISS_Opts["params"]>) {
+		public updateParams(params: Partial<Params>) {
 			Object.assign( (this.#host as LHost).params, params );
 		}
 
 		// DOM
-		public get isInDOM() {
+		public get isInDOM(): boolean {
 			return (this.#host as LHost).isInDOM;
 		}
 		protected onDOMConnected() {

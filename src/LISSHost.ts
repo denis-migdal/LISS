@@ -1,5 +1,5 @@
 import { setCstrHost } from "./LISSBase";
-import { LISS_Opts, LISSReturnType } from "./types";
+import { Class, Constructor, LISS_Opts, LISSReturnType } from "./types";
 import { isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
 
 let id = 0;
@@ -7,8 +7,13 @@ let id = 0;
 //TODO: shadow utils ?
 const sharedCSS = new CSSStyleSheet();
 
-export function buildLISSHost<Opts extends LISS_Opts,
-                       T extends LISSReturnType<Opts>>(Liss: T, _params: Partial<Opts["params"]> = {}) {
+export function buildLISSHost<
+						ExtendsCstr extends Constructor<Class>,
+						Params      extends Record<string, any>,
+						// HTML Base
+						HostCstr    extends Constructor<HTMLElement>,
+						Attrs       extends string,
+                        T extends LISSReturnType<ExtendsCstr, Params, HostCstr, Attrs>>(Liss: T, _params: Partial<Params> = {}) {
 	const {
 		host,
 		attrs,
@@ -17,9 +22,7 @@ export function buildLISSHost<Opts extends LISS_Opts,
 		shadow,
 	} = Liss.LISSCfg;
 
-    type Params = Opts["params"];
-    type Attrs  = Opts["attrs"][number];
-    type Host   = InstanceType<Opts["host"]>;
+    type Host   = InstanceType<HostCstr>;
 
     // attrs proxy
 	const GET = Symbol('get');
@@ -79,8 +82,10 @@ export function buildLISSHost<Opts extends LISS_Opts,
 
 		readonly #id = ++id; // for debug
 
-		constructor(params: Partial<Params> = {}) {
+		constructor(...args: any[]) {
 			super();
+
+			const params: Partial<Params> = args[0] ?? {};
 			this.#params = Object.assign({}, Liss.LISSCfg.params, _params, params);
 
 			this.#waitInit = new Promise( (resolve) => {

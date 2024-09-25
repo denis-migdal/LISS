@@ -1,6 +1,6 @@
 import { LISS } from "./LISSBase";
 
-interface Class {}
+export interface Class {}
 
 export type Constructor<T> = { new(...args:any[]): T};
 
@@ -55,7 +55,12 @@ export type LISS_Opts<
 }
 
 // get the mixins return type.
-export type LISSReturnType<Opts extends LISS_Opts> = ReturnType<typeof LISS<LISS_Opts>>;
+export type LISSReturnType<
+                    ExtendsCstr extends Constructor<Class>,
+                    Params      extends Record<string, any>,
+                    // HTML Base
+                    HostCstr    extends Constructor<HTMLElement>,
+                    Attrs       extends string> = ReturnType<typeof LISS<ExtendsCstr, Params, HostCstr, Attrs>>;
 
 /*
 type buildLISSHostReturnType<T>  = T extends LISSReturnType<infer Extends extends Class,

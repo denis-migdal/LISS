@@ -18,7 +18,10 @@
 
 -> updateParams : not known
 -> generic template extends issue... => review types
-  -> bad type deduction ?
+  -> séparation obligatoire pour fixer les defaults ?
+    -> make a feature request
+  -> partial required ?
+  -> LISSBase<T> = LISSReturnType<T[], T[], T[], T[]> ?
 
 - Make Webpack output several JS lib exports.
 

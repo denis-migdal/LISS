@@ -1,7 +1,7 @@
 
 import LISS from '../../../';
 
-class MyComponent extends LISS() {
+class MyComponent extends LISS({attrs: ["e"]}) {
 
     // Initialize your WebComponent
     constructor() {
