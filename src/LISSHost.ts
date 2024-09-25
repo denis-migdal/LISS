@@ -1,19 +1,16 @@
 import { setCstrHost } from "./LISSBase";
-import { Class, Constructor, LISS_Opts, LISSReturnType } from "./types";
+import { Class, Constructor, LISS, LISS_Opts, LISSCstr } from "./types";
 import { isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
 
 let id = 0;
+
+type inferLISS<T> = T extends LISSCstr<infer A, infer B, infer C, infer D> ? [A,B,C,D] : never;
 
 //TODO: shadow utils ?
 const sharedCSS = new CSSStyleSheet();
 
 export function buildLISSHost<
-						ExtendsCstr extends Constructor<Class>,
-						Params      extends Record<string, any>,
-						// HTML Base
-						HostCstr    extends Constructor<HTMLElement>,
-						Attrs       extends string,
-                        T extends LISSReturnType<ExtendsCstr, Params, HostCstr, Attrs>>(Liss: T, _params: Partial<Params> = {}) {
+                        T extends LISSCstr>(Liss: T, _params: Partial<T["LISSCfg"]["params"]> = {}) {
 	const {
 		host,
 		attrs,
@@ -21,6 +18,12 @@ export function buildLISSHost<
 		stylesheets,
 		shadow,
 	} = Liss.LISSCfg;
+
+	type P = inferLISS<T>;
+	//type ExtendsCstr = P[0];
+	type Params      = P[1];
+	type HostCstr    = P[2];
+	type Attrs       = P[3];
 
     type Host   = InstanceType<HostCstr>;
 

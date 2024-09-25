@@ -54,13 +54,21 @@ export type LISS_Opts<
         shadow  : ShadowCfg
 }
 
-// get the mixins return type.
-export type LISSReturnType<
-                    ExtendsCstr extends Constructor<Class>,
-                    Params      extends Record<string, any>,
-                    // HTML Base
-                    HostCstr    extends Constructor<HTMLElement>,
-                    Attrs       extends string> = ReturnType<typeof LISS<ExtendsCstr, Params, HostCstr, Attrs>>;
+// LISSBase
+
+export type LISSCstr<
+        ExtendsCtr extends Constructor<Class>       = Constructor<Class>,
+        Params     extends Record<string, any>      = Record<string, unknown>, /* RO ? */
+        HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
+        Attrs      extends string                   = string>
+    = ReturnType<typeof LISS<ExtendsCtr, Params, HostCstr, Attrs>>;
+
+export type LISS<
+        ExtendsCtr extends Constructor<Class>       = Constructor<Class>,
+        Params     extends Record<string, any>      = Record<string, unknown>, /* RO ? */
+        HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
+        Attrs      extends string                   = string>
+    = InstanceType<LISSCstr<ExtendsCtr, Params, HostCstr, Attrs>>;
 
 /*
 type buildLISSHostReturnType<T>  = T extends LISSReturnType<infer Extends extends Class,

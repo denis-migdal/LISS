@@ -7,11 +7,6 @@ export function setCstrHost(_: any) {
 	__cstr_host = _;
 }
 
-
-type MyOpts<Attrs extends string> = {
-	attrs: Attrs[],
-};
-
 export function LISS<
 	ExtendsCtr extends Constructor<Class>  = Constructor<Class>,
 	Params     extends Record<string, any> = {}, //Record<string, unknown>, /* RO ? */
