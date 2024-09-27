@@ -187,3 +187,22 @@ LISS.qsc = qsc;
 LISS.qsSync  = qsSync;
 LISS.qsaSync = qsaSync;
 LISS.qscSync = qscSync;
+
+
+
+
+LISS.closest = function closest<E extends Element>(selector: string, element: Element) {
+
+	while(true) {
+		var result = element.closest<E>(selector);
+
+		if( result !== null)
+			return result;
+
+		const root = element.getRootNode();
+		if( ! ("host" in root) )
+			return null;
+
+		element = (root as ShadowRoot).host;
+	}
+}
