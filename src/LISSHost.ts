@@ -79,17 +79,16 @@ export function buildLISSHost<
     // No deps and DOM already loaded.
     let isReady = Liss.LISSCfg.deps.length == 0 && isDOMContentLoaded();
 
+	const params = Object.assign({}, Liss.LISSCfg.params, _params);
+
 	class LISSHostBase extends host {
 
-		readonly #params: Params;
+		readonly #params: Params = params;
 
 		readonly #id = ++id; // for debug
 
 		constructor(...args: any[]) {
-			super();
-
-			const params: Partial<Params> = args[0] ?? {};
-			this.#params = Object.assign({}, Liss.LISSCfg.params, _params, params);
+			super(...args);
 
 			this.#waitInit = new Promise( (resolve) => {
 				/*if(this.isInit) - not possible
@@ -166,6 +165,7 @@ export function buildLISSHost<
 				if( ! this.isReady ) {
                     (async ()=>{
                         await this.waitReady;
+						this.init();
                         if( this.isInDOM)
                             (this.#API! as any).onDOMConnected();
                     })();
@@ -243,7 +243,6 @@ export function buildLISSHost<
 
 	    	// h4ck, okay because JS is monothreaded.
 			setCstrHost(this);
-
 	    	let obj = new Liss();
 
 			this.#API = obj as InstanceType<T>;

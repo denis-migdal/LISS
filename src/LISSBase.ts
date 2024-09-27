@@ -91,9 +91,9 @@ export function LISS<
 
 	class LISSBase extends _extends {
 
-		constructor(..._: any[]) { // required by TS, we don't use it...
+		constructor(...args: any[]) { // required by TS, we don't use it...
 
-			super();
+			super(...args);
 
 			// h4ck, okay because JS is monothreaded.
 			if( __cstr_host === null )

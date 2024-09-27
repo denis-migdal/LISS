@@ -6,12 +6,6 @@ import { buildLISSHost } from "./LISSHost";
 import { LISSCstr } from "./types";
 import { _element2tagname } from "./utils";
 
-
-/*export function define<Opts extends LISS_Opts,
-		     		   T extends LISSReturnType<Opts>>(
-						   	tagname       : string,
-							ComponentClass: T,
-							params        : Partial<Opts["params"]> = {}) {*/
 export function define<T extends LISSCstr>(
 							tagname       : string,
 							ComponentClass: T,
