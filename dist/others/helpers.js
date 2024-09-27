@@ -88,38 +88,6 @@ function buildSync(tagname, { params = {}, initialize = true, content = [], pare
     return LISS.getLISSSync(elem);
 }
 LISS.buildSync = buildSync;
-LISS.whenDefined = async function (tagname, callback) {
-    await customElements.whenDefined(tagname);
-    if (callback !== undefined)
-        callback();
-    return;
-};
-LISS.whenAllDefined = async function (tagnames, callback) {
-    await Promise.all(tagnames.map(t => customElements.whenDefined(t)));
-    if (callback !== undefined)
-        callback();
-};
-LISS.isDefined = function (name) {
-    return customElements.get(name);
-};
-LISS.selector = function (name) {
-    if (name === undefined) // just an h4ck
-        return "";
-    return `:is(${name}, [is="${name}"])`;
-};
-LISS.getLISS = async function (element) {
-    await LISS.whenDefined(LISS.getName(element));
-    return element.LISS; // ensure initialized.
-};
-LISS.getLISSSync = function (element) {
-    const name = LISS.getName(element);
-    if (!LISS.isDefined(name))
-        throw new Error(`${name} hasn't been defined yet.`);
-    let host = element;
-    if (!host.isInit)
-        throw new Error("Instance hasn't been initialized yet.");
-    return host.LISSSync;
-};
 LISS.initialize = async function (element) {
     await LISS.whenDefined(LISS.getName(element));
     return await element.initialize(); // ensure initialization.
@@ -130,79 +98,6 @@ LISS.initializeSync = function (element) {
         throw new Error(`${name} not defined`);
     return element.initialize(); // ensure initialization.
 };
-LISS.getName = function (element) {
-    const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
-    if (!name.includes('-'))
-        throw new Error(`Element ${name} is not a WebComponent`);
-    return name;
-};
-function _buildQS(selector, tagname_or_parent, parent = document) {
-    if (tagname_or_parent !== undefined && typeof tagname_or_parent !== 'string') {
-        parent = tagname_or_parent;
-        tagname_or_parent = undefined;
-    }
-    return [`${selector}${LISS.selector(tagname_or_parent)}`, parent];
-}
-async function qs(selector, tagname_or_parent, parent = document) {
-    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
-    let result = await LISS.qso(selector, parent);
-    if (result === null)
-        throw new Error(`Element ${selector} not found`);
-    return result;
-}
-LISS.qs = qs;
-async function qso(selector, tagname_or_parent, parent = document) {
-    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
-    const element = parent.querySelector(selector);
-    if (element === null)
-        return null;
-    return await LISS.getLISS(element);
-}
-LISS.qso = qso;
-async function qsa(selector, tagname_or_parent, parent = document) {
-    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
-    const elements = parent.querySelectorAll(selector);
-    let idx = 0;
-    const promises = new Array(elements.length);
-    for (let element of elements)
-        promises[idx++] = LISS.getLISS(element);
-    return await Promise.all(promises);
-}
-LISS.qsa = qsa;
-async function qsc(selector, tagname_or_parent, element) {
-    const res = _buildQS(selector, tagname_or_parent, element);
-    const result = res[1].closest(res[0]);
-    if (result === null)
-        return null;
-    return await LISS.getLISS(result);
-}
-LISS.qsc = qsc;
-function qsSync(selector, tagname_or_parent, parent = document) {
-    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
-    const element = parent.querySelector(selector);
-    if (element === null)
-        throw new Error(`Element ${selector} not found`);
-    return LISS.getLISSSync(element);
-}
-LISS.qsSync = qsSync;
-function qsaSync(selector, tagname_or_parent, parent = document) {
-    [selector, parent] = _buildQS(selector, tagname_or_parent, parent);
-    const elements = parent.querySelectorAll(selector);
-    let idx = 0;
-    const result = new Array(elements.length);
-    for (let element of elements)
-        result[idx++] = LISS.getLISSSync(element);
-    return result;
-}
-LISS.qsaSync = qsaSync;
-function qscSync(selector, tagname_or_parent, element) {
-    const res = _buildQS(selector, tagname_or_parent, element);
-    const result = res[1].closest(res[0]);
-    if (result === null)
-        return null;
-    return LISS.getLISSSync(result);
-}
-LISS.qscSync = qscSync;
 // ================================================
 // =============== LISS Auto ======================
 // ================================================

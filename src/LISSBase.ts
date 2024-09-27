@@ -7,6 +7,10 @@ export function setCstrHost(_: any) {
 	__cstr_host = _;
 }
 
+export class ILISS {}
+
+export default LISS as typeof LISS & ILISS;
+
 export function LISS<
 	ExtendsCtr extends Constructor<Class>  = Constructor<Class>,
 	Params     extends Record<string, any> = {}, //Record<string, unknown>, /* RO ? */

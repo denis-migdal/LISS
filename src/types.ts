@@ -1,3 +1,4 @@
+import { buildLISSHost } from "LISSHost";
 import { LISS } from "./LISSBase";
 
 export interface Class {}
@@ -56,31 +57,27 @@ export type LISS_Opts<
 
 // LISSBase
 
-export type LISSCstr<
+export type LISSBaseCstr<
         ExtendsCtr extends Constructor<Class>       = Constructor<Class>,
         Params     extends Record<string, any>      = Record<string, unknown>, /* RO ? */
         HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
         Attrs      extends string                   = string>
     = ReturnType<typeof LISS<ExtendsCtr, Params, HostCstr, Attrs>>;
 
-export type LISS<
+export type LISSBase<
         ExtendsCtr extends Constructor<Class>       = Constructor<Class>,
         Params     extends Record<string, any>      = Record<string, unknown>, /* RO ? */
         HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
         Attrs      extends string                   = string>
-    = InstanceType<LISSCstr<ExtendsCtr, Params, HostCstr, Attrs>>;
-
-/*
-type buildLISSHostReturnType<T>  = T extends LISSReturnType<infer Extends extends Class,
-															infer Host    extends HTMLElement,
-															infer Attrs   extends string,
-															infer Params  extends Record<string,any>>
-															? ReturnType<typeof buildLISSHost<Extends, Host, Attrs, Params, T>> : never;
+    = InstanceType<LISSBaseCstr<ExtendsCtr, Params, HostCstr, Attrs>>;
 
 
-export type LISSBase<Extends extends Class,
-					 Host    extends HTMLElement,
-					 Attrs   extends string,
-					 Params  extends Record<string,any>> = InstanceType<LISSReturnType<Extends, Host, Attrs, Params>>;
-export type LISSHost<LISS extends LISSBase<any,any,any,any> > = InstanceType<buildLISSHostReturnType<Constructor<LISS> & {Parameters: any}>>;
-*/
+export type LISSBase2LISSBaseCstr<T extends LISSBase> = T extends LISSBase<
+            infer A extends Constructor<Class>,
+            infer B,
+            infer C,
+            infer D> ? Constructor<T> & LISSBaseCstr<A,B,C,D> : never;
+
+
+export type LISSHostCstr<T extends LISSBase|LISSBaseCstr> = ReturnType<typeof buildLISSHost<T extends LISSBase ? LISSBase2LISSBaseCstr<T> : T>>;
+export type LISSHost    <T extends LISSBase|LISSBaseCstr> = InstanceType<LISSHostCstr<T>>;

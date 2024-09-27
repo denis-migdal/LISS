@@ -1,16 +1,16 @@
 import { setCstrHost } from "./LISSBase";
-import { Class, Constructor, LISS, LISS_Opts, LISSCstr } from "./types";
+import { LISS_Opts, LISSBaseCstr } from "./types";
 import { isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
 
 let id = 0;
 
-type inferLISS<T> = T extends LISSCstr<infer A, infer B, infer C, infer D> ? [A,B,C,D] : never;
+type inferLISS<T> = T extends LISSBaseCstr<infer A, infer B, infer C, infer D> ? [A,B,C,D] : never;
 
 //TODO: shadow utils ?
 const sharedCSS = new CSSStyleSheet();
 
 export function buildLISSHost<
-                        T extends LISSCstr>(Liss: T, _params: Partial<T["LISSCfg"]["params"]> = {}) {
+                        T extends LISSBaseCstr>(Liss: T, _params: Partial<T["LISSCfg"]["params"]> = {}) {
 	const {
 		host,
 		attrs,
