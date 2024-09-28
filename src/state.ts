@@ -297,29 +297,41 @@ export function upgradeSync<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement,
 
 // Go to state INITIALIZED
 
-export async function initialize<T extends LISSBase>(elem : HTMLElement|LISSHost<T>, strict = false): Promise<T> {
+export async function initialize<T extends LISSBase>(elem : HTMLElement|LISSHost<T>, strict: boolean|T["params"] = false): Promise<T> {
     
     const state = getState(elem);
 
-    if( state.isUpgraded && strict )
-        throw new Error(`Already upgraded!`);
+    if( state.isInitialized ) {
+        if( strict === false )
+            return (elem as any).base as T;
+        throw new Error(`Already initialized!`);
+    }
 
     const host = await upgrade(elem);
 
     await state.whenReady();
 
-    host.initialize();
+    let params = typeof strict === "boolean" ? {} : strict;
+    host.initialize(params);
 
     return host.base as T;
 }
-export function initializeSync<T extends LISSBase>(elem : HTMLElement|LISSHost<T>): T {
+export function initializeSync<T extends LISSBase>(elem : HTMLElement|LISSHost<T>, strict: boolean|T["params"] = false): T {
+
+    const state = getState(elem);
+    if( state.isInitialized ) {
+        if( strict === false)
+            return (elem as any).base as T;
+        throw new Error(`Already initialized!`);
+    }
 
     const host = upgradeSync(elem);
 
-    if( ! host.state.isReady )
+    if( ! state.isReady )
         throw new Error("Element not ready !");
 
-    host.initialize();
+    let params = typeof strict === "boolean" ? {} : strict;
+    host.initialize(params);
 
     return host.base as T;
 }

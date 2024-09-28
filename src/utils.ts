@@ -79,3 +79,9 @@ export async function waitDOMContentLoaded() {
 
     await promise;
 }
+
+// for mixins.
+export type ComposeConstructor<T, U> = 
+    [T, U] extends [new (a: infer O1) => infer R1,new (a: infer O2) => infer R2] ? {
+        new (o: O1 & O2): R1 & R2
+    } & Pick<T, keyof T> & Pick<U, keyof U> : never

@@ -17,7 +17,7 @@ Attributes:
 - `attrs`
 - `setAttrDefault(name, value)` : [TODO] replace by attr: {key: default} ?
 
-Others:
+Content:
 - `content`
 - `hasShadow`
 - `CSSSelector`

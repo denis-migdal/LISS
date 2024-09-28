@@ -1,14 +1,9 @@
 import { LISSState, upgradeSync } from "state";
 import { setCstrHost } from "./LISSBase";
 import { LISS_Opts, LISSBaseCstr } from "./types";
-import { isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
+import { ComposeConstructor, isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
 
 let id = 0;
-
-type ComposeConstructor<T, U> = 
-    [T, U] extends [new (a: infer O1) => infer R1,new (a: infer O2) => infer R2] ? {
-        new (o: O1 & O2): R1 & R2
-    } & Pick<T, keyof T> & Pick<U, keyof U> : never
 
 type inferLISS<T> = T extends LISSBaseCstr<infer A, infer B, infer C, infer D> ? [A,B,C,D] : never;
 

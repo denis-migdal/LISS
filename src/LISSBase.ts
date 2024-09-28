@@ -162,7 +162,7 @@ export function LISS<
 
 		// DOM
 		public get isInDOM(): boolean {
-			return (this.#host as LHost).isInDOM;
+			return (this.#host as LHost).isConnected;
 		}
 		protected onDOMConnected() {
 			this.connectedCallback();
@@ -187,7 +187,7 @@ export function LISS<
 		}
 	}
 
-	return LISSBase;    
+	return LISSBase;
 }
 
 function process_css(css: string|CSSStyleSheet|HTMLStyleElement) {
