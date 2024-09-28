@@ -187,23 +187,55 @@ export function buildLISSHost<
 			return this.#attrs;
 		}
 
+		// ============== Content ===================
+
+		#content: Host|ShadowRoot|null = null;
+
+		get content() {
+			return this.#content;
+		}
+
+		getPart(name: string) {
+			return this.hasShadow
+					? this.#content?.querySelector(`::part(${name})`)
+					: this.#content?.querySelector(`[part="${name}"]`);
+		}
+		getParts(name: string) {
+			return this.hasShadow
+					? this.#content?.querySelectorAll(`::part(${name})`)
+					: this.#content?.querySelectorAll(`[part="${name}"]`);
+		}
+
+		protected get hasShadow(): boolean {
+			return shadow !== 'none';
+		}
+
+		/*** CSS ***/
+
+		get CSSSelector() {
+
+			if(this.hasShadow || ! this.hasAttribute("is") )
+				return this.tagName;
+
+			return `${this.tagName}[is="${this.getAttribute("is")}"]`;
+		}
+
 		// ============== Impl ===================
 
 		constructor(params: {}, base?: InstanceType<T>) {
 			super();
 
-			if( base !== undefined){
-				this.#base = base;
-				this.initialize();
-			}
+			Object.assign(this.#params, params);
 
 			let {promise, resolve} = Promise.withResolvers<InstanceType<T>>();
 
 			this.whenInitialized = promise;
 			this.#whenInitialized_resolver = resolve;
 
-			if( this.isInitialized )
-				resolve(this.base);
+			if( base !== undefined) {
+				this.#base = base;
+				this.init(); // call the resolver
+			}
 
 			if( "_whenUpgradedResolve" in this)
 				(this._whenUpgradedResolve as any)();
@@ -226,13 +258,15 @@ export function buildLISSHost<
 			// TODO: life cycle options
 			if( this.state.isReady ) {
 				this.initialize(); // automatically calls onDOMConnected
+				return;
 			}
 
 			( async () => {
 
 				await this.state.isReady;
 
-				this.initialize();
+				if( ! this.isInitialized )
+					this.initialize();
 
 			})();
 		}
@@ -318,37 +352,7 @@ export function buildLISSHost<
 			return this.base;
 		}
 
-		/*** content ***/
-		#content: Host|ShadowRoot|null = null;
 
-		get content() {
-			return this.#content;
-		}
-
-		getPart(name: string) {
-			return this.hasShadow
-					? this.#content?.querySelector(`::part(${name})`)
-					: this.#content?.querySelector(`[part="${name}"]`);
-		}
-		getParts(name: string) {
-			return this.hasShadow
-					? this.#content?.querySelectorAll(`::part(${name})`)
-					: this.#content?.querySelectorAll(`[part="${name}"]`);
-		}
-
-		protected get hasShadow(): boolean {
-			return shadow !== 'none';
-		}
-
-		/*** CSS ***/
-
-		get CSSSelector() {
-
-			if(this.hasShadow || ! this.hasAttribute("is") )
-				return this.tagName;
-
-			return `${this.tagName}[is="${this.getAttribute("is")}"]`;
-		}
 
 		// attrs
 
