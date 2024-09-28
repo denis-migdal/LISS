@@ -1,5 +1,6 @@
 //TODO
 
+/*
 import LISS, { LISSBase, LISSHost, ShadowCfg } from "./";
 
 // for now do not handle parent changes.
@@ -7,7 +8,7 @@ import LISS, { LISSBase, LISSHost, ShadowCfg } from "./";
 export default class LissParam<T> extends LISS({
     shadow: ShadowCfg.NONE,
     css: [`:host {display: none}`],
-    attributes: [ "value", "type" ] /* for now only value to stay simple */
+    attributes: [ "value", "type" ] /* for now only value to stay simple *//*
 }) {
 
     #name  : string;
@@ -72,7 +73,7 @@ export default class LissParam<T> extends LISS({
         /*
         // do not updated if not in DOM.
         if( ! this.#parent?.isInDOM)
-            return;*/
+            return;*//*
 
         this.#parent.setParam(this.#name, this.#value);
     }
@@ -90,7 +91,9 @@ export default class LissParam<T> extends LISS({
     protected override onAttrChanged(_name: string, _oldValue: string, _newValue: string): void | false {
         
         this.onValueChanged(this.attrs.value!);
-    }*/
+    }*//*
 }
 
 LISS.define("liss-param", LissParam);
+
+*/
