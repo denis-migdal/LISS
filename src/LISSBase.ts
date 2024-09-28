@@ -1,6 +1,7 @@
 import { buildLISSHost } from "LISSHost";
 import { Class, Constructor, CSS_Source, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
 import { _element2tagname, isShadowSupported } from "./utils";
+import { LISSState } from "state";
 
 let __cstr_host  : any = null;
 
@@ -119,6 +120,10 @@ export function LISS<
 			stylesheets,
 			shadow,
 		};
+
+		get state(): LISSState {
+			return this.#host.state;
+		}
 
 		public get host(): InstanceType<HostCstr> {
 			return this.#host;

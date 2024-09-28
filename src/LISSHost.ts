@@ -1,4 +1,4 @@
-import { upgradeSync } from "state";
+import { LISSState, upgradeSync } from "state";
 import { setCstrHost } from "./LISSBase";
 import { LISS_Opts, LISSBaseCstr } from "./types";
 import { isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
@@ -97,6 +97,11 @@ export function buildLISSHost<
 	})();
 
 	class LISSHostBase extends (host as new () => HTMLElement) {
+
+		static Base = Liss;
+
+		// adopt state if already created.
+		readonly state = (this as any).state ?? new LISSState(this);
 
 		static readonly whenDepsResolved = whenDepsResolved;
 		static get isDepsResolved() {

@@ -1,8 +1,7 @@
 
 import { html, liss } from 'helpers/build';
 import LISS from '../../../';
-import { ShadowCfg } from 'types';
-import { getState, state2str } from 'state';
+import { getState } from 'state';
 
 // =============================================================
 
@@ -44,11 +43,11 @@ foo();
     let compo = new MyComponentB.Host();
     document.body.append(compo);
 
-    console.warn("host", state2str(getState(compo)) );
+    console.warn("host", getState(compo) );
 }
 {
     let compo = new MyComponentB();
     document.body.append(compo.host);
 
-    console.warn("base", state2str(getState(compo.host)) );
+    console.warn("base", getState(compo.host) );
 }

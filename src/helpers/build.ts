@@ -22,18 +22,14 @@ export async function liss<T extends LISSBase>(str: readonly string[], ...args: 
 
     const elem = html(str, ...args);
 
-    const host = await initialize<LISSHost<LISSBaseCstr>>(elem);
-
-    return host.LISSSync as T; //TODO better ?
+    return await initialize<T>(elem);
 }
 
 export function lissSync<T extends LISSBase>(str: readonly string[], ...args: any[]) {
 
     const elem = html(str, ...args);
 
-    const host = initializeSync<LISSHost<LISSBase>>(elem);
-
-    return host.LISSSync as T; //TODO better ?
+    return initializeSync<T>(elem);
 }
 
 
