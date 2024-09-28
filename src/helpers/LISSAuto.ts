@@ -3,6 +3,7 @@
 // =============== LISS Auto ======================
 // ================================================
 
+/*
 export class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 	readonly #known_tag = new Set<string>();
@@ -150,9 +151,11 @@ async function _import(uri: string, isLissAuto: boolean = false) {
 		return undefined;
 
 	try {
-		return (await import(/* webpackIgnore: true */ uri)).default;
+		return (await import(/* webpackIgnore: true *//* uri)).default;
 	} catch(e) {
 		console.log(e);
 		return undefined;
 	}
 }
+
+*/
