@@ -1,4 +1,6 @@
+import { initialize, initializeSync } from "state";
 import LISS from "../index";
+import { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "types";
 
 export function html<T extends HTMLElement>(str: readonly string[], ...args: any[]): T {
     
@@ -16,19 +18,22 @@ export function html<T extends HTMLElement>(str: readonly string[], ...args: any
     return template.firstElementChild! as T;
 }
 
+export async function liss<T extends LISSBase>(str: readonly string[], ...args: any[]) {
 
-export function liss(str: readonly string[], ...args: any[]) {
+    const elem = html(str, ...args);
 
-    const host = html(str, ...args);
-    //TODO: initialize()
-    return LISS.getLISS(host); // returns the promise
+    const host = await initialize<LISSHost<LISSBaseCstr>>(elem);
+
+    return host.LISSSync as T; //TODO better ?
 }
 
-export function lissSync(str: readonly string[], ...args: any[]) {
+export function lissSync<T extends LISSBase>(str: readonly string[], ...args: any[]) {
 
-    const host = html(str, ...args);
-    //TODO: initialize()
-    return LISS.getLISSSync(host);
+    const elem = html(str, ...args);
+
+    const host = initializeSync<LISSHost<LISSBase>>(elem);
+
+    return host.LISSSync as T; //TODO better ?
 }
 
 

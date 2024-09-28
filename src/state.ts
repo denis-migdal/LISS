@@ -1,6 +1,6 @@
 import { getName } from "define";
 import { LISSBaseCstr, LISSHost, LISSHostCstr } from "types";
-import { isDOMContentLoaded, whenDOMContentLoaded } from "utils";
+import { _element2tagname, isDOMContentLoaded, whenDOMContentLoaded } from "utils";
 
 export enum LISSState {
     NONE = 0,
@@ -69,6 +69,22 @@ export async function whenState(elem: HTMLElement, state: LISSState) {
 }
 
 // ================== DEFINED ==============================
+
+// go to state define.
+export function define<T extends LISSBaseCstr>(
+    tagname       : string,
+    ComponentClass: T) {
+        
+    const Class  = ComponentClass.LISSCfg.host;
+    let htmltag  = _element2tagname(Class)??undefined;
+
+    const LISSclass = ComponentClass.Host; //buildLISSHost<T>(ComponentClass, params);
+
+    const opts = htmltag === undefined ? {}
+                : {extends: htmltag};
+
+    customElements.define(tagname, LISSclass, opts);
+};
 
 function isDefined(elem: HTMLElement) {
     return customElements.get( getName(elem) ) !== undefined;
@@ -139,6 +155,27 @@ async function whenReady(elem: HTMLElement) {
 
 // ================== UPGRADED ==============================
 
+export async function upgrade<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement): Promise<T> {
+
+    await whenDefined(elem);
+
+    return upgradeSync<T>(elem);
+}
+
+export function upgradeSync<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement): T {
+    if( ! isDefined(elem) )
+        throw new Error('Element not defined!');
+
+    customElements.upgrade(elem);
+
+    const Host = getHostCstrSync(elem);
+
+    if( ! (elem instanceof Host) )
+        throw new Error(`Element didn't upgrade!`);
+
+    return elem as T;
+}
+
 function isUpgraded(elem: HTMLElement) {
     if( ! isDefined(elem) )
         return false;
@@ -172,6 +209,27 @@ async function whenUpgraded(elem: HTMLElement) {
 
 // ================== INITIALIZED ==============================
 
+export async function initialize<T extends LISSHost<LISSBaseCstr>>(elem : HTMLElement) {
+    
+    const host = await upgrade(elem);
+
+    await whenReady(elem);
+
+    host.initialize();
+
+    return host as T;
+}
+export function initializeSync<T extends LISSHost<LISSBaseCstr>>(elem : HTMLElement) {
+
+    const host = upgradeSync(elem);
+
+    if( ! isReady(elem) )
+        throw new Error("Element not ready !");
+
+    host.initialize();
+
+    return host as T;
+}
 
 function isInitialized(elem: HTMLElement) {
 
