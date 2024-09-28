@@ -1,7 +1,8 @@
 # LISSState
 
--> accessible from `LISSHost` and `LISSBase` instances (TODO: from class too).
--> accessible from `getState(HTMLElement)`
+Accessible from:
+- `LISSHost` and `LISSBase` instances (TODO: from class too).
+- `liss.getState(HTMLElement)`
 
 ## States
 
@@ -22,6 +23,7 @@ For each state:
 - `is[State]: boolean`
 - `when[State](): Promise`.
 
+Return types:
 - `whenDefined()    : LISSHostCstr`
 - `whenReady()      : ?`
 - `whenUpgraded()   : LISSHost`
@@ -35,10 +37,10 @@ Implicit conversions:
 
 - `liss.define(LISSHost|LISSBase)`
 - `liss.upgrade[Sync]<LISSHost>(HTMLElement, strict=false): LISSHost` : if `strict` raise an exception if already upgraded.
-- `liss.initialize[Sync]<LISSBase>(HTMLElement|LISSHost, strict=false): LISSBase` : if `strict` raise an exception if already upgraded.
+- `liss.initialize[Sync]<LISSBase>(HTMLElement|LISSHost, strict=false): LISSBase` : if `strict` raise an exception if already initialized.
 
 ## Externals when
 
-- + whenDefined + other customRegistery methods ?
+- whenDefined + other customRegistery methods ?
 - `whenUpgraded   (HTMLElement, force=false, strict=false): LISSHost`.
 - `whenInitialized(HTMLElement, force=false, strict=false): LISSBase`.
