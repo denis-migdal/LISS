@@ -1,4 +1,7 @@
 
+//TODO: LISSHost ?
+
+/*
 const sharedCSS = new CSSStyleSheet();
 document.adoptedStyleSheets.push(sharedCSS);
 
@@ -16,3 +19,4 @@ LISS.insertGlobalCSSRules = function(css: string|HTMLStyleElement) {
 	for(let rule of css_style.cssRules)
 		sharedCSS.insertRule(rule.cssText);
 }
+*/
