@@ -11,52 +11,39 @@
 
 ## TODO
 
-- [ ] ${} in content => use html`` (can add sync objcts)
-  - [] add slots
-  - [] liss/sync : initialize ?
-  - content : change rules...
-- [ ] test
-- [ ] fix helpers
-- [ ] html``
-- [ ] liss[Sync]``
+- [ ] Params
+  - [ ] new x2
+  - [ ] initialize (in place of strict)
+- [ ] LISSHost : internal system redo
+- [ ] fix helpers + examples + doc.
 
-- ! redefined already defined !
+- [ ] liss() redirect to liss.extends or liss.???()
+- [ ] ${} in content => use html`` (can add sync objects)
+  - [ ] add insertion of children
+  - [ ] add slots (values can be changed through attrs/params/whatever)
+  - [ ] change rules for content (do not parse ?)
 
-- changer représentation interne pour permettre héritage sans LISS.extends...
-- liss() <= au lieu de extends ??? [utilise pour types]
-  - mixins ()
-  - extends()
+- [ ] Life cycle options
 
-- params in LISSHost : delete...
-=> LISS fix : not cstr params ! (does not need as not called !!!).
+- [ ] LISSHost public interface
+- [ ] Facilitate static changes of parameters (inherit without LISS.extends)
 
-- Make Webpack output several JS lib exports.
+- [ ] Distribute : make Webpack output several JS lib exports.
+- [ ] Provide clone optimisation (e.g. for WebSlides) ?
+  - clean state   (with/without Shadow ?) ?
+  - do not reinit ?
+  - special WebComponent ?
 
-- Provide clone optimisation (e.g. for WebSlides) ?
-  -> clean state   (with/without Shadow ?) ?
-  -> do not reinit ?
-- Life cycle options -> Host vs Impl...
+- [ ] Add customRegistery methods...
 
-- vanilla compat...
+- [ ] (BLISS) : emulate string prefix https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
 
-+ update if inside template : won't do anything...
-+ customRegistery methods...
-+ upgrade doesn't throw if not defined
-+ LISSHost init/life cycle...
-  + state + isX
 
-=> add previous helpers/examples
-=> add new thingy...
-	=> Host vs Base...
-
-=> (BLISS) : emulate string prefix https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
-
-## Helpers :
-
-QuerySelector :
-  - elem.host.querySelector
-  - LISS.getLISS( elem )
-  -> or helpers querySelectors [](./doc/helpers/querySelectors.md)
+Add gotcha/Doc :
+- update if inside template : won't do anything...
+- upgrade doesn't throw even if didn't upgraded (e.g. not defined, template, etc)
+- Base vs Host
+- link to subpages
 
 ## Why LISS ?
 
