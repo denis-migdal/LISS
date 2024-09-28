@@ -131,12 +131,12 @@ export function buildLISSHost<
 
 			Object.assign(this.#params, params);
 
-			const base = this.init();
+			this.#base = this.init();
 
 			if( this.isConnected )
-				(base as any).onDOMConnected();
+				(this.#base as any).onDOMConnected();
 
-			return this.#base = base;
+			return this.#base;
 		}
 
 		// =================================
