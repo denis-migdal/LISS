@@ -2,7 +2,7 @@
 // =============== LISS define ====================
 // ================================================
 
-//TODO remove...
+//TODO: CustomRegistery + see with state...
 
 import LISS from "LISSBase";
 import { LISSBaseCstr } from "./types";
@@ -71,3 +71,48 @@ LISS.whenDefined    = whenDefined;
 LISS.whenAllDefined = whenAllDefined;
 LISS.isDefined      = isDefined;
 LISS.getName        = getName;
+
+
+/* 
+
+//TODO: other options...
+function extendsLISS<Extends extends Class,
+	Host    extends HTMLElement,
+	Attrs1   extends string,
+	Attrs2   extends string,
+	Params  extends Record<string,any>,
+	T extends LISSReturnType<Extends, Host, Attrs1, Params>>(Liss: T,
+		parameters: {
+			shadow      ?: ShadowCfg,
+			attributes  ?: readonly Attrs2[],
+			dependencies?: readonly Promise<any>[]
+		}) {
+
+	const attributes   = [...Liss.Parameters.attributes  , ...parameters.attributes  ??[]];
+	const dependencies = [...Liss.Parameters.dependencies, ...parameters.dependencies??[]];
+
+	const params = Object.assign({}, Liss.Parameters, {
+		attributes,
+		dependencies
+	});
+	if( parameters.shadow !== undefined)
+		params.shadow = parameters.shadow;
+
+	// @ts-ignore : because TS stupid
+	class ExtendedLISS extends Liss {
+		constructor(...t: any[]) {
+			// @ts-ignore : because TS stupid
+			super(...t);
+		}
+
+		protected override get attrs() {
+			return super.attrs as Record<Attrs2|Attrs1, string|null>;
+		}
+
+		static override Parameters = params;
+	}
+
+	return ExtendedLISS;
+}
+LISS.extendsLISS = extendsLISS;
+*/

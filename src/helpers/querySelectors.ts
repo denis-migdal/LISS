@@ -5,6 +5,7 @@
 
 import type { LISSBase, LISSHost } from "types";
 import LISS from "index";
+import { initializeSync, whenInitialized } from "state";
 
 interface Components {};
 
@@ -20,6 +21,8 @@ declare module "../LISSBase" {
         qsSync : typeof qsSync;
         qsaSync: typeof qsaSync;
         qscSync: typeof qscSync;
+
+		closest: typeof closest;
     }
 }
 
@@ -72,9 +75,8 @@ async function qso<T extends LISSBase>(	selector: string,
 	if( element === null )
 		return null;
 
-	return await LISS.getLISS( element );
+	return await whenInitialized<T>( element );
 }
-LISS.qso = qso
 
 async function qsa<T extends LISSBase>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): Promise<T[]>;
@@ -92,11 +94,10 @@ async function qsa<T extends LISSBase>(	selector: string,
 	let idx = 0;
 	const promises = new Array<Promise<T>>( elements.length );
 	for(let element of elements)
-		promises[idx++] = LISS.getLISS( element );
+		promises[idx++] = whenInitialized<T>( element );
 
 	return await Promise.all(promises);
 }
-LISS.qsa = qsa;
 
 async function qsc<T extends LISSBase>(selector: string,
 						element  : Element): Promise<T>;
@@ -113,9 +114,8 @@ async function qsc<T extends LISSBase>(	selector: string,
 	if(result === null)
 		return null;
 
-	return await LISS.getLISS(result);
+	return await whenInitialized<T>(result);
 }
-LISS.qsc = qsc;
 
 function qsSync<T extends LISSBase>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): T;
@@ -133,9 +133,8 @@ function qsSync<T extends LISSBase>(	selector: string,
 	if( element === null )
 		throw new Error(`Element ${selector} not found`);
 
-	return LISS.getLISSSync( element );
+	return initializeSync<T>( element );
 }
-LISS.qsSync = qsSync;
 
 function qsaSync<T extends LISSBase>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): T[];
@@ -153,11 +152,10 @@ function qsaSync<T extends LISSBase>(	selector: string,
 	let idx = 0;
 	const result = new Array<T>( elements.length );
 	for(let element of elements)
-		result[idx++] = LISS.getLISSSync<T>( element );
+		result[idx++] = initializeSync<T>( element );
 
 	return result;
 }
-LISS.qsaSync = qsaSync;
 
 function qscSync<T extends LISSBase>(selector: string,
 						element  : Element): T;
@@ -174,24 +172,12 @@ function qscSync<T extends LISSBase>(	selector: string,
 	if(result === null)
 		return null;
 
-	return LISS.getLISSSync(result);
+	return initializeSync<T>(result);
 }
 
-// async
-LISS.qs  = qs;
-LISS.qso = qso;
-LISS.qsa = qsa;
-LISS.qsc = qsc;
+// ==================
 
-// sync
-LISS.qsSync  = qsSync;
-LISS.qsaSync = qsaSync;
-LISS.qscSync = qscSync;
-
-
-
-
-LISS.closest = function closest<E extends Element>(selector: string, element: Element) {
+function closest<E extends Element>(selector: string, element: Element) {
 
 	while(true) {
 		var result = element.closest<E>(selector);
@@ -206,3 +192,17 @@ LISS.closest = function closest<E extends Element>(selector: string, element: El
 		element = (root as ShadowRoot).host;
 	}
 }
+
+
+// async
+LISS.qs  = qs;
+LISS.qso = qso;
+LISS.qsa = qsa;
+LISS.qsc = qsc;
+
+// sync
+LISS.qsSync  = qsSync;
+LISS.qsaSync = qsaSync;
+LISS.qscSync = qscSync;
+
+LISS.closest = closest;

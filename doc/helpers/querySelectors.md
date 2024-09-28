@@ -1,5 +1,7 @@
 # Query selectors
 
+[TODO] + closest
+
 LISS provides several optional fonctions to get fully initialized LISS components from a query string.
 
 They are a short way for writing: `LISS.getLISS( parent.querySelector(query) )`.
