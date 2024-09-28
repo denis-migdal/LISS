@@ -11,11 +11,11 @@
 
 ## TODO
 
-- [ ] Params
-  - [ ] new x2
-  - [ ] initialize (in place of strict)
-- [ ] LISSHost : internal system redo
 - [ ] fix helpers + examples + doc.
+  - [ ] define.ts (-> customRegistery)
+  - [ ] LISSAuto (html`` ?)
+  - [ ] globalCSSRules
+  - [ ] LISSParams + lifeCycle...
 
 - [ ] liss() redirect to liss.extends or liss.???()
 - [ ] ${} in content => use html`` (can add sync objects)
@@ -34,8 +34,6 @@
   - clean state   (with/without Shadow ?) ?
   - do not reinit ?
   - special WebComponent ?
-
-- [ ] Add customRegistery methods...
 
 - [ ] (BLISS) : emulate string prefix https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
 
