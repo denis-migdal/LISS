@@ -2,8 +2,10 @@
 // =============== LISS define ====================
 // ================================================
 
+//TODO remove...
+
 import LISS from "LISSBase";
-import { LISSBase, LISSBaseCstr, LISSHost } from "./types";
+import { LISSBaseCstr } from "./types";
 import { _element2tagname } from "./utils";
 
 declare module "./LISSBase" {
@@ -13,9 +15,6 @@ declare module "./LISSBase" {
 		whenAllDefined : typeof whenAllDefined;
 		isDefined      : typeof isDefined;
 		getName        : typeof getName;
-
-		getLISS    : typeof getLISS;
-		getLISSSync: typeof getLISSSync;
     }
 }
 
@@ -30,8 +29,6 @@ export function define<T extends LISSBaseCstr>(
 	const opts = htmltag === undefined ? {}
 									   : {extends: htmltag};
 	
-	console.warn("defined", tagname, LISSclass, opts);
-
 	customElements.define(tagname, LISSclass, opts);
 };
 
@@ -74,32 +71,3 @@ LISS.whenDefined    = whenDefined;
 LISS.whenAllDefined = whenAllDefined;
 LISS.isDefined      = isDefined;
 LISS.getName        = getName;
-
-// ==========================================================
-
-async function getLISS<T extends LISSBase>( element: Element ): Promise<T> {
-
-	await LISS.whenDefined( LISS.getName(element) );
-
-	customElements.upgrade( element );
-
-	console.warn("getLISS", element, element.constructor.name );
-
-	return await (element as LISSHost<T>).LISS as T; // ensure initialized.
-}
-function getLISSSync<T extends LISSBase>( element: Element ): T {
-
-	const name = LISS.getName(element);
-	if( ! LISS.isDefined( name ) )
-		throw new Error(`${name} hasn't been defined yet.`);
-
-	let host = element as LISSHost<T>;
-
-	if( ! host.isInit )
-		throw new Error("Instance hasn't been initialized yet.");
-
-	return host.LISSSync as T;
-}
-
-LISS.getLISS     = getLISS;
-LISS.getLISSSync = getLISSSync;

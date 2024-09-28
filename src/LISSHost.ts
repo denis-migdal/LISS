@@ -98,124 +98,143 @@ export function buildLISSHost<
 
 	class LISSHostBase extends (host as new () => HTMLElement) {
 
-		static Base = Liss;
-
 		// adopt state if already created.
 		readonly state = (this as any).state ?? new LISSState(this);
+
+		// ============ DEPENDENCIES ==================================
 
 		static readonly whenDepsResolved = whenDepsResolved;
 		static get isDepsResolved() {
 			return isDepsResolved;
 		}
 
-		get isInitialized() {
-			return this.#API !== null;
+		// ============ INITIALIZATION ==================================
+		static Base = Liss;
+
+		#base: any|null = null;
+		get base() {
+			return this.#base;
 		}
-		get whenInitialized() {
-			return this.#waitInit; // TODO: better...
+
+		get isInitialized() {
+			return this.#base !== null;
+		}
+		readonly whenInitialized: Promise<InstanceType<T>>;
+		#whenInitialized_resolver;
+
+		initialize(params: Partial<Params> = {}) {
+
+			if( this.isInitialized )
+				throw new Error('Element already initialized!');
+            if( ! ( this.constructor as any).isDepsResolved )
+                throw new Error("Dependencies hasn't been loaded !");
+
+			Object.assign(this.#params, params);
+
+			const base = this.init();
+
+			if( this.isConnected )
+				(base as any).onDOMConnected();
+
+			return this.#base = base;
 		}
 
 		// =================================
+		readonly #params: Params = params;
 
-		readonly #params: Params = params; // do I need it as member ???
-		readonly #id = ++id; // for debug
+		get params(): Params {
+			return this.#params;
+		}
+
+        public updateParams(params: Partial<LISS_Opts["params"]>) {
+			if( this.isInitialized )
+                // @ts-ignore
+				return this.base!.updateParams(params);
+
+            // wil be given to constructor...
+			Object.assign( this.#params, params );
+		}
+		// ============== Attributes ===================
+
+		#attrs_flag = false;
+
+		#attributes         = {} as Record<Attrs, string|null>;
+		#attributesDefaults = {} as Record<Attrs, string|null>;
+		#attrs = new Attributes(
+			this.#attributes,
+			this.#attributesDefaults,
+			(name: Attrs, value:string|null) => {
+
+				this.#attributes[name] = value;
+
+				this.#attrs_flag = true; // do not trigger onAttrsChanged.
+				if( value === null)
+					this.removeAttribute(name);
+				else
+					this.setAttribute(name, value);
+			}
+		) as unknown as Record<Attrs, string|null>;
+
+		setAttrDefault(name: Attrs, value: string|null) {
+			if( value === null)
+				delete this.#attributesDefaults[name];
+			else
+				this.#attributesDefaults[name] = value;
+		}
+
+		get attrs(): Readonly<Record<Attrs, string|null>> {
+
+			return this.#attrs;
+		}
+
+		// ============== Impl ===================
 
 		constructor(params: {}, base?: InstanceType<T>) {
 			super();
 
 			if( base !== undefined){
-				this.#API = base;
-				this.init();
+				this.#base = base;
+				this.initialize();
 			}
 
-			this.#waitInit = new Promise( (resolve) => {
-				if(this.isInit)
-					return resolve(this.#API!);
-				this.#resolve = (...args) => { console.warn('resolved?'); resolve(...args) };
-			});
+			let {promise, resolve} = Promise.withResolvers<InstanceType<T>>();
+
+			this.whenInitialized = promise;
+			this.#whenInitialized_resolver = resolve;
+
+			if( this.isInitialized )
+				resolve(this.base);
 
 			if( "_whenUpgradedResolve" in this)
 				(this._whenUpgradedResolve as any)();
 		}
 
-		/**** public API *************/
-
-        static get waitReady() {
-            return waitReady;
-        }
-        static get isReady() {
-            return isReady;
-        }
-
-        get waitReady() {
-            return LISSHostBase.waitReady;
-        }
-        get isReady() {
-            return LISSHostBase.isReady;
-        }
-
-		get isInit() {
-			return this.#API !== null;
-		}
-		initialize(params: Partial<Params> = {}) {
-
-			if( this.isInit )
-				throw new Error('Element already initialized!');
-            if( ! this.isReady )
-                throw new Error("Dependencies hasn't been loaded !");
-
-			Object.assign(this.#params, params);
-
-			const api = this.init();
-
-			if( this.#isInDOM )
-				(api as any).onDOMConnected();
-
-			return api;
-		}
-
-		get LISSSync() {
-			if( ! this.isInit )
-				throw new Error('Accessing API before WebComponent initialization!');
-			return this.#API!;
-		}
-		get LISS() {
-			return this.#waitInit;
-		}
-
-		/*** init ***/
-		#waitInit: Promise<InstanceType<T>>;
-		#resolve: ((u: InstanceType<T>) => void) | null = null;
-		#API: InstanceType<T> | null = null;
-
-		#isInDOM = false; // could also use isConnected...
-		get isInDOM() {
-			return this.#isInDOM;
-		}
+		// ====================== DOM ===========================		
 
 		disconnectedCallback() {
-			this.#isInDOM = false;
-			(this.#API! as any).onDOMDisconnected();
+			(this.base! as any).onDOMDisconnected();
 		}
 
 		connectedCallback() {
 
-			this.#isInDOM = true;
-	
-			if( ! this.isInit ) {// TODO: if option init each time...
-				if( ! this.isReady ) {
-                    (async ()=>{
-                        await this.waitReady;
-						this.init();
-                        if( this.isInDOM)
-                            (this.#API! as any).onDOMConnected();
-                    })();
-                    return;
-                }
-                this.init();
-            }
+			// TODO: life cycle options
+			if( this.isInitialized ) {
+				this.base!.onDOMConnected();
+				return;
+			}
 
-			(this.#API! as any).onDOMConnected();
+			// TODO: life cycle options
+			if( this.state.isReady ) {
+				this.initialize(); // automatically calls onDOMConnected
+			}
+
+			( async () => {
+
+				await this.state.isReady;
+
+				this.initialize();
+
+			})();
 		}
 
 		private init() {
@@ -286,35 +305,18 @@ export function buildLISSHost<
 
 	    	// h4ck, okay because JS is monothreaded.
 			setCstrHost(this);
-	    	let obj = this.#API === null ? new Liss() : this.#API;
+	    	let obj = this.base === null ? new Liss() : this.base;
 
-			this.#API = obj as InstanceType<T>;
+			this.#base = obj as InstanceType<T>;
 
 			// default slot
 			if( this.hasShadow && this.#content.childNodes.length === 0 )
 				this.#content.append( document.createElement('slot') );
 
-			if( this.#resolve !== null) {
-				console.warn("resolved", this.#API);
-				this.#resolve(this.#API);
-			}
+			this.#whenInitialized_resolver(this.base);
 
-			return this.#API;
+			return this.base;
 		}
-
-		get params(): Params {
-			return this.#params;
-		}
-
-        public updateParams(params: Partial<LISS_Opts["params"]>) {
-			if( this.isInit )
-                // @ts-ignore
-				return this.#API!.updateParams(params);
-
-            // wil be given to constructor...
-			Object.assign( this.#params, params );
-		}
-
 
 		/*** content ***/
 		#content: Host|ShadowRoot|null = null;
@@ -348,37 +350,7 @@ export function buildLISSHost<
 			return `${this.tagName}[is="${this.getAttribute("is")}"]`;
 		}
 
-		/*** attrs ***/
-		#attrs_flag = false;
-
-		#attributes         = {} as Record<Attrs, string|null>;
-		#attributesDefaults = {} as Record<Attrs, string|null>;
-		#attrs = new Attributes(
-			this.#attributes,
-			this.#attributesDefaults,
-			(name: Attrs, value:string|null) => {
-
-				this.#attributes[name] = value;
-
-				this.#attrs_flag = true; // do not trigger onAttrsChanged.
-				if( value === null)
-					this.removeAttribute(name);
-				else
-					this.setAttribute(name, value);
-			}
-		) as unknown as Record<Attrs, string|null>;
-
-		setAttrDefault(name: Attrs, value: string|null) {
-			if( value === null)
-				delete this.#attributesDefaults[name];
-			else
-				this.#attributesDefaults[name] = value;
-		}
-
-		get attrs(): Readonly<Record<Attrs, string|null>> {
-
-			return this.#attrs;
-		}
+		// attrs
 
 		static observedAttributes = attrs;
 		attributeChangedCallback(name    : Attrs,
@@ -391,10 +363,10 @@ export function buildLISSHost<
 			}
 
 			this.#attributes[name] = newValue;
-			if( ! this.isInit )
+			if( ! this.isInitialized )
 				return;
 
-			if( (this.#API! as any).onAttrChanged(name, oldValue, newValue) === false) {
+			if( (this.base! as any).onAttrChanged(name, oldValue, newValue) === false) {
 				this.#attrs[name] = oldValue; // revert the change.
 			}
 		}

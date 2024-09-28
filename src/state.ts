@@ -190,7 +190,7 @@ export class LISSState {
 
         await host.whenInitialized;
 
-        return (elem as LISSHost<T>).LISSSync as T;
+        return (elem as LISSHost<T>).base as T;
     }
 
     // ================== CONVERSIONS ==============================
@@ -310,7 +310,7 @@ export async function initialize<T extends LISSBase>(elem : HTMLElement|LISSHost
 
     host.initialize();
 
-    return host.LISSSync as T;
+    return host.base as T;
 }
 export function initializeSync<T extends LISSBase>(elem : HTMLElement|LISSHost<T>): T {
 
@@ -321,7 +321,7 @@ export function initializeSync<T extends LISSBase>(elem : HTMLElement|LISSHost<T
 
     host.initialize();
 
-    return host.LISSSync as T;
+    return host.base as T;
 }
 // ====================== external WHEN ======================================
 

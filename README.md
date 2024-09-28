@@ -27,6 +27,7 @@
 
 - [ ] LISSHost public interface
 - [ ] Facilitate static changes of parameters (inherit without LISS.extends)
+  - [ ] merge observed attrs names and default attrs.
 
 - [ ] Distribute : make Webpack output several JS lib exports.
 - [ ] Provide clone optimisation (e.g. for WebSlides) ?
