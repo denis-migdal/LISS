@@ -7,16 +7,14 @@
 		<script type="importmap">
 		{
 			"imports": {
-				"LISS": "/index.js"
+				"LISS": "../../../index.js"
 			}
 		}
 		</script>
-		<script type="module">
-			import "LISS";
-		</script>
+		<script type="module" src="./index.js" defer></script>
 	</head>
 	<body>
-		<liss-auto src="./components/"></liss-auto>
+		<liss-auto src="../../../assets/liss-auto/components/" sw="../../../../../sw.js"></liss-auto>
 
 		<liss-html></liss-html>
 		<liss-css></liss-css>

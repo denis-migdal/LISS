@@ -1,6 +1,6 @@
 import LISS from "./LISSBase";
 
-import "./define";
+//import "./define";
 
 
 export default LISS;

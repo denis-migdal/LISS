@@ -1,10 +1,13 @@
+import { ShadowCfg } from "types";
+import LISS from "../LISSBase";
 
-// ================================================
-// =============== LISS Auto ======================
-// ================================================
+import {define} from "../state";
 
-/*
-export class LISS_Auto extends LISS({attributes: ["src"]}) {
+export class LISS_Auto extends LISS({
+	attrs: ["src", "sw"],
+	shadow: ShadowCfg.NONE,
+	css: `:host { display: none; }`
+}) {
 
 	readonly #known_tag = new Set<string>();
 	readonly #directory: string;
@@ -16,10 +19,12 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 
 		this.#sw = new Promise( async (resolve) => {
 			
-			await navigator.serviceWorker.register(`./sw.js`);
+			await navigator.serviceWorker.register(this.attrs.sw ?? "/sw.js", {scope: "/"});
 
-			if( navigator.serviceWorker.controller )
+			if( navigator.serviceWorker.controller ) {
 				resolve();
+				return;
+			}
 
 			navigator.serviceWorker.addEventListener('controllerchange', () => {
 				resolve();
@@ -31,7 +36,7 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 		if(src === null)
 			throw new Error("src attribute is missing.");
 		this.#directory = src[0] === '.'
-								? `${window.location.pathname}/${src}`
+								? `${window.location.pathname}${src}`
 								: src;
 
 		new MutationObserver( (mutations) => {
@@ -68,10 +73,12 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 		else if( content !== undefined )
 			klass = class WebComponent extends LISS(opts) {};
 
+		console.warn(tagname, files);
+
 		if(klass === null)
 			throw new Error(`Missing files for WebComponent ${tagname}.`);
 
-		return LISS.define(tagname, klass);
+		return define(tagname, klass);
 	}
 
 	async #addTag(tagname: string) {
@@ -107,7 +114,7 @@ export class LISS_Auto extends LISS({attributes: ["src"]}) {
 		
 	}
 }
-LISS.define("liss-auto", LISS_Auto);
+define("liss-auto", LISS_Auto);
 
 export interface Components {
 	"liss-auto": LISS_Auto
@@ -116,6 +123,8 @@ export interface Components {
 // ================================================
 // =============== LISS internal tools ============
 // ================================================
+
+type Resource = URL|Response;
 
 async function fetchResource(resource: Resource|Promise<Resource>) {
 
@@ -151,11 +160,9 @@ async function _import(uri: string, isLissAuto: boolean = false) {
 		return undefined;
 
 	try {
-		return (await import(/* webpackIgnore: true *//* uri)).default;
+		return (await import(/* webpackIgnore: true */ uri)).default;
 	} catch(e) {
 		console.log(e);
 		return undefined;
 	}
 }
-
-*/

@@ -1,4 +1,3 @@
-import { getName } from "define";
 import { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "types";
 import { _element2tagname, isDOMContentLoaded, whenDOMContentLoaded } from "utils";
 
@@ -366,4 +365,15 @@ function getHostCstrSync<T extends LISSHostCstr<LISSBaseCstr>>(elem: HTMLElement
     if( host === undefined)
         throw new Error(`${name} not yet defined!`);
     return host as T;
+}
+
+//TODO: move 2 registery...
+export function getName( element: Element ): string {
+
+	const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
+	
+	if( ! name.includes('-') )
+		throw new Error(`Element ${name} is not a WebComponent`);
+
+	return name;
 }

@@ -11,9 +11,12 @@
 
 ## TODO
 
+- LISSAuto : ${} for attrs/params...
+  // => content: do not parse / parser own parser
+    // how to preproc ???
+
 - [ ] fix helpers + examples + doc.
   - [ ] define.ts (-> customRegistery)
-  - [ ] LISSAuto (html`` ?)
   - [ ] globalCSSRules
   - [ ] LISSParams + lifeCycle...
 
