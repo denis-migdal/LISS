@@ -23,6 +23,21 @@ export const INITIALIZED = LISSState.INITIALIZED;
 //TODO: add to API ?
 //TODO: HTMLElement or Host class or Base class or X.
 
+export function state2str(state: LISSState) {
+    let is = new Array<string>();
+
+    if( state & DEFINED )
+        is.push("DEFINED");
+    if( state & READY )
+        is.push("READY");
+    if( state & UPGRADED )
+        is.push("UPGRADED");
+    if( state & INITIALIZED )
+        is.push("INITIALIZED");
+
+    return is.join('|');
+}
+
 export function getState(elem: HTMLElement): LISSState {
 
     let state: LISSState = 0;

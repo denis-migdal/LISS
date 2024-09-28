@@ -2,6 +2,7 @@
 import { html, liss } from 'helpers/build';
 import LISS from '../../../';
 import { ShadowCfg } from 'types';
+import { getState, state2str } from 'state';
 
 // =============================================================
 
@@ -32,16 +33,22 @@ LISS.define('my-component-b', MyComponentB);
 
 async function foo() {
 
-    const promise = liss`<my-component-b></my-component-b>`;
-
-    console.warn(promise);
+    const component = await liss`<my-component-b></my-component-b>`;
     
-    const component = await promise;
-
-    console.warn(promise);
-
-    console.log("append", component);
     document.body.append(component.host);
 }
 
 foo();
+
+{
+    let compo = new MyComponentB.Host();
+    document.body.append(compo);
+
+    console.warn("host", state2str(getState(compo)) );
+}
+{
+    let compo = new MyComponentB();
+    document.body.append(compo.host);
+
+    console.warn("base", state2str(getState(compo.host)) );
+}

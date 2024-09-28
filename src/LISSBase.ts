@@ -102,7 +102,7 @@ export function LISS<
 
 			// h4ck, okay because JS is monothreaded.
 			if( __cstr_host === null )
-				throw new Error("Please do not directly call this constructor");
+				__cstr_host = new (this.constructor as any).Host({}, this);
 			this.#host = __cstr_host;
 			__cstr_host = null;
 		}

@@ -1,8 +1,14 @@
+import { upgradeSync } from "state";
 import { setCstrHost } from "./LISSBase";
 import { LISS_Opts, LISSBaseCstr } from "./types";
 import { isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
 
 let id = 0;
+
+type ComposeConstructor<T, U> = 
+    [T, U] extends [new (a: infer O1) => infer R1,new (a: infer O2) => infer R2] ? {
+        new (o: O1 & O2): R1 & R2
+    } & Pick<T, keyof T> & Pick<U, keyof U> : never
 
 type inferLISS<T> = T extends LISSBaseCstr<infer A, infer B, infer C, infer D> ? [A,B,C,D] : never;
 
@@ -90,7 +96,7 @@ export function buildLISSHost<
 		isDepsResolved = true;
 	})();
 
-	class LISSHostBase extends host {
+	class LISSHostBase extends (host as new () => HTMLElement) {
 
 		static readonly whenDepsResolved = whenDepsResolved;
 		static get isDepsResolved() {
@@ -109,12 +115,17 @@ export function buildLISSHost<
 		readonly #params: Params = params; // do I need it as member ???
 		readonly #id = ++id; // for debug
 
-		constructor(...args: any[]) {
-			super(...args);
+		constructor(params: {}, base?: InstanceType<T>) {
+			super();
+
+			if( base !== undefined){
+				this.#API = base;
+				this.init();
+			}
 
 			this.#waitInit = new Promise( (resolve) => {
-				/*if(this.isInit) - not possible
-					return resolve(this.#API!);*/
+				if(this.isInit)
+					return resolve(this.#API!);
 				this.#resolve = (...args) => { console.warn('resolved?'); resolve(...args) };
 			});
 
@@ -269,7 +280,7 @@ export function buildLISSHost<
 
 	    	// h4ck, okay because JS is monothreaded.
 			setCstrHost(this);
-	    	let obj = new Liss();
+	    	let obj = this.#API === null ? new Liss() : this.#API;
 
 			this.#API = obj as InstanceType<T>;
 
@@ -383,7 +394,7 @@ export function buildLISSHost<
 		}
 	};
 
-	return LISSHostBase;
+	return LISSHostBase as ComposeConstructor<typeof LISSHostBase, typeof host>;
 }
 
 
