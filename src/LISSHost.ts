@@ -274,10 +274,11 @@ export function buildLISSHost<
 
 			// content
 			if( content !== undefined ) {
-				// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
 				let template_elem = document.createElement('template');
-				let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
-	    		template_elem.innerHTML = str;
+				// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
+				//let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
+	    		let str = (content as string);
+				template_elem.innerHTML = str;
 	    		this.#content.append(...template_elem.content.childNodes);
 	    	}
 
