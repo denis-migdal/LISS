@@ -3,6 +3,7 @@
 // =============== LISS EventsTarget ==============
 // ================================================
 
+/*
 type CstEvent<Event extends string, Args> = CustomEvent<Args> & {type: Event};
 
 export interface EventsTarget<Events extends Record<string, any>>{
@@ -69,3 +70,4 @@ LISS.insertGlobalDelegatedListener = function(event_name: keyof typeof DELEGATED
 
 document.addEventListener('click', onClickEvent);
 document.addEventListener('dblclick', onClickEvent);
+*/
