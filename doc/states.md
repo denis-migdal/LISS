@@ -36,8 +36,8 @@ Implicit conversions:
 ## State modifiers
 
 - `liss.define(LISSHost|LISSBase)`
-- `liss.upgrade[Sync]<LISSHost>(HTMLElement, strict=false): LISSHost` : if `strict` raise an exception if already upgraded.
-- `liss.initialize[Sync]<LISSBase>(HTMLElement|LISSHost, strict=false): LISSBase` : if `strict` raise an exception if already initialized.
+- `liss.upgrade[Sync]<LISSHost>(HTMLElement, strict=false|Params): LISSHost` : if `strict !== false` raise an exception if already upgraded.
+- `liss.initialize[Sync]<LISSBase>(HTMLElement|LISSHost, strict=false|Params): LISSBase` : if `strict !== false` raise an exception if already initialized.
 
 ## Externals when
 
