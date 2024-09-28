@@ -1,3 +1,4 @@
+import { buildLISSHost } from "LISSHost";
 import { Class, Constructor, CSS_Source, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
 import { _element2tagname, isShadowSupported } from "./utils";
 
@@ -170,6 +171,14 @@ export function LISS<
 		protected disconnectedCallback() {}
 		public get isConnected() {
 			return this.isInDOM;
+		}
+
+		private static _Host: LISSHost<LISSBase>;
+
+		static get Host() {
+			if( this._Host === undefined)
+				this._Host = buildLISSHost(this);
+			return this._Host;
 		}
 	}
 

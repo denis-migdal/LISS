@@ -3,7 +3,6 @@
 // ================================================
 
 import LISS from "LISSBase";
-import { buildLISSHost } from "./LISSHost";
 import { LISSBase, LISSBaseCstr, LISSHost } from "./types";
 import { _element2tagname } from "./utils";
 
@@ -22,16 +21,17 @@ declare module "./LISSBase" {
 
 export function define<T extends LISSBaseCstr>(
 							tagname       : string,
-							ComponentClass: T,
-							params        : Partial<T["LISSCfg"]["params"]> = {}) {
+							ComponentClass: T) {
 	const Class  = ComponentClass.LISSCfg.host;
 	let htmltag  = _element2tagname(Class)??undefined;
 
-	const LISSclass = buildLISSHost<T>(ComponentClass, params);
+	const LISSclass = ComponentClass.Host; //buildLISSHost<T>(ComponentClass, params);
 	
 	const opts = htmltag === undefined ? {}
 									   : {extends: htmltag};
 	
+	console.warn("defined", tagname, LISSclass, opts);
+
 	customElements.define(tagname, LISSclass, opts);
 };
 
@@ -59,7 +59,7 @@ function isDefined(name: string) {
 }
 
 
-function getName( element: Element ): string {
+export function getName( element: Element ): string {
 
 	const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
 	
@@ -80,6 +80,10 @@ LISS.getName        = getName;
 async function getLISS<T extends LISSBase>( element: Element ): Promise<T> {
 
 	await LISS.whenDefined( LISS.getName(element) );
+
+	customElements.upgrade( element );
+
+	console.warn("getLISS", element, element.constructor.name );
 
 	return await (element as LISSHost<T>).LISS as T; // ensure initialized.
 }

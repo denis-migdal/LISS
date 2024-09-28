@@ -10,7 +10,7 @@ type inferLISS<T> = T extends LISSBaseCstr<infer A, infer B, infer C, infer D> ?
 const sharedCSS = new CSSStyleSheet();
 
 export function buildLISSHost<
-                        T extends LISSBaseCstr>(Liss: T, _params: Partial<T["LISSCfg"]["params"]> = {}) {
+                        T extends LISSBaseCstr>(Liss: T) {
 	const {
 		host,
 		attrs,
@@ -79,12 +79,34 @@ export function buildLISSHost<
     // No deps and DOM already loaded.
     let isReady = Liss.LISSCfg.deps.length == 0 && isDOMContentLoaded();
 
-	const params = Object.assign({}, Liss.LISSCfg.params, _params);
+	const params = Liss.LISSCfg.params; //Object.assign({}, Liss.LISSCfg.params, _params);
+
+	//
+
+	const whenDepsResolved = Promise.all(Liss.LISSCfg.deps);
+	let isDepsResolved = false;
+	( async () => {
+		await whenDepsResolved;
+		isDepsResolved = true;
+	})();
 
 	class LISSHostBase extends host {
 
-		readonly #params: Params = params;
+		static readonly whenDepsResolved = whenDepsResolved;
+		static get isDepsResolved() {
+			return isDepsResolved;
+		}
 
+		get isInitialized() {
+			return this.#API !== null;
+		}
+		get whenInitialized() {
+			return this.#waitInit; // TODO: better...
+		}
+
+		// =================================
+
+		readonly #params: Params = params; // do I need it as member ???
 		readonly #id = ++id; // for debug
 
 		constructor(...args: any[]) {
@@ -93,8 +115,11 @@ export function buildLISSHost<
 			this.#waitInit = new Promise( (resolve) => {
 				/*if(this.isInit) - not possible
 					return resolve(this.#API!);*/
-				this.#resolve = resolve;
+				this.#resolve = (...args) => { console.warn('resolved?'); resolve(...args) };
 			});
+
+			if( "_whenUpgradedResolve" in this)
+				(this._whenUpgradedResolve as any)();
 		}
 
 		/**** public API *************/
@@ -233,6 +258,7 @@ export function buildLISSHost<
 
 			// content
 			if( content !== undefined ) {
+				// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
 				let template_elem = document.createElement('template');
 				let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
 	    		template_elem.innerHTML = str;
@@ -251,8 +277,10 @@ export function buildLISSHost<
 			if( this.hasShadow && this.#content.childNodes.length === 0 )
 				this.#content.append( document.createElement('slot') );
 
-			if( this.#resolve !== null)
+			if( this.#resolve !== null) {
+				console.warn("resolved", this.#API);
 				this.#resolve(this.#API);
+			}
 
 			return this.#API;
 		}
@@ -357,3 +385,5 @@ export function buildLISSHost<
 
 	return LISSHostBase;
 }
+
+

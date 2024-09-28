@@ -65,6 +65,8 @@ export function isDOMContentLoaded() {
     return document.readyState === "interactive" || document.readyState === "complete";
 }
 
+export const whenDOMContentLoaded = waitDOMContentLoaded();
+
 export async function waitDOMContentLoaded() {
     if( isDOMContentLoaded() )
         return;

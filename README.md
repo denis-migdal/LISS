@@ -1,7 +1,7 @@
 <div align="center">
-  <h1>[PROJECT TITLE]</h1>
+  <h1>LISS: Light, Intuitive, Simplier, and Safer Web Components.</h1>
 
-  <p>[Project description]</p>
+  <p>Build safe and simple vanilla WebComponents</p>
 </div>
 
 ## Build
@@ -11,10 +11,21 @@
 
 ## TODO
 
+- [ ] ${} in content => use html`` (can add sync objcts)
+  - [] add slots
+  - [] liss/sync : initialize ?
+  - content : change rules...
 - [ ] test
-- [ ] helpers/shadowRoot/LISSAuto => helpers directory.
+- [ ] fix helpers
 - [ ] html``
 - [ ] liss[Sync]``
+
+- ! redefined already defined !
+
+- changer représentation interne pour permettre héritage sans LISS.extends...
+- liss() <= au lieu de extends ??? [utilise pour types]
+  - mixins ()
+  - extends()
 
 - params in LISSHost : delete...
 => LISS fix : not cstr params ! (does not need as not called !!!).
@@ -28,6 +39,12 @@
 
 - vanilla compat...
 
++ update if inside template : won't do anything...
++ customRegistery methods...
++ upgrade doesn't throw if not defined
++ LISSHost init/life cycle...
+  + state + isX
+
 => add previous helpers/examples
 => add new thingy...
 	=> Host vs Base...
@@ -40,9 +57,6 @@ QuerySelector :
   - elem.host.querySelector
   - LISS.getLISS( elem )
   -> or helpers querySelectors [](./doc/helpers/querySelectors.md)
-
-
-# LISS: Light, Intuitive, Simplier, and Safer Web Components.
 
 ## Why LISS ?
 
@@ -764,7 +778,6 @@ Build a new component instance.
 
 ## TODO
 
-- [ ] Dependancies : after Host decl.
 - [ ] Expect parents/children initialization options (2 incompatibles)
   -> expect Host ?
   -> DOM connect/disconnect => different life-cycle / upper life-cycle ?

@@ -1,3 +1,36 @@
+import LISS from "../index";
+
+export function html<T extends HTMLElement>(str: readonly string[], ...args: any[]): T {
+    
+    let string = str[0];
+    for(let i = 0; i < args.length; ++i) {
+        string += `${args[i]}`;
+        string += `${str[i+1]}`;
+        //TODO: more pre-processes
+    }
+
+    // using template prevents CustomElements upgrade...
+    let template = document.createElement('div');
+    string = string.trim(); // Never return a text node of whitespace as the result
+    template.innerHTML = string;
+    return template.firstElementChild! as T;
+}
+
+
+export function liss(str: readonly string[], ...args: any[]) {
+
+    const host = html(str, ...args);
+    //TODO: initialize()
+    return LISS.getLISS(host); // returns the promise
+}
+
+export function lissSync(str: readonly string[], ...args: any[]) {
+
+    const host = html(str, ...args);
+    //TODO: initialize()
+    return LISS.getLISSSync(host);
+}
+
 
 type BUILD_OPTIONS<T extends LISSBase<any,any,any,any>> = Partial<{
     params    : Partial<inferParams<T>>,
