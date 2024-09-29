@@ -12,8 +12,10 @@
 ## TODO
 
 - LISSAuto : ${} for attrs/params...
-  // => content: do not parse / parser own parser
-    // how to preproc ???
+    // fct (attrs, params) => { str } // if str : build the function...
+      // can do .clone()...
+    // special parser for LISSAuto
+    // html`` <= also DF
 
 - [ ] fix helpers + examples + doc.
   - [ ] define.ts (-> customRegistery)
@@ -43,9 +45,11 @@
 
 Add gotcha/Doc :
 - update if inside template : won't do anything...
+  - adoptNode()
 - upgrade doesn't throw even if didn't upgraded (e.g. not defined, template, etc)
 - Base vs Host
 - link to subpages
+- build HTMLElement from string : multiple ways with gotchas
 
 ## Why LISS ?
 

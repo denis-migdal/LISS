@@ -284,6 +284,8 @@ export function upgradeSync<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement,
     if( ! state.isDefined )
         throw new Error('Element not defined!');
 
+    if( elem.ownerDocument !== document )
+        document.adoptNode(elem);
     customElements.upgrade(elem);
 
     const Host = getHostCstrSync(elem);

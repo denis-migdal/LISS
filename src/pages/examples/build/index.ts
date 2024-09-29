@@ -1,7 +1,7 @@
 
 import { html, liss } from 'helpers/build';
 import LISS from '../../../';
-import { getState } from 'state';
+import { define, getState } from 'state';
 
 // =============================================================
 
@@ -14,7 +14,7 @@ class MyComponentA extends LISS() {
     }
 }
 
-LISS.define('my-component-a', MyComponentA);
+define('my-component-a', MyComponentA);
 
 // =============================================================
 
@@ -28,7 +28,7 @@ class MyComponentB extends LISS({
     }
 }
 
-LISS.define('my-component-b', MyComponentB);
+define('my-component-b', MyComponentB);
 
 async function foo() {
 

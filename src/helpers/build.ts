@@ -2,7 +2,7 @@ import { initialize, initializeSync } from "state";
 import LISS from "../index";
 import { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "types";
 
-export function html<T extends HTMLElement>(str: readonly string[], ...args: any[]): T {
+export function html<T extends DocumentFragment|HTMLElement>(str: readonly string[], ...args: any[]): T {
     
     let string = str[0];
     for(let i = 0; i < args.length; ++i) {
@@ -12,15 +12,22 @@ export function html<T extends HTMLElement>(str: readonly string[], ...args: any
     }
 
     // using template prevents CustomElements upgrade...
-    let template = document.createElement('div');
-    string = string.trim(); // Never return a text node of whitespace as the result
-    template.innerHTML = string;
-    return template.firstElementChild! as T;
+    let template = document.createElement('template');
+    // Never return a text node of whitespace as the result
+    template.innerHTML = string.trim();
+
+    if( template.content.children.length === 1)
+      return template.content.firstChild! as unknown as T;
+
+    return template.content! as unknown as T;
 }
 
 export async function liss<T extends LISSBase>(str: readonly string[], ...args: any[]) {
 
     const elem = html(str, ...args);
+
+    if( elem instanceof DocumentFragment )
+      throw new Error(`Multiple HTMLElement given!`);
 
     return await initialize<T>(elem);
 }
@@ -28,6 +35,9 @@ export async function liss<T extends LISSBase>(str: readonly string[], ...args: 
 export function lissSync<T extends LISSBase>(str: readonly string[], ...args: any[]) {
 
     const elem = html(str, ...args);
+
+    if( elem instanceof DocumentFragment )
+      throw new Error(`Multiple HTMLElement given!`);
 
     return initializeSync<T>(elem);
 }

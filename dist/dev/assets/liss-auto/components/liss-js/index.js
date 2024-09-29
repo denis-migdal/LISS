@@ -18,5 +18,6 @@ export default function(options) {
 			}, 1000);
 		}
 	}
+
 }
 
