@@ -1,4 +1,4 @@
-import { LISSState, upgradeSync } from "state";
+import { LISSState, upgradeSync } from "./state";
 import { setCstrHost } from "./LISSBase";
 import { LISS_Opts, LISSBaseCstr } from "./types";
 import { ComposeConstructor, isDOMContentLoaded, waitDOMContentLoaded } from "./utils";

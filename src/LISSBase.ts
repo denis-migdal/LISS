@@ -1,8 +1,8 @@
-import { buildLISSHost } from "LISSHost";
+import { buildLISSHost } from "./LISSHost";
 import { Class, Constructor, ContentFactory, CSS_Source, HTML_Resource, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
 import { _element2tagname, isShadowSupported } from "./utils";
 import { LISSState } from "state";
-import { html } from "helpers/build";
+import { html } from "./helpers/build";
 
 let __cstr_host  : any = null;
 
@@ -35,10 +35,6 @@ export function DEFAULT_CONTENT_FACTORY(content?: Exclude<HTML_Resource, Respons
 
 	return () => content?.cloneNode(true);
 }
-
-export class ILISS {}
-
-export default LISS as typeof LISS & ILISS;
 
 export function LISS<
 	ExtendsCtr extends Constructor<Class>  = Constructor<Class>,

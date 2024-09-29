@@ -11,13 +11,10 @@
 
 ## TODO
 
-- [ ] liss() redirect to liss.extends or liss.???()
-  -> redo liss.extends (all options...)
-
 - [ ] fix helpers + examples + doc.
   - [ ] define.ts (-> customRegistery)
   - [ ] globalCSSRules
-  - [ ] LISSParams + lifeCycle...
+  - [ ] LISSParams
 - verify types...
 
 - [ ] Distribute : make Webpack output several JS lib exports.

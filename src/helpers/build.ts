@@ -1,6 +1,5 @@
-import { initialize, initializeSync } from "state";
-import LISS from "../index";
-import { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "types";
+import { initialize, initializeSync } from "../state";
+import { LISSBase } from "../types";
 
 export function html<T extends DocumentFragment|HTMLElement>(str: readonly string[], ...args: any[]): T {
     

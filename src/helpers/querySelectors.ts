@@ -3,13 +3,13 @@
 // =============== LISS QuerySelectors ============
 // ================================================
 
-import type { LISSBase, LISSHost } from "types";
-import LISS from "index";
-import { initializeSync, whenInitialized } from "state";
+import LISS from "../extends";
+import type { LISSBase, LISSHost } from "../types";
+import { initializeSync, whenInitialized } from "../state";
 
 interface Components {};
 
-declare module "../LISSBase" {
+declare module "../extends" {
     interface ILISS {
         // async
         qs : typeof qs;
@@ -53,7 +53,7 @@ async function qs<T extends LISSBase>(	selector: string,
 
 	[selector, parent] = _buildQS(selector, tagname_or_parent, parent);
 
-	let result = await LISS.qso<T>(selector, parent);
+	let result = await qso<T>(selector, parent);
 	if(result === null)
 		throw new Error(`Element ${selector} not found`);
 

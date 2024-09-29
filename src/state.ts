@@ -1,5 +1,5 @@
-import { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "types";
-import { _element2tagname, isDOMContentLoaded, whenDOMContentLoaded } from "utils";
+import { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "./types";
+import { _element2tagname, isDOMContentLoaded, whenDOMContentLoaded } from "./utils";
 
 enum State {
     NONE = 0,

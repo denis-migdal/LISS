@@ -1,1 +1,1 @@
-import '../../../helpers/LISSAuto';
+import '../../../';

@@ -4,11 +4,11 @@
 
 //TODO: CustomRegistery + see with state...
 
-import LISS from "LISSBase";
+import LISS from "./extends";
 import { LISSBaseCstr } from "./types";
 import { _element2tagname } from "./utils";
 
-declare module "./LISSBase" {
+declare module "./extends" {
     interface ILISS {
         define     : typeof define;
 		whenDefined    : typeof whenDefined;

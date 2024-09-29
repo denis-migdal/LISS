@@ -1,4 +1,4 @@
-import { buildLISSHost } from "LISSHost";
+import { buildLISSHost } from "./LISSHost";
 import { LISS } from "./LISSBase";
 
 export interface Class {}
@@ -17,7 +17,7 @@ export enum ShadowCfg {
 	CLOSE= 'closed'
 };
 
-//TODO: implement
+//TODO: implement ?
 export enum LifeCycle {
     DEFAULT                   = 0,
 	// not implemented yet

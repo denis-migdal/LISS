@@ -1,5 +1,9 @@
-import { Class, Constructor, LISS_Opts, LISSBaseCstr } from "types";
+import { Class, Constructor, LISS_Opts, LISSBaseCstr } from "./types";
 import {LISS as _LISS} from "./LISSBase";
+
+export class ILISS {}
+
+export default LISS as typeof LISS & ILISS;
 
 // extends signature
 export function LISS<
@@ -24,7 +28,7 @@ export function LISS<
 >(opts?: Partial<LISS_Opts<ExtendsCtr, Params, HostCstr, Attrs>>): LISSBaseCstr<ExtendsCtr, Params, HostCstr, Attrs>
 export function LISS(opts: any): LISSBaseCstr
 {
-    if( "Host" in opts.extends ) // we assume this is a LISSBaseCstr
+    if( opts.extends !== undefined && "Host" in opts.extends ) // we assume this is a LISSBaseCstr
         return _extends(opts);
 
     return _LISS(opts);

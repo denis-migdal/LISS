@@ -1,5 +1,5 @@
-import { ShadowCfg } from "types";
-import LISS from "../LISSBase";
+import { ShadowCfg } from "../types";
+import {LISS} from "../LISSBase";
 
 import {define} from "../state";
 import { html } from "./build";
@@ -132,7 +132,10 @@ export class LISS_Auto extends LISS({
 		
 	}
 }
-define("liss-auto", LISS_Auto);
+
+// prevents multi-declarations...
+if( customElements.get("liss-auto") === undefined)
+	define("liss-auto", LISS_Auto);
 
 //TODO: fix...
 export interface Components {
