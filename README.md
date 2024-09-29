@@ -11,28 +11,28 @@
 
 ## TODO
 
+- [ ] liss() redirect to liss.extends or liss.???()
+  -> redo liss.extends (all options...)
+
 - [ ] fix helpers + examples + doc.
   - [ ] define.ts (-> customRegistery)
   - [ ] globalCSSRules
   - [ ] LISSParams + lifeCycle...
-
-- [ ] liss() redirect to liss.extends or liss.???()
-- [ ] ${} in content => use html`` (can add sync objects)
-  - [ ] add insertion of children
-  - [ ] add slots (values can be changed through attrs/params/whatever)
-  - [ ] change rules for content (do not parse ?)
-
-- [ ] Life cycle options
-
-- [ ] LISSHost public interface
-- [ ] Facilitate static changes of parameters (inherit without LISS.extends)
-  - [ ] merge observed attrs names and default attrs.
+- verify types...
 
 - [ ] Distribute : make Webpack output several JS lib exports.
 - [ ] Provide clone optimisation (e.g. for WebSlides) ?
   - clean state   (with/without Shadow ?) ?
   - do not reinit ?
   - special WebComponent ?
+
+- [ ] html`` (can add sync objects)
+  - [ ] add insertion of children
+  - [ ] add slots (values can be changed through attrs/params/whatever)
+- [ ] Life cycle options (do we need it in the end ?)
+- [ ] LISSHost public interface
+- [ ] Facilitate static changes of parameters (inherit without LISS.extends)
+  - [ ] merge observed attrs names and default attrs.
 
 - [ ] (BLISS) : emulate string prefix https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
 
