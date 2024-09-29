@@ -15,7 +15,7 @@ export function buildLISSHost<
 	const {
 		host,
 		attrs,
-		content,
+		content_factory,
 		stylesheets,
 		shadow,
 	} = Liss.LISSCfg;
@@ -321,14 +321,9 @@ export function buildLISSHost<
 			}
 
 			// content
-			if( content !== undefined ) {
-				let template_elem = document.createElement('template');
-				// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
-				//let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
-	    		let str = (content as string);
-				template_elem.innerHTML = str;
-	    		this.#content.append(...template_elem.content.childNodes);
-	    	}
+			const content = content_factory(this.attrs, this.params);
+			if( content !== undefined)
+				this.#content.append( content );
 
 	    	// build
 

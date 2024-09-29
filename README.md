@@ -44,6 +44,7 @@
 
 
 Add gotcha/Doc :
+- content_factory()
 - update if inside template : won't do anything...
   - adoptNode()
 - upgrade doesn't throw even if didn't upgraded (e.g. not defined, template, etc)

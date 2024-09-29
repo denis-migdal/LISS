@@ -8,7 +8,7 @@ export type Constructor<T> = { new(...args:any[]): T};
 export type CSS_Resource = string|Response|HTMLStyleElement|CSSStyleSheet;
 export type CSS_Source   = CSS_Resource | Promise<CSS_Resource>;
 
-export type HTML_Resource = string|Response|HTMLTemplateElement;
+export type HTML_Resource = string|Response|HTMLTemplateElement|Node;
 export type HTML_Source   = HTML_Resource | Promise<HTML_Resource>;
 
 export enum ShadowCfg {
@@ -27,6 +27,8 @@ export enum LifeCycle {
     RECREATE_AFTER_CONNECTION = 1 << 3, /* requires rebuild content + destroy/dispose when removed from DOM */
     /* sleep when disco : you need to implement it yourself */
 }
+
+export type ContentFactory<Attrs extends string, Params extends Record<string,any>> = ( (attrs: Record<Attrs, null|string>, params: Params) => Node|undefined );
 
 // Using Constructor<T> instead of T as generic parameter
 // enables to fetch static member types.
@@ -51,6 +53,7 @@ export type LISS_Opts<
         observedAttributes: readonly Attrs[], // for vanilla compat
         // non-generic
         content?: HTML_Source,
+        content_factory: (content?: Exclude<HTML_Resource, Response>) => ContentFactory<Attrs, Params>,
         css     : CSS_Source | readonly CSS_Source[],
         shadow  : ShadowCfg
 }

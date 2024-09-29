@@ -1,12 +1,35 @@
 import { buildLISSHost } from "LISSHost";
-import { Class, Constructor, CSS_Source, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
+import { Class, Constructor, ContentFactory, CSS_Source, HTML_Resource, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
 import { _element2tagname, isShadowSupported } from "./utils";
 import { LISSState } from "state";
+import { html } from "helpers/build";
 
 let __cstr_host  : any = null;
 
 export function setCstrHost(_: any) {
 	__cstr_host = _;
+}
+
+export function DEFAULT_CONTENT_FACTORY(content?: Exclude<HTML_Resource, Response>) {
+
+	if( typeof content === "string") {
+
+		content = content.trim();
+		if( content.length === 0 )
+			content = undefined;
+
+		if( content !== undefined)
+			content = html`${content}`;
+
+		// TODO LISSAuto parser...
+		// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
+		//let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
+	}
+
+	if( content instanceof HTMLTemplateElement)
+		content = content.content;
+
+	return () => content?.cloneNode(true);
 }
 
 export class ILISS {}
@@ -34,6 +57,7 @@ export function LISS<
     attrs = observedAttributes,
     // non-generic
     content,
+	content_factory: _content_factory = DEFAULT_CONTENT_FACTORY,
     css,
     shadow = isShadowSupported(host) ? ShadowCfg.CLOSE : ShadowCfg.NONE
 }: Partial<LISS_Opts<ExtendsCtr, Params, HostCstr, Attrs>> = {}) {
@@ -42,6 +66,8 @@ export function LISS<
         throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
 
     const all_deps = [...deps];
+
+	let content_factory: ContentFactory<Attrs, Params>;
 
     // content processing
     if( content instanceof Promise || content instanceof Response ) {
@@ -55,11 +81,11 @@ export function LISS<
             if( _content instanceof Response ) // from a fetch...
 				_content = await _content.text();
 
-            LISSBase.LISSCfg.content = process_content(_content);
+            LISSBase.LISSCfg.content_factory = _content_factory(_content);
         })() );
 
     } else {
-		content = process_content(content);
+		content_factory = _content_factory(content);
 	}
 
 	// CSS processing
@@ -116,7 +142,7 @@ export function LISS<
 			deps,
 			attrs,
 			params,
-			content,
+			content_factory,
 			stylesheets,
 			shadow,
 		};
@@ -182,7 +208,7 @@ export function LISS<
 
 		static get Host() {
 			if( this._Host === undefined)
-				this._Host = buildLISSHost(this);
+				this._Host = buildLISSHost(this as any); //TODO: fix type error (why???)
 			return this._Host;
 		}
 	}
@@ -204,19 +230,4 @@ function process_css(css: string|CSSStyleSheet|HTMLStyleElement) {
 	}
 
 	throw new Error("Should not occurs");
-}
-
-function process_content(content: string|HTMLTemplateElement|undefined) {
-
-    if(content === undefined)
-        return undefined;
-
-    if(content instanceof HTMLTemplateElement)
-        content = content.innerHTML;
-
-    content = content.trim();
-    if( content.length === 0 )
-        return undefined;
-
-    return content;
 }
