@@ -53,7 +53,6 @@ export function LISS<
     params            = {}     as unknown as Params,
     // non-generic
     deps   = [],
-    life_cycle =  LifeCycle.DEFAULT,
 
     // HTML Base
     host  = HTMLElement as unknown as HostCstr,

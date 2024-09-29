@@ -45,7 +45,6 @@ export type LISS_Opts<
         params    : Params,
         // non-generic
         deps      : readonly Promise<any>[],
-        life_cycle: LifeCycle, 
 
         // HTML Base
         host   : HostCstr,

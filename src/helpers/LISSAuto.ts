@@ -77,7 +77,7 @@ export class LISS_Auto extends LISS({
 
 				const content = html`${str}`;
 
-				let spans = content.querySelectorAll('span[value]');
+				let spans = content.querySelectorAll('liss[value]');
 
 				return (_a: unknown, _b:unknown, elem: HTMLElement) => {
 
