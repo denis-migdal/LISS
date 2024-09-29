@@ -2,6 +2,7 @@ import { ShadowCfg } from "types";
 import LISS from "../LISSBase";
 
 import {define} from "../state";
+import { html } from "./build";
 
 export class LISS_Auto extends LISS({
 	attrs: ["src", "sw"],
@@ -70,10 +71,27 @@ export class LISS_Auto extends LISS({
 		let klass: null| ReturnType<typeof LISS> = null;
 		if( js !== undefined )
 			klass = js(opts);
-		else if( content !== undefined )
-			klass = class WebComponent extends LISS(opts) {};
+		else if( content !== undefined ) {
 
-		console.warn(tagname, files);
+			(opts as any).content_factory = (str: string) => {
+
+				const content = html`${str}`;
+
+				let spans = content.querySelectorAll('span[value]');
+
+				return (_a: unknown, _b:unknown, elem: HTMLElement) => {
+
+					// can be optimized...
+					for(let span of spans)
+						span.textContent = elem.getAttribute(span.getAttribute('value')!)
+
+					return content.cloneNode(true);
+				};
+
+			};
+
+			klass = class WebComponent extends LISS(opts) {};
+		}
 
 		if(klass === null)
 			throw new Error(`Missing files for WebComponent ${tagname}.`);
@@ -116,6 +134,7 @@ export class LISS_Auto extends LISS({
 }
 define("liss-auto", LISS_Auto);
 
+//TODO: fix...
 export interface Components {
 	"liss-auto": LISS_Auto
 };
@@ -123,19 +142,6 @@ export interface Components {
 // ================================================
 // =============== LISS internal tools ============
 // ================================================
-
-type Resource = URL|Response;
-
-async function fetchResource(resource: Resource|Promise<Resource>) {
-
-	resource = await resource;
-
-	if( ! (resource instanceof Response) )
-		resource = await fetch(resource);
-
-	return await resource.text();
-}
-
 
 async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
 

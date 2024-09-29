@@ -28,7 +28,7 @@ export enum LifeCycle {
     /* sleep when disco : you need to implement it yourself */
 }
 
-export type ContentFactory<Attrs extends string, Params extends Record<string,any>> = ( (attrs: Record<Attrs, null|string>, params: Params) => Node|undefined );
+export type ContentFactory<Attrs extends string, Params extends Record<string,any>> = ( (attrs: Record<Attrs, null|string>, params: Params, elem:HTMLElement) => Node|undefined );
 
 // Using Constructor<T> instead of T as generic parameter
 // enables to fetch static member types.

@@ -321,7 +321,7 @@ export function buildLISSHost<
 			}
 
 			// content
-			const content = content_factory(this.attrs, this.params);
+			const content = content_factory(this.attrs, this.params, this);
 			if( content !== undefined)
 				this.#content.append( content );
 

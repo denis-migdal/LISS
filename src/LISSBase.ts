@@ -22,6 +22,10 @@ export function DEFAULT_CONTENT_FACTORY(content?: Exclude<HTML_Resource, Respons
 			content = html`${content}`;
 
 		// TODO LISSAuto parser...
+		// only if no JS...
+		// tolerate non-opti (easier ?) or span[value] ?
+			// => record element with target...
+			// => clone(attrs, params) => for each span replace then clone.
 		// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
 		//let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
 	}

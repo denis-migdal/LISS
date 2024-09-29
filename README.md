@@ -11,12 +11,6 @@
 
 ## TODO
 
-- LISSAuto : ${} for attrs/params...
-    // fct (attrs, params) => { str } // if str : build the function...
-      // can do .clone()...
-    // special parser for LISSAuto
-    // html`` <= also DF
-
 - [ ] fix helpers + examples + doc.
   - [ ] define.ts (-> customRegistery)
   - [ ] globalCSSRules

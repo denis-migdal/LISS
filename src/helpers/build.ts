@@ -16,7 +16,7 @@ export function html<T extends DocumentFragment|HTMLElement>(str: readonly strin
     // Never return a text node of whitespace as the result
     template.innerHTML = string.trim();
 
-    if( template.content.children.length === 1)
+    if( template.content.childNodes.length === 1 && template.content.firstChild!.nodeType !== Node.TEXT_NODE)
       return template.content.firstChild! as unknown as T;
 
     return template.content! as unknown as T;
