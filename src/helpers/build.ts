@@ -1,25 +1,8 @@
+import type { LISSBase } from "../types";
+
 import { initialize, initializeSync } from "../state";
-import { LISSBase } from "../types";
+import { html } from "utils";
 
-export function html<T extends DocumentFragment|HTMLElement>(str: readonly string[], ...args: any[]): T {
-    
-    let string = str[0];
-    for(let i = 0; i < args.length; ++i) {
-        string += `${args[i]}`;
-        string += `${str[i+1]}`;
-        //TODO: more pre-processes
-    }
-
-    // using template prevents CustomElements upgrade...
-    let template = document.createElement('template');
-    // Never return a text node of whitespace as the result
-    template.innerHTML = string.trim();
-
-    if( template.content.childNodes.length === 1 && template.content.firstChild!.nodeType !== Node.TEXT_NODE)
-      return template.content.firstChild! as unknown as T;
-
-    return template.content! as unknown as T;
-}
 
 export async function liss<T extends LISSBase>(str: readonly string[], ...args: any[]) {
 
@@ -41,7 +24,7 @@ export function lissSync<T extends LISSBase>(str: readonly string[], ...args: an
     return initializeSync<T>(elem);
 }
 
-
+/*
 type BUILD_OPTIONS<T extends LISSBase> = Partial<{
     params    : Partial<T["params"]>,
     content	  : string|Node|readonly Node[],
@@ -60,7 +43,7 @@ type BUILD_OPTIONS<T extends LISSBase> = Partial<{
 });
 
 //async function build<T extends keyof Components>(tagname: T, options?: BUILD_OPTIONS<Components[T]>): Promise<Components[T]>;
-/*
+
 async function build<T extends LISSBase>(tagname: string, options?: BUILD_OPTIONS<T>): Promise<T>;
 async function build<T extends LISSBase>(tagname: string, {
               params    = {},

@@ -1,8 +1,9 @@
+import type { Class, Constructor, ContentFactory, CSS_Source, HTML_Resource, HTML_Source, LISS_Opts } from "./types";
+import type { LISSState } from "state";
+
+import {ShadowCfg} from "./types";
 import { buildLISSHost } from "./LISSHost";
-import { Class, Constructor, ContentFactory, CSS_Source, HTML_Resource, HTML_Source, LifeCycle, LISS_Opts, ShadowCfg } from "./types";
-import { _element2tagname, isShadowSupported } from "./utils";
-import { LISSState } from "state";
-import { html } from "./helpers/build";
+import { _element2tagname, isShadowSupported, html } from "./utils";
 
 let __cstr_host  : any = null;
 

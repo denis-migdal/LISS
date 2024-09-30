@@ -1,5 +1,5 @@
-import { buildLISSHost } from "./LISSHost";
-import { LISS } from "./LISSBase";
+import type { buildLISSHost } from "./LISSHost";
+import type { LISS } from "./LISSBase";
 
 export interface Class {}
 

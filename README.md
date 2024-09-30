@@ -9,6 +9,8 @@
 - `npm run build`
 - `npm run watch`
 
+💡 (Un)comment lines in `./src/index.ts` to remove(/add) features.
+
 ## TODO
 
 - [ ] fix helpers + examples + doc.

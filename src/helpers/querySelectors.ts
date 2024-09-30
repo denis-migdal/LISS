@@ -1,14 +1,10 @@
 
-// ================================================
-// =============== LISS QuerySelectors ============
-// ================================================
-
-import LISS from "../extends";
 import type { LISSBase, LISSHost } from "../types";
 import { initializeSync, whenInitialized } from "../state";
 
 interface Components {};
 
+import LISS from "../extends";
 declare module "../extends" {
     interface ILISS {
         // async

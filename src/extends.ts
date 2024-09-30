@@ -1,4 +1,4 @@
-import { Class, Constructor, LISS_Opts, LISSBaseCstr } from "./types";
+import type { Class, Constructor, LISS_Opts, LISSBaseCstr } from "./types";
 import {LISS as _LISS} from "./LISSBase";
 
 export class ILISS {}

@@ -1,6 +1,8 @@
 import LISS from "./extends";
 
-import "./define"; //TODO: customRegistery
+import "./core/state";
+import "./core/customRegistery";
+
 //TODO: globalCSSRules
 //TODO: BLISS
 //TODO: LISSParams
@@ -10,5 +12,6 @@ import "./define"; //TODO: customRegistery
 import "./helpers/querySelectors";
 import "./helpers/LISSAuto";
 
-export {liss, lissSync, html} from "./helpers/build";
+export {liss, lissSync} from "./helpers/build";
+export {html} from "./utils";
 export default LISS;

@@ -1,7 +1,4 @@
-
-import { html, liss } from 'helpers/build';
-import LISS from '../../../';
-import { define, getState } from 'state';
+import LISS, {html, liss} from '../../../';
 
 // =============================================================
 
@@ -14,7 +11,7 @@ class MyComponentA extends LISS() {
     }
 }
 
-define('my-component-a', MyComponentA);
+LISS.define('my-component-a', MyComponentA);
 
 // =============================================================
 
@@ -28,7 +25,7 @@ class MyComponentB extends LISS({
     }
 }
 
-define('my-component-b', MyComponentB);
+LISS.define('my-component-b', MyComponentB);
 
 async function foo() {
 
@@ -43,11 +40,11 @@ foo();
     let compo = new MyComponentB.Host();
     document.body.append(compo);
 
-    console.warn("host", getState(compo) );
+    console.warn("host", LISS.getState(compo) );
 }
 {
     let compo = new MyComponentB();
     document.body.append(compo.host);
 
-    console.warn("base", getState(compo.host) );
+    console.warn("base", LISS.getState(compo.host) );
 }

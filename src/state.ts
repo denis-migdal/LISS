@@ -1,4 +1,6 @@
-import { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "./types";
+import type { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "./types";
+
+import { getHostCstr, getName } from "./customRegistery";
 import { _element2tagname, isDOMContentLoaded, whenDOMContentLoaded } from "./utils";
 
 enum State {
@@ -99,7 +101,7 @@ export class LISSState {
         if( ! this.isDefined )
             return false;
 
-        const Host = getHostCstrSync(elem);
+        const Host = getHostCstr(getName(elem));
 
         if( ! isDOMContentLoaded() )
             return false;
@@ -132,7 +134,7 @@ export class LISSState {
         if( ! this.isDefined )
             return false;
     
-        const host = getHostCstrSync(elem);
+        const host = getHostCstr(getName(elem));
         return elem instanceof host;
     }
     
@@ -240,27 +242,6 @@ export function getState(elem: HTMLElement) {
 
 // ================== State modifiers (move?) ==============================
 
-// Go to state DEFINED
-export function define<T extends LISSBaseCstr>(
-    tagname       : string,
-    ComponentClass: T|LISSHostCstr<T>) {
-
-    // could be better.
-    if( "Base" in ComponentClass) {
-        ComponentClass = ComponentClass.Base as T;
-    }
-    
-    const Class  = ComponentClass.LISSCfg.host;
-    let htmltag  = _element2tagname(Class)??undefined;
-
-    const LISSclass = ComponentClass.Host; //buildLISSHost<T>(ComponentClass, params);
-
-    const opts = htmltag === undefined ? {}
-                : {extends: htmltag};
-
-    customElements.define(tagname, LISSclass, opts);
-};
-
 // Go to state UPGRADED
 export async function upgrade<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement, strict = false): Promise<T> {
 
@@ -288,7 +269,7 @@ export function upgradeSync<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement,
         document.adoptNode(elem);
     customElements.upgrade(elem);
 
-    const Host = getHostCstrSync(elem);
+    const Host = getHostCstr(getName(elem));
 
     if( ! (elem instanceof Host) )
         throw new Error(`Element didn't upgrade!`);
@@ -356,26 +337,4 @@ export async function whenInitialized<T extends LISSBase>(elem : HTMLElement|LIS
         return await initialize(elem, strict);
 
     return await state.whenInitialized<T>();
-}
-
-// Private for now.
-
-function getHostCstrSync<T extends LISSHostCstr<LISSBaseCstr>>(elem: HTMLElement) {
-    
-    const name = getName(elem);
-    const host = customElements.get( name );
-    if( host === undefined)
-        throw new Error(`${name} not yet defined!`);
-    return host as T;
-}
-
-//TODO: move 2 registery...
-export function getName( element: Element ): string {
-
-	const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
-	
-	if( ! name.includes('-') )
-		throw new Error(`Element ${name} is not a WebComponent`);
-
-	return name;
 }

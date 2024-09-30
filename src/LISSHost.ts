@@ -1,6 +1,7 @@
-import { LISSState, upgradeSync } from "./state";
+import type { LISS_Opts, LISSBaseCstr } from "./types";
+
+import { LISSState } from "./state";
 import { setCstrHost } from "./LISSBase";
-import { LISS_Opts, LISSBaseCstr } from "./types";
 import { ComposeConstructor, isDOMContentLoaded, waitDOMContentLoaded } from "./utils";
 
 let id = 0;

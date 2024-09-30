@@ -1,8 +1,8 @@
 import { ShadowCfg } from "../types";
 import {LISS} from "../LISSBase";
 
-import {define} from "../state";
-import { html } from "./build";
+import {define} from "../customRegistery";
+import { html } from "../utils";
 
 export class LISS_Auto extends LISS({
 	attrs: ["src", "sw"],
