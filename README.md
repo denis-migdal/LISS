@@ -44,6 +44,11 @@ Add gotcha/Doc :
 - Base vs Host
 - link to subpages
 - build HTMLElement from string : multiple ways with gotchas
+- events : Close more safe but delegated events doesn't enter -> by default SEMIOPEN : composedPath correct + LISS.eventMatches
+
+
+- EventTarget2 : extends/implements/as
+- WithEvents().
 
 ## Why LISS ?
 

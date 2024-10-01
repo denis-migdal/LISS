@@ -1,4 +1,4 @@
-import type { LISS_Opts, LISSBaseCstr } from "./types";
+import { ShadowCfg, type LISS_Opts, type LISSBaseCstr } from "./types";
 
 import { LISSState } from "./state";
 import { setCstrHost } from "./LISSBase";
@@ -267,6 +267,13 @@ export function buildLISSHost<
 			})();
 		}
 
+		override get shadowRoot() {
+			console.warn("called");
+			if(shadow === ShadowCfg.SEMIOPEN)
+				return null;
+			return super.shadowRoot;
+		}
+
 		private init() {
 			
 			customElements.upgrade(this);
@@ -276,7 +283,8 @@ export function buildLISSHost<
 			// shadow
 			this.#content = this as unknown as Host;
 			if( shadow !== 'none') {
-				this.#content = this.attachShadow({mode: shadow});
+				const mode = shadow === ShadowCfg.SEMIOPEN ? 'open' : shadow;
+				this.#content = this.attachShadow({mode});
 
 				//@ts-ignore
 				//this.#content.addEventListener('click', onClickEvent);

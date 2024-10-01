@@ -59,7 +59,7 @@ export function LISS<
     content,
 	content_factory: _content_factory = DEFAULT_CONTENT_FACTORY,
     css,
-    shadow = isShadowSupported(host) ? ShadowCfg.CLOSE : ShadowCfg.NONE
+    shadow = isShadowSupported(host) ? ShadowCfg.SEMIOPEN : ShadowCfg.NONE
 }: Partial<LISS_Opts<ExtendsCtr, Params, HostCstr, Attrs>> = {}) {
 
     if( shadow !== ShadowCfg.OPEN && ! isShadowSupported(host) )
