@@ -82,5 +82,5 @@ export type LISSBase2LISSBaseCstr<T extends LISSBase> = T extends LISSBase<
             infer D> ? Constructor<T> & LISSBaseCstr<A,B,C,D> : never;
 
 
-export type LISSHostCstr<T extends LISSBase|LISSBaseCstr> = ReturnType<typeof buildLISSHost<T extends LISSBase ? LISSBase2LISSBaseCstr<T> : T>>;
-export type LISSHost    <T extends LISSBase|LISSBaseCstr> = InstanceType<LISSHostCstr<T>>;
+export type LISSHostCstr<T extends LISSBase|LISSBaseCstr = LISSBase> = ReturnType<typeof buildLISSHost<T extends LISSBase ? LISSBase2LISSBaseCstr<T> : T>>;
+export type LISSHost    <T extends LISSBase|LISSBaseCstr = LISSBase> = InstanceType<LISSHostCstr<T>>;

@@ -1,29 +1,30 @@
-//TODO
+import { define } from "customRegistery";
+import { LISS } from "LISSBase";
+import { LISSHost, ShadowCfg } from "types";
 
-/*
-import LISS, { LISSBase, LISSHost, ShadowCfg } from "./";
+// Normally :
+// Parent upgrade -> children upgrade -> children init -> manipulate parent host -> parent init.
+// If deps -> need a tool for "waitChildrenInit" or "waitParentInit".
 
-// for now do not handle parent changes.
-
-export default class LissParam<T> extends LISS({
+export default class LissParams<T extends Record<string, any>> extends LISS({
     shadow: ShadowCfg.NONE,
     css: [`:host {display: none}`],
-    attributes: [ "value", "type" ] /* for now only value to stay simple *//*
+    attrs: ["type"]
 }) {
 
     #name  : string;
     #value?: T;
 
-    #parent: LISSHost<any>;
+    #parent: LISSHost;
 
     // dirty h4ck...
-    constructor(p = {}, init = true) {
+    constructor(p = {}, init = true) { // why init ?
 
         super();
 
         this.#name = this.host.getAttribute("name")!;
 
-        this.#parent = this.host.parentElement! as LISSHost<any>;
+        this.#parent = this.host.parentElement! as LISSHost;
 
         if(init)
             this.init();
@@ -31,29 +32,23 @@ export default class LissParam<T> extends LISS({
 
     protected init() {
 
-        if( this.host.hasAttribute("value") ) {
-            this.onValueChanged(this.attrs.value!);
-            return;
-        }
-
         // TODO: observe content...
         this.onValueChanged(this.host.textContent!);
     }
 
     //TODO
     protected get type() {
-        return this.attrs.type ?? "string";
+        return this.attrs.type ?? "JSON";
     }
 
     protected _parseContent(value: string): T {
 
         const type = this.type;
 
-        if( type === "string" )
-            return value as T;
         if( type === "JSON")
             return JSON.parse(value);
         if( type === "JS") {
+            //TODO: may be improved ?
             const args = Object.keys( this.getArgs() );
             this.#fct = new Function(...args, `return ${value}`);
             return this.call( ...Object.values(args) );
@@ -73,17 +68,13 @@ export default class LissParam<T> extends LISS({
         /*
         // do not updated if not in DOM.
         if( ! this.#parent?.isInDOM)
-            return;*//*
+            return;*/
 
-        this.#parent.setParam(this.#name, this.#value);
+        this.#parent.updateParams(this.#value);
     }
 
     protected getArgs(): Record<string,any> {
         return {};
-    }
-
-    protected setValue(val: T) {
-        this.#parent.setParam(this.#name, val);
     }
 
     //TODO...
@@ -91,9 +82,8 @@ export default class LissParam<T> extends LISS({
     protected override onAttrChanged(_name: string, _oldValue: string, _newValue: string): void | false {
         
         this.onValueChanged(this.attrs.value!);
-    }*//*
+    }*/
 }
 
-LISS.define("liss-param", LissParam);
-
-*/
+if( customElements.get("liss-params") === undefined)
+    define("liss-params", LissParams);
