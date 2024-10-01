@@ -1,11 +1,17 @@
 
-//TODO: LISSHost ?
+import { getSharedCSS } from "LISSHost";
 
-/*
-const sharedCSS = new CSSStyleSheet();
-document.adoptedStyleSheets.push(sharedCSS);
+const sharedCSS = getSharedCSS();
+document.adoptedStyleSheets.push(sharedCSS); //TODO prevent multi-calls ?
 
-LISS.insertGlobalCSSRules = function(css: string|HTMLStyleElement) {
+import LISS from "../extends";
+declare module "../extends" {
+    interface ILISS {
+		addGlobalCSSRules: typeof addGlobalCSSRules
+    }
+}
+
+function addGlobalCSSRules(css: string|HTMLStyleElement) {
 
 	let css_style!: CSSStyleSheet;
 
@@ -19,4 +25,5 @@ LISS.insertGlobalCSSRules = function(css: string|HTMLStyleElement) {
 	for(let rule of css_style.cssRules)
 		sharedCSS.insertRule(rule.cssText);
 }
-*/
+
+LISS.addGlobalCSSRules = addGlobalCSSRules;

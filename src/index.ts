@@ -8,10 +8,10 @@ import "./core/customRegistery";
 //TODO: events.ts
 //TODO: globalCSSRules
 import "./helpers/LISSAuto";
-//TODO: LISSParams
 import "./helpers/querySelectors";
 
-export {eventMatches, WithEvents, EventTarget2, CustomEvent2} from './helpers/events';
 export {liss, lissSync} from "./helpers/build";
+export {eventMatches, WithEvents, EventTarget2, CustomEvent2} from './helpers/events';
+export {LISSParams} from "./helpers/LISSParams";
 export {html} from "./utils";
 export default LISS;

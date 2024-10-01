@@ -8,8 +8,10 @@ let id = 0;
 
 type inferLISS<T> = T extends LISSBaseCstr<infer A, infer B, infer C, infer D> ? [A,B,C,D] : never;
 
-//TODO: shadow utils ?
 const sharedCSS = new CSSStyleSheet();
+export function getSharedCSS() {
+	return sharedCSS;
+}
 
 export function buildLISSHost<
                         T extends LISSBaseCstr>(Liss: T) {

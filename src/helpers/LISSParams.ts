@@ -6,7 +6,7 @@ import { LISSHost, ShadowCfg } from "types";
 // Parent upgrade -> children upgrade -> children init -> manipulate parent host -> parent init.
 // If deps -> need a tool for "waitChildrenInit" or "waitParentInit".
 
-export default class LissParams<T extends Record<string, any>> extends LISS({
+export class LISSParams<T extends Record<string, any>> extends LISS({
     shadow: ShadowCfg.NONE,
     css: [`:host {display: none}`],
     attrs: ["type"]
@@ -86,4 +86,4 @@ export default class LissParams<T extends Record<string, any>> extends LISS({
 }
 
 if( customElements.get("liss-params") === undefined)
-    define("liss-params", LissParams);
+    define("liss-params", LISSParams);
