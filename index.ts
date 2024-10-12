@@ -2,6 +2,27 @@
 // =============== LISS exported types ============
 // ================================================
 
+/*
+type S<A,B> = {
+	A: A,
+	B: B
+};
+type LH = S<unknown,unknown>;
+
+type inferA<T> = T extends S<infer A, any> ? A : never;
+
+function foo<T extends LH>(t: T): inferA<T> {
+	return t.A as inferA<T>;
+}
+
+let X = {
+	A: 32,
+	B: "str"
+};
+
+let c = foo(X);
+*/
+
 export type CSS_Resource = string|Response|HTMLStyleElement|CSSStyleSheet;
 export type CSS_Source   = CSS_Resource | Promise<CSS_Resource>;
 
