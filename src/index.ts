@@ -10,6 +10,8 @@ import "./core/customRegistery";
 import "./helpers/LISSAuto";
 import "./helpers/querySelectors";
 
+export {ShadowCfg} from "./types";
+
 export {liss, lissSync} from "./helpers/build";
 export {eventMatches, WithEvents, EventTarget2, CustomEvent2} from './helpers/events';
 export {LISSParams} from "./helpers/LISSParams";
