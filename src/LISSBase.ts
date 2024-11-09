@@ -62,7 +62,7 @@ export function LISS<
     shadow = isShadowSupported(host) ? ShadowCfg.SEMIOPEN : ShadowCfg.NONE
 }: Partial<LISS_Opts<ExtendsCtr, Params, HostCstr, Attrs>> = {}) {
 
-    if( shadow !== ShadowCfg.OPEN && ! isShadowSupported(host) )
+    if( shadow !== ShadowCfg.NONE && ! isShadowSupported(host) )
         throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
 
     const all_deps = [...deps];

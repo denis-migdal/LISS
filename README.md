@@ -14,7 +14,6 @@
 ## TODO
 
 - [ ] fix helpers + examples + doc.
-  - [ ] define.ts (-> customRegistery)
   - [ ] globalCSSRules
   - [ ] LISSParams
 - verify types...

@@ -1,0 +1,12 @@
+:host {
+    & .name {
+        text-transform: capitalize;
+    }
+    & .surname {
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+    & .age {
+        font-style: italic;
+    }
+}

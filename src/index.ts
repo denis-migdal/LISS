@@ -7,7 +7,7 @@ import "./core/customRegistery";
 
 //TODO: events.ts
 //TODO: globalCSSRules
-import "./helpers/LISSAuto";
+export {LISSAuto} from "./helpers/LISSAuto";
 import "./helpers/querySelectors";
 
 export {ShadowCfg} from "./types";

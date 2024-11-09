@@ -1,119 +1,73 @@
-import { ShadowCfg } from "../types";
+import { Constructor, ShadowCfg } from "../types";
 import {LISS} from "../LISSBase";
 
 import {define} from "../customRegistery";
 import { html } from "../utils";
 
-export class LISS_Auto extends LISS({
-	attrs: ["src", "sw"],
-	shadow: ShadowCfg.NONE,
-	css: `:host { display: none; }`
-}) {
+// should be improved (but how ?)
+const script = document.querySelector('script[autodir]');
+if( script !== null ) {
 
-	readonly #known_tag = new Set<string>();
-	readonly #directory: string;
-	readonly #sw: Promise<void>;
+	const RESSOURCES = [
+		"index.js",
+		"index.bry",
+		"index.html",
+		"index.css"
+	];
 
-	constructor() {
+	const KnownTags = new Set<string>();
 
-		super();
+	const SW: Promise<void> = new Promise( async (resolve) => {
+		
+		await navigator.serviceWorker.register(script.getAttribute('sw') ?? "/sw.js", {scope: "/"});
 
-		this.#sw = new Promise( async (resolve) => {
-			
-			await navigator.serviceWorker.register(this.attrs.sw ?? "/sw.js", {scope: "/"});
-
-			if( navigator.serviceWorker.controller ) {
-				resolve();
-				return;
-			}
-
-			navigator.serviceWorker.addEventListener('controllerchange', () => {
-				resolve();
-			});
-		});
-
-
-		const src = this.attrs.src;
-		if(src === null)
-			throw new Error("src attribute is missing.");
-		this.#directory = src[0] === '.'
-								? `${window.location.pathname}${src}`
-								: src;
-
-		new MutationObserver( (mutations) => {
-
-			for(let mutation of mutations)
-				for(let addition of mutation.addedNodes)
-					if(addition instanceof Element)
-						this.#addTag(addition.tagName)
-
-		}).observe( document, { childList:true, subtree:true });
-
-
-		for( let elem of document.querySelectorAll("*") )
-			this.#addTag(elem.tagName);
-	}
-
-
-    protected resources() {
-		return [
-			"index.js",
-			"index.html",
-			"index.css"
-		];
-    }
-
-	protected defineWebComponent(tagname: string, files: Record<string, any>, opts: Partial<{content: string, css: string}>) {
-
-		const js = files["index.js"];
-		const content = files["index.html"];
-
-		let klass: null| ReturnType<typeof LISS> = null;
-		if( js !== undefined )
-			klass = js(opts);
-		else if( content !== undefined ) {
-
-			(opts as any).content_factory = (str: string) => {
-
-				const content = html`${str}`;
-
-				let spans = content.querySelectorAll('liss[value]');
-
-				return (_a: unknown, _b:unknown, elem: HTMLElement) => {
-
-					// can be optimized...
-					for(let span of spans)
-						span.textContent = elem.getAttribute(span.getAttribute('value')!)
-
-					return content.cloneNode(true);
-				};
-
-			};
-
-			klass = class WebComponent extends LISS(opts) {};
+		if( navigator.serviceWorker.controller ) {
+			resolve();
+			return;
 		}
 
-		if(klass === null)
-			throw new Error(`Missing files for WebComponent ${tagname}.`);
+		navigator.serviceWorker.addEventListener('controllerchange', () => {
+			resolve();
+		});
+	});
 
-		return define(tagname, klass);
-	}
+	let components_dir = script.getAttribute('autodir')!;
+	if( components_dir[0] === '.')
+		components_dir = window.location.pathname + components_dir; // getting an absolute path.
+	if( components_dir[components_dir.length-1] !== '/')
+		components_dir += '/';
 
-	async #addTag(tagname: string) {
+	// observe for new injected tags.
+	new MutationObserver( (mutations) => {
 
-		tagname = tagname.toLowerCase();
+		for(let mutation of mutations)
+			for(let addition of mutation.addedNodes)
+				if(addition instanceof HTMLElement)
+					addTag(addition)
 
-		if( tagname === 'liss-auto' || tagname === 'bliss-auto' || ! tagname.includes('-') || this.#known_tag.has( tagname ) )
+	}).observe( document, { childList:true, subtree:true });
+
+	for( let elem of document.querySelectorAll<HTMLElement>("*") )
+		addTag( elem );
+
+
+	async function addTag(tag: HTMLElement) {
+
+		const tagname = ( tag.getAttribute('is') ?? tag.tagName ).toLowerCase();
+
+		if( ! tagname.includes('-') || KnownTags.has( tagname ) )
 			return;
 
-		this.#known_tag.add(tagname);
+		KnownTags.add(tagname);
 
-		await this.#sw; // ensure SW is installed.
+		await SW; // ensure SW is installed.
 
-		const filenames = this.resources();
-		const resources = await Promise.all( filenames.map( file => file.endsWith('.js')
-													? _import   (`${this.#directory}/${tagname}/${file}`, true)
-													: _fetchText(`${this.#directory}/${tagname}/${file}`, true) ) );
+		const filenames = RESSOURCES;
+		const resources = await Promise.all( filenames.map( file => {
+			const file_path = `${components_dir}${tagname}/${file}`;
+			return file.endsWith('.js') ? _import   (file_path, true)
+										: _fetchText(file_path, true);
+		}));
 
 		const files: Record<string, any> = {};
 		for(let i = 0; i < filenames.length; ++i)
@@ -123,55 +77,117 @@ export class LISS_Auto extends LISS({
 		const content = files["index.html"];
 		const css     = files["index.css"];
 
-		const opts: Partial<{content: string, css: string}> = {
+		let host = undefined;
+		if( tag.hasAttribute('is') )
+			host = tag.constructor as Constructor<HTMLElement>
+
+		const opts: Partial<{content: string, css: string, host: Constructor<HTMLElement>}> = {
 			...content !== undefined && {content},
 			...css     !== undefined && {css},
+			...host    !== undefined && {host},
 		};
 
-		return this.defineWebComponent(tagname, files, opts);
+		return defineWebComponent(tagname, files, opts);
 		
 	}
-}
-
-// prevents multi-declarations...
-if( customElements.get("liss-auto") === undefined)
-	define("liss-auto", LISS_Auto);
-
-//TODO: fix...
-export interface Components {
-	"liss-auto": LISS_Auto
-};
-
-// ================================================
-// =============== LISS internal tools ============
-// ================================================
-
-async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
-
-	const options = isLissAuto
-						? {headers:{"liss-auto": "true"}}
-						: {};
 
 
-	const response = await fetch(uri, options);
-	if(response.status !== 200 )
-		return undefined;
+	function defineWebComponent(tagname: string, files: Record<string, any>, opts: Partial<{content: string, css: string, host: HTMLElement}>) {
 
-	if( isLissAuto && response.headers.get("status")! === "404" )
-		return undefined;
+		const js      = files["index.js"];
+		const content = files["index.html"];
 
-	return await response.text();
-}
-async function _import(uri: string, isLissAuto: boolean = false) {
+		let klass: null| ReturnType<typeof LISS> = null;
+		if( js !== undefined )
+			klass = js(opts);
+		else if( content !== undefined ) {
+			klass = LISSAuto(opts.content, opts.css, opts.host);
+		}
 
-	// test for the module existance.
-	if(isLissAuto && await _fetchText(uri, isLissAuto) === undefined )
-		return undefined;
+		if(klass === null)
+			throw new Error(`Missing files for WebComponent ${tagname}.`);
 
-	try {
-		return (await import(/* webpackIgnore: true */ uri)).default;
-	} catch(e) {
-		console.log(e);
-		return undefined;
+		return define(tagname, klass);
 	}
+
+
+	// ================================================
+	// =============== LISS internal tools ============
+	// ================================================
+
+	async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
+
+		const options = isLissAuto
+							? {headers:{"liss-auto": "true"}}
+							: {};
+
+
+		const response = await fetch(uri, options);
+		if(response.status !== 200 )
+			return undefined;
+
+		if( isLissAuto && response.headers.get("status")! === "404" )
+			return undefined;
+
+		return await response.text();
+	}
+	async function _import(uri: string, isLissAuto: boolean = false) {
+
+		// test for the module existance.
+		if(isLissAuto && await _fetchText(uri, isLissAuto) === undefined )
+			return undefined;
+
+		try {
+			return (await import(/* webpackIgnore: true */ uri)).default;
+		} catch(e) {
+			console.log(e);
+			return undefined;
+		}
+	}
+}
+
+//TODO: improve ?
+export function LISSAuto(content?: string, css?: string, host?: Constructor<HTMLElement>) {
+
+	const opts = {content, css, host};
+
+	//TODO: {}
+	//TODO: CSS_factory too ??? ou css-toto="toto" (?)
+	(opts as any).content_factory = (str: string) => {
+
+		str = str.replaceAll(/\$\{([\w]+)\}/g, (_, name: string) => {
+			return `<liss value="${name}"></liss>`;
+		});
+
+		//TODO: ${} in attr
+			// - detect start ${ + end }
+			// - register elem + attr name
+			// - replace. 
+		const content = html`${str}`;
+
+		let spans = content.querySelectorAll('liss[value]');
+
+		return (_a: unknown, _b:unknown, elem: HTMLElement) => {
+
+			// can be optimized...
+			for(let span of spans)
+				span.textContent = elem.getAttribute(span.getAttribute('value')!)
+
+			return content.cloneNode(true);
+		};
+
+	};
+
+	const klass = class WebComponent extends LISS(opts) {
+		constructor(...args: any[]) {
+			super(...args);
+			
+			const css_attrs = this.host.getAttributeNames().filter( e => e.startsWith('css-'));
+
+			for(let css_attr of css_attrs)
+				this.host.style.setProperty(`--${css_attr.slice('css-'.length)}`, this.host.getAttribute(css_attr));
+		}
+	};
+
+	return klass;
 }

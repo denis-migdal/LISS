@@ -1,0 +1,8 @@
+:host {
+    & ::slotted(:not([slot])) {
+        background-color: var(--color, red);
+    }
+    & ::slotted([slot='invite']) {
+        font-weight: bold;
+    }
+}
