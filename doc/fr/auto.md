@@ -18,9 +18,9 @@ Concrètement, votre projet pourra contenir les fichiers suivants :
         └── index.css  // l'affichage de votre composant Web.
 ```
 
-*Examples:*
-- [auto-html](../../dist/dev/pages/playground/?example=auto-html)
-- [auto-html-tr](../../dist/dev/pages/playground/?example=auto-html-tr)
+*Examples :*
+- [auto-html](https://denis-migdal.github.io/LISS/dist/dev/pages/playground/?example=auto-html)
+- [auto-html-tr](https://denis-migdal.github.io/LISS/dist/dev/pages/playground/?example=auto-html-tr)
 
 ## Utiliser LISS auto 
 
@@ -87,8 +87,8 @@ Le contenu de votre composant Web peut dépendre du contenu de l'élément hôte
 
 ⚠ Les slots ne peuvent être utilisés sur les composants Web héritant de certains éléments HTML.
 
-*Example:*
-- [auto-html-slots](../../dist/dev/pages/playground/?example=auto-html-slots)
+*Example :*
+- [auto-html-slots](https://denis-migdal.github.io/LISS/dist/dev/pages/playground/?example=auto-html-slots)
 
 ## L'affichage de votre composant Web
 
