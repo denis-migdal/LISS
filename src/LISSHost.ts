@@ -83,7 +83,7 @@ export function buildLISSHost<
     // No deps and DOM already loaded.
     let isReady = Liss.LISSCfg.deps.length == 0 && isDOMContentLoaded();
 
-	const params = Liss.LISSCfg.params; //Object.assign({}, Liss.LISSCfg.params, _params);
+	const params = {...Liss.LISSCfg.params}; //Object.assign({}, Liss.LISSCfg.params, _params);
 
 	//
 
