@@ -43,8 +43,6 @@ const elementNameLookupTable = {
   };
 export function _element2tagname(Class: typeof HTMLElement): string|null {
 
-    console.warn('C', Class);
-
 	if( Class === HTMLElement )
 		return null;
 	

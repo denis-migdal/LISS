@@ -1,5 +1,6 @@
-import type { Class, Constructor, LISS_Opts, LISSBaseCstr } from "./types";
+import type { Class, Constructor, LISS_Opts, LISSBaseCstr, LISSHost } from "./types";
 import {LISS as _LISS} from "./LISSBase";
+import { buildLISSHost } from "LISSHost";
 
 export class ILISS {}
 
@@ -81,6 +82,8 @@ function _extends<
 
     class ExtendedLISS extends opts.extends {
 
+        //TODO: fix types...
+
         static override readonly LISSCfg = {
 			host,
 			deps,
@@ -91,7 +94,15 @@ function _extends<
 			shadow,
 		};
 
-        //TODO: fix types...
+
+		private static _Host: LISSHost<ExtendedLISS>;
+
+        //TODO: fix TS type...
+		static get Host() {
+			if( this._Host === undefined)
+				this._Host = buildLISSHost(this as any); //TODO: fix type error (why???)
+			return this._Host;
+		}
     }
 
     return ExtendedLISS;

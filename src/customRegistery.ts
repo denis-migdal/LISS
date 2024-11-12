@@ -2,6 +2,8 @@ import type { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "./types";
 
 import { _element2tagname } from "./utils";
 
+let x: any;
+
 // Go to state DEFINED
 export function define<T extends LISSBaseCstr>(
     tagname       : string,
