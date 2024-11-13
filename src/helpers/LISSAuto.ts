@@ -18,8 +18,22 @@ if( script !== null ) {
 	const KnownTags = new Set<string>();
 
 	const SW: Promise<void> = new Promise( async (resolve) => {
+
+		const sw_path = script.getAttribute('sw');
+
+		if( sw_path === null ) {
+			console.warn("You are using LISS Auto mode without sw.js.");
+			resolve();
+			return;
+		}
 		
-		await navigator.serviceWorker.register(script.getAttribute('sw') ?? "/sw.js", {scope: "/"});
+		try {
+			await navigator.serviceWorker.register(sw_path, {scope: "/"});
+		} catch(e) {
+			console.warn("Registration of ServiceWorker failed");
+			console.error(e);
+			resolve();
+		}
 
 		if( navigator.serviceWorker.controller ) {
 			resolve();
@@ -30,8 +44,6 @@ if( script !== null ) {
 			resolve();
 		});
 	});
-	
-	console.warn("url", window.location.pathname);
 
 	let components_dir = script.getAttribute('autodir')!;
 	/*
