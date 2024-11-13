@@ -30,10 +30,15 @@ if( script !== null ) {
 			resolve();
 		});
 	});
+	
+	console.warn("url", window.location.pathname);
 
 	let components_dir = script.getAttribute('autodir')!;
-	if( components_dir[0] === '.')
+	/*
+	if( components_dir[0] === '.') {
 		components_dir = window.location.pathname + components_dir; // getting an absolute path.
+	}
+	*/
 	if( components_dir[components_dir.length-1] !== '/')
 		components_dir += '/';
 
