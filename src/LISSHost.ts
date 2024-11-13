@@ -340,7 +340,7 @@ export function buildLISSHost<
 
 	    	// h4ck, okay because JS is monothreaded.
 			setCstrHost(this);
-	    	let obj = this.base === null ? new Liss() : this.base;
+	    	let obj = this.base === null ? new Liss(params) : this.base;
 
 			this.#base = obj as InstanceType<T>;
 
