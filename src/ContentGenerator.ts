@@ -1,6 +1,6 @@
-import { getSharedCSS } from "LISSHost";
-import { LHost, ShadowCfg } from "types";
-import { _element2tagname, isDOMContentLoaded, isShadowSupported, waitDOMContentLoaded } from "utils";
+import { getSharedCSS } from "./LISSHost";
+import { LHost, ShadowCfg } from "./types";
+import { _element2tagname, isDOMContentLoaded, isShadowSupported, waitDOMContentLoaded } from "./utils";
 
 type HTML = DocumentFragment|HTMLElement|string;
 type CSS  = string|CSSStyleSheet|HTMLStyleElement;

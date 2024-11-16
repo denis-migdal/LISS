@@ -1,5 +1,5 @@
 
-import { getSharedCSS } from "LISSHost";
+import { getSharedCSS } from "../LISSHost";
 
 const sharedCSS = getSharedCSS();
 document.adoptedStyleSheets.push(sharedCSS); //TODO prevent multi-calls ?

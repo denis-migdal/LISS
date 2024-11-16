@@ -1,7 +1,7 @@
 import type { LISSBase } from "../types";
 
 import { initialize, initializeSync } from "../state";
-import { html } from "utils";
+import { html } from "../utils";
 
 
 export async function liss<T extends LISSBase>(str: readonly string[], ...args: any[]) {

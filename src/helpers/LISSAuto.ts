@@ -2,7 +2,6 @@ import { Constructor, LHost, ShadowCfg } from "../types";
 import {LISS} from "../LISSBase";
 
 import {define} from "../customRegistery";
-import { html } from "../utils";
 import ContentGenerator from "ContentGenerator";
 
 // should be improved (but how ?)

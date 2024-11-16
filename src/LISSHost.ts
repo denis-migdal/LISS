@@ -2,7 +2,7 @@ import { Class, Constructor, ShadowCfg, type LISSBaseCstr } from "./types";
 
 import { LISSState } from "./state";
 import { setCstrHost } from "./LISSBase";
-import { ContentGenerator_Opts, ContentGeneratorCstr } from "ContentGenerator";
+import { ContentGenerator_Opts, ContentGeneratorCstr } from "./ContentGenerator";
 
 // LISSHost must be build in define as it need to be able to build
 // the defined subclass.

@@ -1,5 +1,5 @@
 
-import { Constructor } from "types";
+import { Constructor } from "../types";
 
 type ListenerFct<T extends Event> = (ev: T) => void;
 type ListenerObj<T extends Event> = { handleEvent: ListenerFct<T> };

@@ -1,7 +1,7 @@
 import type { buildLISSHost } from "./LISSHost";
 import type { LISS } from "./LISSBase";
-import ContentGenerator, { ContentGenerator_Opts, ContentGeneratorCstr } from "ContentGenerator";
-import { LISSState } from "state";
+import { ContentGenerator_Opts, ContentGeneratorCstr } from "./ContentGenerator";
+import { LISSState } from "./state";
 
 export interface Class {}
 

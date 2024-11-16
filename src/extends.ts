@@ -1,6 +1,6 @@
 import type { Class, Constructor, LISS_Opts, LISSBaseCstr, LISSHost } from "./types";
 import {LISS as _LISS} from "./LISSBase";
-import { buildLISSHost } from "LISSHost";
+import { buildLISSHost } from "./LISSHost";
 
 // used for plugins.
 export class ILISS {}
