@@ -1,9 +1,9 @@
 import { LHostCstr, type Class, type Constructor, type LISS_Opts } from "./types";
-import type { LISSState } from "state";
+import type { LISSState } from "./state";
 
 import { buildLISSHost, setCstrBase } from "./LISSHost";
-import { _element2tagname, isShadowSupported, html } from "./utils";
-import ContentGenerator, { ContentGenerator_Opts, ContentGeneratorCstr } from "ContentGenerator";
+import { _element2tagname} from "./utils";
+import ContentGenerator from "./ContentGenerator";
 
 let __cstr_host  : any = null;
 

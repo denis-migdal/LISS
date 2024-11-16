@@ -1,5 +1,5 @@
 
-import { DEFINED, getState, initialize, INITIALIZED, initializeSync, READY, upgrade, UPGRADED, upgradeSync, whenInitialized, whenUpgraded } from "state";
+import { DEFINED, getState, initialize, INITIALIZED, initializeSync, READY, upgrade, UPGRADED, upgradeSync, whenInitialized, whenUpgraded } from "../state";
 import LISS from "../extends";
 
 declare module "../extends" {

@@ -54,6 +54,7 @@ export function _extends<
 				this._Host = buildLISSHost(this,
                                            opts.host!,
                                            opts.content_generator!,
+                                           // @ts-ignore
                                            opts);
 			return this._Host;
 		}

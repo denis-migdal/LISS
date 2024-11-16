@@ -2,7 +2,7 @@ import { Constructor, LHost, ShadowCfg } from "../types";
 import {LISS} from "../LISSBase";
 
 import {define} from "../customRegistery";
-import ContentGenerator from "ContentGenerator";
+import ContentGenerator from "../ContentGenerator";
 
 // should be improved (but how ?)
 const script = document.querySelector('script[autodir]');
