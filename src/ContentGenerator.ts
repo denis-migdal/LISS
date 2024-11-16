@@ -60,9 +60,8 @@ export default class ContentGenerator {
         // + cf at the end...
     }
 
-    generate<Host extends LHost>(host: LHost): HTMLElement|ShadowRoot {
+    generate<Host extends LHost>(host: Host): HTMLElement|ShadowRoot {
 
-        customElements.upgrade(host);
         //TODO: wait parents/children depending on option...     
 
         const target = this.initShadow(host);
@@ -74,6 +73,8 @@ export default class ContentGenerator {
 
         if( target instanceof ShadowRoot && target.childNodes.length === 0)
 			target.append( document.createElement('slot') );
+
+        customElements.upgrade(host);
 
         return target;
     }
