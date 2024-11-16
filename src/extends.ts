@@ -13,7 +13,7 @@ export function LISS<
         
         BaseCstr extends LISSBaseCstr<ExtendsCstr_Base, HostCstr_Base>,
         HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>,
-    >(opts: Partial<LISS_Opts<BaseCstr, HostCstr>>): LISSBaseCstr
+    >(opts: Partial<LISS_Opts<BaseCstr, HostCstr>>): LISSBaseCstr<BaseCstr, HostCstr>
 // LISSBase signature
 export function LISS<
         ExtendsCtr extends Constructor<Class>  = Constructor<Class>,

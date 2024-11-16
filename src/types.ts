@@ -37,8 +37,7 @@ export type LISS_Opts<
     // JS Base
     ExtendsCtr extends Constructor<Class>  = Constructor<Class>,
     // HTML Base
-    HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
-    Attrs      extends string                   = string,
+    HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>
     > = {
         extends: ExtendsCtr, // JS Base
         host   : HostCstr,   // HTML Host
