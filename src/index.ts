@@ -19,5 +19,7 @@ export {eventMatches, WithEvents, EventTarget2, CustomEvent2} from './helpers/ev
 export {html} from "./utils";
 export default LISS;
 
+// for debug.
+export {_extends} from "./extends";
 
 import { ShadowCfg } from "./types";

@@ -8,11 +8,8 @@ export default LISS as typeof LISS & ILISS;
 
 // extends signature
 export function LISS<
-        ExtendsCstr_Base extends Constructor<Class>,
-        HostCstr_Base    extends Constructor<HTMLElement>,
-        
-        BaseCstr extends LISSBaseCstr<ExtendsCstr_Base, HostCstr_Base>,
-        HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>,
+        BaseCstr extends LISSBaseCstr,
+        HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>
     >(opts: Partial<LISS_Opts<BaseCstr, HostCstr>>): LISSBaseCstr<BaseCstr, HostCstr>
 // LISSBase signature
 export function LISS<
@@ -29,13 +26,11 @@ export function LISS(opts: any): LISSBaseCstr
     return _LISS(opts);
 }
 
-function _extends<
-        ExtendsCstr_Base extends Constructor<Class>,
-        HostCstr_Base    extends Constructor<HTMLElement>,
-
-        BaseCstr extends LISSBaseCstr<ExtendsCstr_Base, HostCstr_Base>,
-        HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>,
-    >(opts: Partial<LISS_Opts<BaseCstr, HostCstr>>) {
+export function _extends<
+        BaseCstr extends LISSBaseCstr,
+        //TODO: constraint on HTMLElement...
+        HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>
+    >(opts: Partial<LISS_Opts<BaseCstr, HostCstr>>): LISSBaseCstr<BaseCstr, HostCstr> {
 
     if( opts.extends === undefined) // h4ck
         throw new Error('please provide a LISSBase!');
@@ -63,5 +58,5 @@ function _extends<
 		}
     }
 
-    return ExtendedLISS;
+    return ExtendedLISS as unknown as LISSBaseCstr<BaseCstr, HostCstr>;
 }
