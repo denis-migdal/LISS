@@ -188,6 +188,12 @@ export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTM
 			})();
 		}
 
+		static observedAttributes = Liss.observedAttributes;
+		attributeChangedCallback(name: string, oldValue: string|null, newValue: string|null) {
+			if(this.#base)
+				this.#base.attributeChangedCallback(name, oldValue, newValue);
+		}
+
 		shadowMode: ShadowCfg|null = null;
 
 		override get shadowRoot() {

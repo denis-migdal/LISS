@@ -54,6 +54,9 @@ export function LISS<
 			return this.#host.content!;
 		}
 
+		static observedAttributes: string[] = [];
+		attributeChangedCallback(name: string, oldValue: string|null, newValue: string|null) {}
+
 		protected connectedCallback() {}
 		protected disconnectedCallback() {}
 		public get isConnected() {

@@ -18,3 +18,6 @@ export {liss, lissSync} from "./helpers/build";
 export {eventMatches, WithEvents, EventTarget2, CustomEvent2} from './helpers/events';
 export {html} from "./utils";
 export default LISS;
+
+
+import { ShadowCfg } from "./types";
