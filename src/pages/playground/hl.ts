@@ -26,10 +26,14 @@ export function initContentEditableCode(target: HTMLElement, enter_lose_focus = 
         let path = [];
         let cur  = rrange.startContainer;
 
+        console.warn('find');
+
         while(cur !== p) {
             path.push(cur); 
             cur = cur.parentNode!;
         }
+
+        console.warn('found');
 
         let length = 0;
 
@@ -57,7 +61,12 @@ export function initContentEditableCode(target: HTMLElement, enter_lose_focus = 
         p.innerHTML = hljs.highlight(p.textContent, { language }).value;
 
         cur = p;
+        console.warn('find2');
+
         while(cur.nodeType !== Node.TEXT_NODE) {
+            if( cur.childNodes.length === 0)
+                break;
+
             for( let i = 0; i < cur.childNodes.length; ++i ) {
                 const clen = cur.childNodes[i].textContent!.length;
                 if( length <= clen ) {
@@ -67,6 +76,8 @@ export function initContentEditableCode(target: HTMLElement, enter_lose_focus = 
                 length -= clen;
             }
         }
+
+        console.warn('found2');
         
         var range = document.createRange();
         var sel = window.getSelection()!;

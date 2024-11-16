@@ -1,8 +1,9 @@
-import { Constructor, ShadowCfg } from "../types";
+import { Constructor, LHost, ShadowCfg } from "../types";
 import {LISS} from "../LISSBase";
 
 import {define} from "../customRegistery";
 import { html } from "../utils";
+import ContentGenerator from "ContentGenerator";
 
 // should be improved (but how ?)
 const script = document.querySelector('script[autodir]');
@@ -91,34 +92,30 @@ if( script !== null ) {
 			if( resources[i] !== undefined)
 				files[filenames[i]] = resources[i];
 
-		const content = files["index.html"];
-		const css     = files["index.css"];
+		const html = files["index.html"];
+		const css  = files["index.css"];
 
-		let host = undefined;
+		let host = HTMLElement;
 		if( tag.hasAttribute('is') )
 			host = tag.constructor as Constructor<HTMLElement>
 
-		const opts: Partial<{content: string, css: string, host: Constructor<HTMLElement>}> = {
-			...content !== undefined && {content},
-			...css     !== undefined && {css},
-			...host    !== undefined && {host},
-		};
-
-		return defineWebComponent(tagname, files, opts);
+		return defineWebComponent(tagname, files, {html, css, host});
 		
 	}
 
 
-	function defineWebComponent(tagname: string, files: Record<string, any>, opts: Partial<{content: string, css: string, host: HTMLElement}>) {
+	function defineWebComponent(tagname: string, files: Record<string, any>, opts: {html: string, css: string, host: Constructor<HTMLElement>}) {
 
 		const js      = files["index.js"];
-		const content = files["index.html"];
 
 		let klass: null| ReturnType<typeof LISS> = null;
 		if( js !== undefined )
 			klass = js(opts);
-		else if( content !== undefined ) {
-			klass = LISSAuto(opts.content, opts.css, opts.host);
+		else if( opts.html !== undefined ) {
+			klass = LISS({
+				...opts,
+				content_generator: LISSAuto_ContentGenerator
+			});
 		}
 
 		if(klass === null)
@@ -163,48 +160,42 @@ if( script !== null ) {
 	}
 }
 
-//TODO: improve ?
-export function LISSAuto(content?: string, css?: string, host?: Constructor<HTMLElement>) {
+export class LISSAuto_ContentGenerator extends ContentGenerator {
 
-	const opts = {content, css, host};
+	protected override prepareHTML(html?: DocumentFragment | HTMLElement | string): HTMLTemplateElement {
+		
+		if( typeof html === 'string' ) {
+			html = html.replaceAll(/\$\{([\w]+)\}/g, (_, name: string) => {
+				return `<liss value="${name}"></liss>`;
+			});
 
-	//TODO: {}
-	//TODO: CSS_factory too ??? ou css-toto="toto" (?)
-	(opts as any).content_factory = (str: string) => {
+			// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
+			//let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
 
-		str = str.replaceAll(/\$\{([\w]+)\}/g, (_, name: string) => {
-			return `<liss value="${name}"></liss>`;
-		});
-
-		//TODO: ${} in attr
-			// - detect start ${ + end }
-			// - register elem + attr name
-			// - replace. 
-		const content = html`${str}`;
-
-		let spans = content.querySelectorAll('liss[value]');
-
-		return (_a: unknown, _b:unknown, elem: HTMLElement) => {
-
-			// can be optimized...
-			for(let span of spans)
-				span.textContent = elem.getAttribute(span.getAttribute('value')!)
-
-			return content.cloneNode(true);
-		};
-
-	};
-
-	const klass = class WebComponent extends LISS(opts) {
-		constructor(...args: any[]) {
-			super(...args);
-			
-			const css_attrs = this.host.getAttributeNames().filter( e => e.startsWith('css-'));
-
-			for(let css_attr of css_attrs)
-				this.host.style.setProperty(`--${css_attr.slice('css-'.length)}`, this.host.getAttribute(css_attr));
+			//TODO: ${} in attr
+				// - detect start ${ + end }
+				// - register elem + attr name
+				// - replace. 
 		}
-	};
+		
+		return super.prepareHTML(html);
+	}
 
-	return klass;
+	override generate<Host extends LHost>(host: Host): HTMLElement | ShadowRoot {
+		
+		const content = super.generate(host);
+
+		// html magic values.
+		// can be optimized...
+		const values = content.querySelectorAll('liss[value]');
+		for(let value of values)
+			value.textContent = host.getAttribute(value.getAttribute('value')!)
+
+		// css prop.
+		const css_attrs = host.getAttributeNames().filter( e => e.startsWith('css-'));
+		for(let css_attr of css_attrs)
+			host.style.setProperty(`--${css_attr.slice('css-'.length)}`, host.getAttribute(css_attr));
+
+		return content;
+	}
 }

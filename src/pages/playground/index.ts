@@ -5,11 +5,14 @@ let iframe = document.querySelector('iframe')!;
 const examples = [
     "auto-html",
     "auto-html-tr",
-    "auto-html-slots"
+    "auto-html-slots",
+    "cstr-params"
 ];
 
 const resources = [
     'page.html',
+    'page.js',
+    'page.bry',
     'index.html',
     'index.css',
     'index.js',
@@ -69,12 +72,26 @@ async function setExample(name: string) {
         inputs["js"].innerHTML = hl(values["js"] = files["index.bry"], "python");
     else
         inputs["js"].innerHTML = values["js"] =  "";
- 
+
+    
+    if( files["page.js"] !== "")
+        inputs["pjs"].innerHTML = hl(values["pjs"] = files["page.js"], "js");
+    else if( files["index.bry"] !== "" )
+        inputs["pjs"].innerHTML = hl(values["pjs"] = files["page.bry"], "python");
+    else
+        inputs["pjs"].innerHTML = values["pjs"] =  "";
+
     update();
 }
 
 
 function update() {
+
+    let cmpjs = values.js;
+    if( cmpjs === "")
+        cmpjs = `const host = document.querySelector('[is]')?.constructor;
+                 const content_generator = LISSAuto_ContentGenerator;
+                 LISS.define('${webcomp_name.value}', LISS({host, html, css, content_generator}) );`;
 
     const html =
 `<!DOCTYPE html>
@@ -86,14 +103,16 @@ function update() {
             }
         </style>
         <script type="module" defer>
-            import LISS, {LISSAuto} from '../../index.js';
+            import LISS, {LISSAuto_ContentGenerator, ContentGenerator} from '../../index.js';
 
-            const content = "${values.html.replaceAll('\n', '\\n').replaceAll('"', '\\"')}";
-            const css     = "${values.css .replaceAll('\n', '\\n').replaceAll('"', '\\"')}";
+            const html = "${values.html.replaceAll('\n', '\\n').replaceAll('"', '\\"')}";
+            const css  = "${values.css .replaceAll('\n', '\\n').replaceAll('"', '\\"')}";
 
-            const host = document.querySelector('[is]')?.constructor;
+            ${cmpjs}
 
-            LISS.define('${webcomp_name.value}', LISSAuto(content, css, host) );
+            //await LISS.whenAllDefined();
+
+            ${values.pjs}
         </script>
     </head>
     <body>
@@ -113,7 +132,7 @@ ${values.page}
     iframe.contentWindow!.document.close();
 }
 
-const inputs_names = ['page', 'html', 'css', 'js'];
+const inputs_names = ['page', 'pjs', 'html', 'css', 'js'];
 const inputs: Record<string, HTMLElement> = {};
 const values: Record<string, string> = {};
 

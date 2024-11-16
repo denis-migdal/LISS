@@ -1,5 +1,7 @@
 import type { buildLISSHost } from "./LISSHost";
 import type { LISS } from "./LISSBase";
+import ContentGenerator, { ContentGenerator_Opts, ContentGeneratorCstr } from "ContentGenerator";
+import { LISSState } from "state";
 
 export interface Class {}
 
@@ -29,58 +31,62 @@ export enum LifeCycle {
     /* sleep when disco : you need to implement it yourself */
 }
 
-export type ContentFactory<Attrs extends string, Params extends Record<string,any>> = ( (attrs: Record<Attrs, null|string>, params: Params, elem:HTMLElement) => Node|undefined );
-
 // Using Constructor<T> instead of T as generic parameter
 // enables to fetch static member types.
 export type LISS_Opts<
     // JS Base
     ExtendsCtr extends Constructor<Class>  = Constructor<Class>,
-    Params     extends Record<string, any> = Record<string, unknown>, /* RO ? */
     // HTML Base
     HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
     Attrs      extends string                   = string,
     > = {
-        // JS Base
-        extends   : ExtendsCtr,
-        params    : Params,
-        // non-generic
-        deps      : readonly Promise<any>[],
-
-        // HTML Base
-        host   : HostCstr,
-        attrs  : readonly Attrs[],
-        observedAttributes: readonly Attrs[], // for vanilla compat
-        // non-generic
-        content?: HTML_Source,
-        content_factory: (content?: Exclude<HTML_Resource, Response>) => ContentFactory<Attrs, Params>,
-        css     : CSS_Source | readonly CSS_Source[],
-        shadow  : ShadowCfg
-}
+        extends: ExtendsCtr, // JS Base
+        host   : HostCstr,   // HTML Host
+        content_generator: ContentGeneratorCstr,
+} & ContentGenerator_Opts;
 
 // LISSBase
 
 export type LISSBaseCstr<
         ExtendsCtr extends Constructor<Class>       = Constructor<Class>,
-        Params     extends Record<string, any>      = Record<string, unknown>, /* RO ? */
-        HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
-        Attrs      extends string                   = string>
-    = ReturnType<typeof LISS<ExtendsCtr, Params, HostCstr, Attrs>>;
+        HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>
+    > = ReturnType<typeof LISS<ExtendsCtr, HostCstr>>;
 
 export type LISSBase<
         ExtendsCtr extends Constructor<Class>       = Constructor<Class>,
-        Params     extends Record<string, any>      = Record<string, unknown>, /* RO ? */
-        HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
-        Attrs      extends string                   = string>
-    = InstanceType<LISSBaseCstr<ExtendsCtr, Params, HostCstr, Attrs>>;
+        HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>
+    > = InstanceType<LISSBaseCstr<ExtendsCtr, HostCstr>>;
 
 
 export type LISSBase2LISSBaseCstr<T extends LISSBase> = T extends LISSBase<
-            infer A extends Constructor<Class>,
-            infer B,
-            infer C,
-            infer D> ? Constructor<T> & LISSBaseCstr<A,B,C,D> : never;
-
+            infer ExtendsCtr extends Constructor<Class>,
+            infer HostCstr   extends Constructor<HTMLElement>
+        > ? Constructor<T> & LISSBaseCstr<ExtendsCtr,HostCstr> : never;
 
 export type LISSHostCstr<T extends LISSBase|LISSBaseCstr = LISSBase> = ReturnType<typeof buildLISSHost<T extends LISSBase ? LISSBase2LISSBaseCstr<T> : T>>;
 export type LISSHost    <T extends LISSBase|LISSBaseCstr = LISSBase> = InstanceType<LISSHostCstr<T>>;
+
+// lighter LISSHost def to avoid type issues...
+export type LHost<HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>> = {
+
+    state  : LISSState;
+    content: ShadowRoot|InstanceType<HostCstr>;
+
+    shadowMode: ShadowCfg|null;
+
+    CSSSelector: string;
+
+} & InstanceType<HostCstr>;
+
+export type LHostCstr<HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>> = {
+    new(...args: any): LHost<HostCstr>;
+
+    Cfg: {
+        host             : HostCstr,
+        content_generator: ContentGeneratorCstr,
+        args             : ContentGenerator_Opts
+    }
+
+    state  : LISSState;
+
+} & HostCstr;

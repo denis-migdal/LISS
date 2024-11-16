@@ -7,19 +7,22 @@
     </head>
     <body>
         <div>
-            <h2>Config</h2>
-            Example: <select></select>
-            WebComponent name: <input/>
-            [TODO: JS OR BRY]
-            [TODO: auto-mode]
+            <h2>WebPage JS/Brython</h2>
+            <div id="pjs" lang="js" contenteditable></div>
         </div>
         <div>
-            <h2>Web page</h2>
+            <h2>WebPage HTML</h2>
             <div id="page" lang="html" contenteditable></div>
         </div>
         <div>
             <h2>Result</h2>
             <iframe></iframe>
+        </div>
+        <div>
+            <h2>WebComponent JS/Brython</h2>
+            <div id="js" lang="js" contenteditable>
+                [TODO]
+            </div>
         </div>
         <div>
             <h2>WebComponent HTML</h2>
@@ -29,11 +32,10 @@
             <h2>WebComponent CSS</h2>
             <div id="css" lang="css" contenteditable></div>
         </div>
-        <div>
-            <h2>WebComponent JS/Brython</h2>
-            <div id="js" lang="js" contenteditable>
-                [TODO]
-            </div>
+        <div style="flex-direction: row;grid-area: span 1 / span 3">
+            Example: <select></select>
+            WebComponent name: <input/>
+            [TODO: JS OR BRY]
         </div>
     </body>
 </html>
