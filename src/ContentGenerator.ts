@@ -69,7 +69,8 @@ export default class ContentGenerator {
         this.injectCSS(target, this.#stylesheets);
 
         const content = this.#template.content.cloneNode(true);
-        target.replaceChildren(content);
+        if( host.shadowMode !== ShadowCfg.NONE || target.childNodes.length === 0 )
+            target.replaceChildren(content);
 
         if( target instanceof ShadowRoot && target.childNodes.length === 0)
 			target.append( document.createElement('slot') );
