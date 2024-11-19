@@ -19,8 +19,10 @@ const sharedCSS = getSharedCSS(); // from LISSHost...
 export default class ContentGenerator {
 
     #stylesheets: CSSStyleSheet[];
-    #template   : HTMLTemplateElement;
+    #template   : HTMLTemplateElement|null;
     #shadow     : ShadowCfg|null;
+
+    protected data: any;
 
     constructor({
         html,
@@ -37,6 +39,10 @@ export default class ContentGenerator {
         this.#whenReady = waitDOMContentLoaded();
 
         //TODO: other deps...
+    }
+
+    protected setTemplate(template: HTMLTemplateElement) {
+        this.#template = template;
     }
 
     #whenReady: Promise<unknown>;
@@ -68,7 +74,7 @@ export default class ContentGenerator {
 
         this.injectCSS(target, this.#stylesheets);
 
-        const content = this.#template.content.cloneNode(true);
+        const content = this.#template!.content.cloneNode(true);
         if( host.shadowMode !== ShadowCfg.NONE || target.childNodes.length === 0 )
             target.replaceChildren(content);
 
@@ -125,7 +131,7 @@ export default class ContentGenerator {
         throw new Error("Should not occur");
     }
 
-    protected prepareHTML(html?: HTML) {
+    protected prepareHTML(html?: HTML): HTMLTemplateElement|null {
     
         const template = document.createElement('template');
 

@@ -159,17 +159,27 @@ if( script !== null ) {
 	}
 }
 
+const converter = document.createElement('span');
+
+function encodeHTML(text: string) {
+	converter.textContent = text;
+	return converter.innerHTML;
+}
+
 export class LISSAuto_ContentGenerator extends ContentGenerator {
 
-	protected override prepareHTML(html?: DocumentFragment | HTMLElement | string): HTMLTemplateElement {
+	protected override prepareHTML(html?: DocumentFragment | HTMLElement | string) {
 		
+		this.data = null;
+
 		if( typeof html === 'string' ) {
+
+			this.data = html;
+			return null;
+			/*
 			html = html.replaceAll(/\$\{([\w]+)\}/g, (_, name: string) => {
 				return `<liss value="${name}"></liss>`;
-			});
-
-			// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
-			//let str = (content as string).replace(/\$\{(.+?)\}/g, (_, match) => this.getAttribute(match)??'')
+			});*/
 
 			//TODO: ${} in attr
 				// - detect start ${ + end }
@@ -182,13 +192,21 @@ export class LISSAuto_ContentGenerator extends ContentGenerator {
 
 	override generate<Host extends LHost>(host: Host): HTMLElement | ShadowRoot {
 		
+		// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
+		if( this.data !== null) {
+			const str = (this.data as string).replace(/\$\{(.+?)\}/g, (_, match) => encodeHTML(host.getAttribute(match) ?? '' ));
+			super.setTemplate( super.prepareHTML(str)! );
+		}
+
 		const content = super.generate(host);
 
+		/*
 		// html magic values.
 		// can be optimized...
 		const values = content.querySelectorAll('liss[value]');
 		for(let value of values)
 			value.textContent = host.getAttribute(value.getAttribute('value')!)
+		*/
 
 		// css prop.
 		const css_attrs = host.getAttributeNames().filter( e => e.startsWith('css-'));
