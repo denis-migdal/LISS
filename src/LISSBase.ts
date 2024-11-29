@@ -51,6 +51,13 @@ export function LISS<
 
 		//TODO: get the real type ?
 		protected get content(): InstanceType<HostCstr>|ShadowRoot {
+
+			try {
+				this.#host.content!;
+			} catch(e) {
+				console.warn(e);
+			}
+
 			return this.#host.content!;
 		}
 

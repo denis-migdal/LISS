@@ -19,7 +19,7 @@ export function LISS<
         // HTML Base
         HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
     >(opts?: Partial<LISS_Opts<ExtendsCtr, HostCstr>>): LISSBaseCstr<ExtendsCtr, HostCstr>
-export function LISS(opts: any): LISSBaseCstr
+export function LISS(opts: any = {}): LISSBaseCstr
 {
     if( opts.extends !== undefined && "Host" in opts.extends ) // we assume this is a LISSBaseCstr
         return _extends(opts);
@@ -37,7 +37,7 @@ export function _extends<
         throw new Error('please provide a LISSBase!');
 
     const cfg = opts.extends.Host.Cfg;
-    opts = Object.assign({}, opts, cfg);
+    opts = Object.assign({}, opts, cfg, cfg.args);
 
     class ExtendedLISS extends opts.extends! {
 

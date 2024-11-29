@@ -215,7 +215,7 @@ export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTM
 			if( this.#base === null) {
 				// h4ck, okay because JS is monothreaded.
 				setCstrHost(this);
-				this.#base = new Liss(...this.#params) as InstanceType<T>;
+				this.#base = new LISSHost.Base(...this.#params) as InstanceType<T>;
 			}
 
 			this.#whenInitialized_resolver(this.base);

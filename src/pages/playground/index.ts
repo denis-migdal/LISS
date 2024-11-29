@@ -1,4 +1,4 @@
-import {hl, initContentEditableCode} from "./hl.ts";
+import {hl, initContentEditableCode} from "../docs/skeleton/code/hl";
 
 let iframe = document.querySelector('iframe')!;
 
@@ -148,7 +148,7 @@ for(let name of inputs_names ) {
 
     values[name] = input.textContent = localStorage.getItem(name) ?? "";
 
-    initContentEditableCode(input, false);
+    initContentEditableCode(input);
 }
 
 update();

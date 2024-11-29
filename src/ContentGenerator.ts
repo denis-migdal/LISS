@@ -128,6 +128,7 @@ export default class ContentGenerator {
             return style;
         }
     
+        console.warn(css);
         throw new Error("Should not occur");
     }
 

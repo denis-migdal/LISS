@@ -1,0 +1,11 @@
+*:not(:defined) {
+    all: unset;
+}
+
+script, style {
+    display: none;
+}
+
+:root {
+    font-family: Arial, sans-serif;
+}

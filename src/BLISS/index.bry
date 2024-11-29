@@ -1,0 +1,14 @@
+def wrap(js_klass):
+
+    class Wrapper:
+        def __init__(self, *args):
+            self._js = js_klass(*args)
+
+        def __getattr__(self, name: str):
+            print( self._js[name] )
+            return self._js[name];
+
+        def __setattr__(self, name: str, value):
+            self._js[name] = value
+
+    return Wrapper
