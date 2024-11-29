@@ -8,7 +8,7 @@ type Resource = {
 }
 
 //TODO : path
-const ASSETS = "/dist/dev/assets/examples";
+export const ASSETS = "/dist/dev/assets/examples";
 
 // @ts-ignore
 import css  from "!!raw-loader!./PlaygroundArea.css";
@@ -65,7 +65,7 @@ export default class PlaygroundArea extends LISS({
             };
 
             code_api.host.addEventListener('change', () => {
-                if( ! this.#inUpdate )
+                if( ! this._inUpdate )
                     this.updateResult();
             });
         }
@@ -75,7 +75,7 @@ export default class PlaygroundArea extends LISS({
             this.updateCodes();
     }
 
-    #inUpdate = false;
+    protected _inUpdate = false;
 
     updateLayout() {
         const show = this.host.getAttribute('show');
@@ -110,7 +110,7 @@ export default class PlaygroundArea extends LISS({
 
     async updateCodes() {
 
-        this.#inUpdate = true;
+        this._inUpdate = true;
 
         const example = this.host.getAttribute('name')!;
 
@@ -141,7 +141,7 @@ export default class PlaygroundArea extends LISS({
         await Promise.all(promises);
         this.updateResult();
 
-        this.#inUpdate = false;
+        this._inUpdate = false;
 
         if( ! this.host.hasAttribute("show") ) {
             names.push("output");

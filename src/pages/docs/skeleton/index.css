@@ -1,14 +1,3 @@
 @import "./reset.css";
 @import "./page.css";
 @import "./colors.css";
-
-.grid {
-    display: grid;
-    grid: 1fr 1fr / 1fr 1fr;
-
-    & > vshs-playground {
-        display: grid;
-        grid-column: span 2;
-        grid-template-columns: subgrid !important;
-    }
-}
