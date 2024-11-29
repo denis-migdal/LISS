@@ -164,28 +164,32 @@ export default class PlaygroundArea extends LISS({
         return result;
     }
 
+    #lastURL: string|null = null;
+
     async updateResult() {
 
         const iframe = document.createElement('iframe');
         this.#iframe.replaceWith(iframe);
         this.#iframe = iframe;
 
-        const content = await this.generateIFrameContent();
+        let content = await this.generateIFrameContent();
 
+        /* doesn't work
+        if( ! (content instanceof Blob) ) {
+            content = new Blob([content], {type: "text/html"});
+        }
+        */
+        
         if( content instanceof Blob ) {
-            const url = URL.createObjectURL(content);
+            if(this.#lastURL !== null)
+                URL.revokeObjectURL(this.#lastURL);
 
-            console.warn(url);
+            this.#lastURL = iframe.src = URL.createObjectURL(content);
 
-            iframe.src = url;
             return;
         }
-        
-        /*const blob = new Blob([content], {type: "text/html"})
-        const url = URL.createObjectURL(blob);
 
-        iframe.src = url;*/
-        
+        /**/
         iframe.src = "about:blank";
         // iframe.srcdoc also possible
         iframe.contentWindow!.document.open();

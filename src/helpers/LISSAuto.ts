@@ -119,6 +119,7 @@ async function defineWebComponent(tagname: string, files: Record<string, any>, o
 		LISS.require = oldreq;
 	}
 	else if( opts.html !== undefined ) {
+
 		klass = LISS({
 			...opts,
 			content_generator: LISSAuto_ContentGenerator
@@ -151,7 +152,12 @@ async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
 	if( isLissAuto && response.headers.get("status")! === "404" )
 		return undefined;
 
-	return await response.text();
+	const answer = await response.text();
+
+	if(answer === "")
+		return undefined;
+
+	return answer
 }
 async function _import(uri: string, isLissAuto: boolean = false) {
 
@@ -293,17 +299,23 @@ async function importComponent<T extends HTMLElement = HTMLElement>(
 		brython = false,
 		// @ts-ignore
 		host    = HTMLElement,
-		files   = {}
-	}: importComponents_Opts<T> & {files?: Record<string, string>}
+		files   = null
+	}: importComponents_Opts<T> & {files?: Record<string, string>|null}
 ) {
 
 	KnownTags.add(tagname);
 
 	const compo_dir = `${cdir}${tagname}/`;
 
-	if( brython ) {
-		if( ! ("index.bry" in files) )
-			files['index.bry'] = (await _fetchText(`${compo_dir}index.bry`, true))!;
+	if( files === null ) {
+		files = {};
+
+		const file = brython ? 'index.bry' : 'index.js';
+
+		files[file] = (await _fetchText(`${compo_dir}${file}`, true))!;
+	}
+
+	if( brython && files['index.bry'] !== undefined) {
 
 		const code = bry_wrapper + files["index.bry"];
 
@@ -317,9 +329,6 @@ const last = imported[imported.length-1];
 export default last.WebComponent;
 
 `;
-	} else {
-		if( ! ("index.js" in files) )
-			files['index.js'] = (await _fetchText(`${compo_dir}index.js`, true))!;
 	}
 
 	const html = files["index.html"];

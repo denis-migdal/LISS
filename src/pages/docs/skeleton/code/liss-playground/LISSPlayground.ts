@@ -38,64 +38,17 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
     constructor() {
         super(resources);
     }
-
-    generateAuto(codes: Record<string, string>) {
-
-        const webcomp_name = this.host.getAttribute('example')!;
-
-        const cmpjs = `const host = document.querySelector('[is]')?.constructor;
-const content_generator = LISSAuto_ContentGenerator;
-LISS.define('${webcomp_name}', LISS({host, html, css, content_generator}) );`;
     
-        return this.generateJS(codes);
-    }
-    // TODO: register wrap + import wrap
-    generateBry(codes: Record<string, string>) {
+    override async generateIFrameContent() {
 
-        let code = codes["index.bry"];
-
-        code = `def wrap(js_klass):
-
-    class Wrapper:
-
-        _js_klass = js_klass
-        _js = None
-
-        def __init__(self, *args):
-            self._js = js_klass.new(*args)
-
-        def __getattr__(self, name: str):
-            return self._js[name];
-
-        def __setattr__(self, name: str, value):
-            if name == "_js":
-                super().__setattr__(name, value)
-                return
-            self._js[name] = value
-
-    return Wrapper
-    
-${code}
-
-${codes["page.bry"]}
-`;
-
-        const jscode = `
-const $B = globalThis.__BRYTHON__;
-const jscode = $B.pythonToJS(\`${code}\`);
-const fct = new Function(jscode);
-fct();
-`;
-
-        return this.generateJS(codes);
-    }
-    generateJS(codes: Record<string, string>) {
+        const codes = this.getAllCodes();
 
         const webcomp_name = this.host.getAttribute('name')!;
 
-        let c_html = codes["index.html"].replaceAll('\n', '\\n').replaceAll('"', '\\"');
-        let c_css  = codes["index.css" ].replaceAll('\n', '\\n').replaceAll('"', '\\"');
-        let c_bry  = codes["index.bry" ].replaceAll('\n', '\\n').replaceAll('"', '\\"');
+        let c_html = escapeStr(codes["index.html"])
+        let c_css  = escapeStr(codes["index.css" ]);
+        let c_bry  = escapeStr(codes["index.bry" ]);
+        let c_js   = escapeStr(codes["index.js"  ]);
 
         const p_js    = "";//codes["page.js" ];
         const p_html  = codes["page.html" ];
@@ -116,20 +69,18 @@ fct();
             window.LISS = LISS;
 
             const files = {
-                "index.bry" : "${c_bry }",
-                "index.html": "${c_html}",
-                "index.css" : "${c_css }",
+                "index.js"  : ${c_js },
+                "index.bry" : ${c_bry },
+                "index.html": ${c_html},
+                "index.css" : ${c_css },
             }
-
-            //TODO...
-            window.require = async function(path) {
-                console.warn("called");
-            }
+            
+            const host = document.querySelector('[is]')?.constructor;
 
             await LISS.importComponent("${webcomp_name}", {
                 cdir   : null, //TODO...
                 brython: true, //TODO...
-                host   : HTMLElement, //TODO...
+                host,
                 files
             } );
 
@@ -146,18 +97,12 @@ ${p_html}
 
         return result;
     }
+}
 
-    override async generateIFrameContent() {
-
-        const codes = this.getAllCodes();
-
-        if( codes['index.js' ] !== "" )
-            return this.generateJS(codes);
-        if( codes['index.bry'] !== "")
-            return this.generateBry(codes);
-
-        return this.generateAuto(codes);
-    }
+function escapeStr(data: undefined|string) {
+    if(data === undefined || data === "")
+        return undefined;
+    return '"' + data.replaceAll('\n', '\\n').replaceAll('"', '\\"') + '"';
 }
 
 LISS.define('liss-playground', LISSPlayground);
