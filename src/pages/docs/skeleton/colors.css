@@ -20,7 +20,7 @@
 }
 
 .color-scheme-gui-btn {
-    position: absolute;
+    position: fixed;
     top: 0px;
     right: 0px;
     cursor: pointer;
