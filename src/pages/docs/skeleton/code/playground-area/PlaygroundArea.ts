@@ -7,8 +7,11 @@ type Resource = {
     title: string,
 }
 
+
+export const rootdir = location.host === "denis-migdal.github.io" ? "/LISS" : "";
+
 //TODO : path
-export const ASSETS = "/dist/dev/assets/examples";
+export const ASSETS = `${rootdir}/dist/dev/assets/examples`;
 
 // @ts-ignore
 import css  from "!!raw-loader!./PlaygroundArea.css";
