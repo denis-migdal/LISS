@@ -8,7 +8,7 @@ type Resource = {
 }
 
 
-export const rootdir = location.host === "denis-migdal.github.io" ? "/LISS" : "";
+export const rootdir = location.host === "denis-migdal.github.io" ? `/${location.pathname.split("/")[1]}` : "";
 
 //TODO : path
 export const ASSETS = `${rootdir}/dist/dev/assets/examples`;
