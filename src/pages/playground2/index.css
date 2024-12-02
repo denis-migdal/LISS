@@ -8,3 +8,20 @@ main {
     /* TODO width */
     /* TODO height with scale+zoom... */
 }
+
+.code_switch {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 20px;
+    cursor: pointer;
+
+    body.code_js &::after {
+        content: "JS";
+        font-weight: bold;
+        color: light-dark( #FFC300 , gold);
+    }
+    body.code_bry &::after {
+        content: "🐍"
+    }
+}

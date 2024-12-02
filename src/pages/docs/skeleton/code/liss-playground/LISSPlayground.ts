@@ -41,6 +41,8 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
     
     override async generateIFrameContent() {
 
+        const rootdir = location.host === "denis-migdal.github.io" ? "/LISS" : "";
+
         const codes = this.getAllCodes();
 
         const webcomp_name = this.host.getAttribute('name')!;
@@ -64,7 +66,7 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
         <script type="module" defer>
             //TODO ?
-            import LISS from '/dist/dev/index.js';
+            import LISS from '${rootdir}/dist/dev/index.js';
 
             window.LISS = LISS;
 
