@@ -79,8 +79,6 @@ export default class CodeBlock extends LISS({
 
         this.#output.addEventListener("input", () => {
 
-            console.warn("called");
-
             const code = this.#output.textContent!;
             this.host.textContent = code;
 
@@ -103,6 +101,9 @@ export default class CodeBlock extends LISS({
         // Tabulation key
         // @ts-ignore
         this.#output.addEventListener("keydown", (ev: KeyboardEvent) => {
+
+            if(this.isRO)
+                return;
 
             if(ev.ctrlKey === true ) {
 
@@ -169,14 +170,43 @@ export default class CodeBlock extends LISS({
         return this.host.getAttribute('lang') ?? "plaintext";
     }
 
+    get isRO() {
+        return this.host.hasAttribute('ro');
+    }
+    set isRO(ro: boolean) {
+        this.host.toggleAttribute('ro', ro);
+    }
+
+    reset() {
+        
+        if( this.#history.length === 1)
+            return;
+
+        this.#history.length = 1;
+        this.#history_offset = 0;
+
+        // duplicated code...
+        let {code, cursor} = this.#history[this.#history.length-1-this.#history_offset];
+        
+        this.host.textContent = code;
+        this.update();
+
+        if( cursor === null)
+            cursor = code.length;
+        setCursorPos(this.#output, cursor);
+    }
+
     update(trigger_event = true) {
+
+        this.#output.toggleAttribute("contenteditable", ! this.isRO );
+
         this.#output.innerHTML = hl(this.host.textContent!, this.lang);
         if( trigger_event )
             this.host.dispatchEvent(new Event('change'));
     }
 
     // TODO listen content.
-    static override observedAttributes = ["lang"];
+    static override observedAttributes = ["lang", "ro"];
 
     override attributeChangedCallback() {
         this.update(); //TODO: request update.

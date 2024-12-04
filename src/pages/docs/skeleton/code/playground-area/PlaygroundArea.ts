@@ -232,10 +232,16 @@ export default class PlaygroundArea extends LISS({
     }
 
     override attributeChangedCallback(name: string) {
-        if(name === "show")
+        if(name === "show") {
             this.updateLayout();
-        if(name === "name")
+            return;
+        }
+        if(name === "name") {
             this.updateCodes();
+            return;
+        }
+        
+        this.updateResult();
     }
 
     static override observedAttributes = ["show", "name"];
