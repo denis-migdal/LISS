@@ -321,9 +321,10 @@ async function importComponent<T extends HTMLElement = HTMLElement>(
 
 		files['index.js'] =
 `const $B = globalThis.__BRYTHON__;
-const result = $B.runPythonSource(\`${code}\`, "_");
 
-const module = __BRYTHON__.imported["_"];
+$B.runPythonSource(\`${code}\`, "_");
+
+const module = $B.imported["_"];
 export default module.WebComponent;
 
 `;
