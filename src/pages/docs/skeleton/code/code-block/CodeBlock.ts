@@ -169,9 +169,10 @@ export default class CodeBlock extends LISS({
         return this.host.getAttribute('lang') ?? "plaintext";
     }
 
-    update() {
+    update(trigger_event = true) {
         this.#output.innerHTML = hl(this.host.textContent!, this.lang);
-        this.host.dispatchEvent(new Event('change'));
+        if( trigger_event )
+            this.host.dispatchEvent(new Event('change'));
     }
 
     // TODO listen content.

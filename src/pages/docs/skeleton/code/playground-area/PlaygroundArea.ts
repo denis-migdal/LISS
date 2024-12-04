@@ -28,6 +28,10 @@ export default class PlaygroundArea extends LISS({
     constructor(resources: readonly Resource[] = []) {
         super();
 
+        document.body.addEventListener('code_changed', () => {
+            this.switchJSBry();
+        })
+
         const output = this.#iframe = document.createElement('iframe');
         let card = document.createElement('div');
         card.classList.add('card');
@@ -73,22 +77,32 @@ export default class PlaygroundArea extends LISS({
             });
         }
 
-        this.updateLayout();
+        this.switchJSBry();
         if( this.host.hasAttribute('name') )
             this.updateCodes();
+
+    }
+
+    switchJSBry() {
+
+        const is_bry = document.body.classList.contains('code_bry');
+
+        const keys = Object.keys(this.resources).filter( n => n.endsWith('.bry') );
+        const ext  = is_bry ? ".bry" : ".js";
+        
+        for(let key of keys) {
+            const file = key.slice(0, -'.bry'.length);
+            this.resources[`${file}.code`] = this.resources[`${file}${ext}`];
+        }
+
+        this.host.toggleAttribute('brython', is_bry);
+        this.updateLayout();
+
     }
 
     protected _inUpdate = false;
 
-    updateLayout() {
-        const show = this.host.getAttribute('show');
-        let codes: string[] = [];
-        if( show === null )
-            codes = Object.keys(this.resources);
-        else
-            codes = show.split(',');
-
-        this.content.replaceChildren(...codes.map( e => this.resources[e].html ));
+    setGrid(codes: readonly string[]) {
 
         if( codes.length == 1 )
             this.host.style.setProperty('grid', '1fr / 1fr');
@@ -100,6 +114,20 @@ export default class PlaygroundArea extends LISS({
             this.host.style.setProperty('grid', 'auto / 1fr 1fr');
         if( codes.length > 4 )
             this.host.style.setProperty('grid', 'auto / 1fr 1fr 1fr');
+    }
+
+    updateLayout() {
+        const show = this.host.getAttribute('show');
+
+        let codes: string[] = [];
+        if( show === null )
+            codes = Object.keys(this.resources);
+        else
+            codes = show.split(',');
+
+        this.content.replaceChildren(...codes.map( e => this.resources[e].html ));
+
+        this.setGrid(codes);
 
         // h4ck
         this.updateResult();
@@ -124,6 +152,8 @@ export default class PlaygroundArea extends LISS({
         for(let file in this.resources) {
 
             if(file === "output")
+                continue;
+            if(file.endsWith('.code'))
                 continue;
 
             const code_api = this.resources[file].ctrler!;
