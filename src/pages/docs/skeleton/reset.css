@@ -9,3 +9,7 @@ script, style {
 :root {
     font-family: Arial, sans-serif;
 }
+
+summary {
+    cursor: pointer;
+}
