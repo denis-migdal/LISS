@@ -207,7 +207,7 @@ function generateMenuHTML(target: MenuNode) {
     return html;
 }
 
-function updatePageMenu() {
+function updatePageMenu(menu: PageMenuNode) {
 
     //TODO: scale...
     let last = searchCurPageHeader( menu, document.documentElement.scrollTop)!;
@@ -221,10 +221,10 @@ const hasH1 = document.body.querySelector("h1") !== null;
 
 if( hasH1 ) {
 
-    buildPageMenu();
+    const menu = buildPageMenu();
 
-    window.addEventListener('scroll', updatePageMenu);
-    updatePageMenu();
+    window.addEventListener('scroll', () => updatePageMenu(menu) );
+    updatePageMenu(menu);
 
 }
 
