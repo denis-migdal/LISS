@@ -1,4 +1,5 @@
 import "./page";
+import "./menu";
 import "./colors";
 import "./code/switch/switch";
 
