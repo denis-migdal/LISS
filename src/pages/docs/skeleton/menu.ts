@@ -35,7 +35,7 @@ function buildPagesMenu(content: string) {
 
     const root: PagesMenuNode = {
         text    : "",
-        href    : "/dist/dev/pages/" + rootdir,
+        href    : rootdir + "/dist/dev/pages/",
         level   : 1,
         parent  : null,
         children: []
@@ -217,12 +217,16 @@ function updatePageMenu() {
     menu_page.replaceChildren(...html);
 }
 
+const hasH1 = document.body.querySelector("h1") !== null;
 
-const menu = buildPageMenu();
+if( hasH1 ) {
 
-window.addEventListener('scroll', updatePageMenu);
-updatePageMenu();
+    buildPageMenu();
 
+    window.addEventListener('scroll', updatePageMenu);
+    updatePageMenu();
+
+}
 
 const cur_page =  searchCurPagesHeader(buildPagesMenu(content));
 menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
