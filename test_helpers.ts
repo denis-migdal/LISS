@@ -10,7 +10,7 @@ files["http://localhost/dist/dev/index.js"] = {
     contentType: "text/javascript"
 }
 
-function generateHTMLPage(brython: string) {
+function generateHTMLPage(page_html: string, brython: string) {
     files['http://localhost/dist/dev/'] = {
         body: `<!DOCTYPE>
 <html>
@@ -19,8 +19,7 @@ function generateHTMLPage(brython: string) {
         <script src="./index.js" brython="${brython}" autodir="./assets/examples/" type="module" defer></script>
     </head>
     <body>
-        <!-- TODO -->
-        <hello-world></hello-world>
+        ${page_html}
     </body>
 </html>`,
         contentType: "text/html"
@@ -28,7 +27,7 @@ function generateHTMLPage(brython: string) {
 }
 
 export async function test( test_name: string,
-                            //...
+                            page_html: string,
                             callback: () => Promise<void>) {
 
     for(let use_brython of ["true", "false"]) {
@@ -90,7 +89,7 @@ export async function test( test_name: string,
                 req.respond(files[url]);
             });
     
-            generateHTMLPage(use_brython);
+            generateHTMLPage(page_html, use_brython);
 
             await page.goto("http://localhost/dist/dev/", {waitUntil: "domcontentloaded"});
 			

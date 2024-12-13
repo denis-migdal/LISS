@@ -2,6 +2,7 @@
 import {test} from "TEST_HELPER";
 
 await test("hello-world",
+    `<hello-world></hello-world>`,
     async () => {
         const elem = document.querySelector('hello-world');
         if( elem === null )
