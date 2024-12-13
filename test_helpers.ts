@@ -10,12 +10,13 @@ files["http://localhost/dist/dev/index.js"] = {
     contentType: "text/javascript"
 }
 
-function generateHTMLPage() {
+function generateHTMLPage(brython: string) {
     files['http://localhost/dist/dev/'] = {
         body: `<!DOCTYPE>
 <html>
     <head>
-        <script src="./index.js" autodir="./assets/examples/" type="module" defer></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
+        <script src="./index.js" brython="${brython}" autodir="./assets/examples/" type="module" defer></script>
     </head>
     <body>
         <!-- TODO -->
@@ -61,7 +62,14 @@ export async function test( test_name: string,
             await page.setRequestInterception(true);
             page.on('request', async req => {
                 const url = req.url();
+
                 const path = new URL(url).pathname;
+                const host = new URL(url).host;
+
+                if( host !== "localhost" ) {
+                    req.continue();
+                    return;
+                }
 
                 if( path === "/favicon.ico") {
                     req.respond({
@@ -82,7 +90,7 @@ export async function test( test_name: string,
                 req.respond(files[url]);
             });
     
-            generateHTMLPage();
+            generateHTMLPage(use_brython);
 
             await page.goto("http://localhost/dist/dev/", {waitUntil: "domcontentloaded"});
 			

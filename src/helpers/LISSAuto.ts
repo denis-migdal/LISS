@@ -47,13 +47,10 @@ if( script !== null ) {
 	});
 
 	let components_dir = script.getAttribute('autodir')!;
-	/*
-	if( components_dir[0] === '.') {
-		components_dir = window.location.pathname + components_dir; // getting an absolute path.
-	}
-	*/
 	if( components_dir[components_dir.length-1] !== '/')
 		components_dir += '/';
+
+	const brython = script.getAttribute("brython");
 
 	// observe for new injected tags.
 	new MutationObserver( (mutations) => {
@@ -83,7 +80,7 @@ if( script !== null ) {
 			return;
 
 		importComponent(tagname, {
-			//TODO: is Brython...
+			brython,
 			cdir: components_dir, //TODO
 			host
 		});		
@@ -242,7 +239,7 @@ declare module "../extends" {
 
 type importComponents_Opts<T extends HTMLElement> = {
 	cdir   ?: string|null,
-	brython?: boolean,
+	brython?: string|null,
 	host   ?: Constructor<T>
 };
 
@@ -250,7 +247,7 @@ async function importComponents<T extends HTMLElement = HTMLElement>(
 						components: string[],
 						{
 							cdir    = null,
-							brython = false,
+							brython = null,
 							// @ts-ignore
 							host    = HTMLElement
 						}: importComponents_Opts<T>) {
@@ -296,7 +293,7 @@ async function importComponent<T extends HTMLElement = HTMLElement>(
 	tagname: string,
 	{
 		cdir    = null,
-		brython = false,
+		brython = null,
 		// @ts-ignore
 		host    = HTMLElement,
 		files   = null
@@ -310,12 +307,12 @@ async function importComponent<T extends HTMLElement = HTMLElement>(
 	if( files === null ) {
 		files = {};
 
-		const file = brython ? 'index.bry' : 'index.js';
+		const file = brython === "true" ? 'index.bry' : 'index.js';
 
 		files[file] = (await _fetchText(`${compo_dir}${file}`, true))!;
 	}
 
-	if( brython && files['index.bry'] !== undefined) {
+	if( brython === "true" && files['index.bry'] !== undefined) {
 
 		const code = bry_wrapper + files["index.bry"];
 
