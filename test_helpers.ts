@@ -1,12 +1,10 @@
 // https://x.com/deno_land/status/1684616962553634816
 import puppeteer from 'https://deno.land/x/puppeteer_plus/mod.ts';
 
-const LISSScript = await Deno.readTextFile("./dist/dev/index.js");
-
 let files: Record<string, {body: string, contentType: string}> = {};
 
 files["http://localhost/dist/dev/index.js"] = {
-    body: LISSScript,
+    body       : await Deno.readTextFile("./dist/dev/index.js"),
     contentType: "text/javascript"
 }
 
@@ -16,6 +14,46 @@ function generateHTMLPage(page_html: string, brython: string) {
 <html>
     <head>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
+        <script>
+            //TODO: recursive compare ?
+            async function assertElemEquals(elem, {
+                tag,
+                shadow_html = null,
+                css = {}
+            }) {
+
+                if( typeof elem === "string" ) {
+                    tag ??= elem;
+                    elem = document.querySelector(elem);
+                }
+
+                if( elem === null )
+                    throw new Error("Component not found");
+
+                await LISS.whenInitialized(elem);
+
+                if( elem.tagName.toLowerCase() !== tag )
+                    throw new Error(\`Wrong tagname.\nExpected: \${tag}\nGot: \${elem.tagName.toLowerCase()}\`);
+
+                if( shadow_html !== elem.shadowRoot ) {
+                    if( shadow_html === null || elem.shadowRoot === null )
+                        throw new Error(\`ShadowRoot missing or unexpected.\`);
+                    if( shadow_html !== elem.shadowRoot.innerHTML )
+                        throw new Error(\`HTML content mismatched.\nExpected: \${shadow_html}\nGot: \${elem.shadowRoot.innerHTML}\`)
+                }
+
+                for(let selector in css ) {
+                    const expected = css[selector];
+                    const sub_elems = elem.shadowRoot.querySelectorAll(selector);
+                    for( let sub_elem of sub_elems ) {
+                        const css = window.getComputedStyle(sub_elem).cssText;
+                        if(css !== expected)
+                            throw new Error(\`CSS mismatch\nExpected:\${expected}\nGot: \${css}\`);
+                    }
+                }
+
+            }
+        </script>
         <script src="./index.js" brython="${brython}" autodir="./assets/examples/" type="module" defer></script>
     </head>
     <body>
