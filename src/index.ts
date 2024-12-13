@@ -5,8 +5,6 @@ import "./core/customRegistery";
 
 export {default as ContentGenerator} from "./ContentGenerator";
 
-//TODO: BLISS
-
 //TODO: events.ts
 //TODO: globalCSSRules
 export {LISSAuto_ContentGenerator} from "./helpers/LISSAuto";
@@ -21,5 +19,3 @@ export default LISS;
 
 // for debug.
 export {_extends} from "./extends";
-
-import { ShadowCfg } from "./types";

@@ -1,4 +1,4 @@
-import { Constructor, LHost, LISSBase, LISSBaseCstr } from "../types";
+import { Constructor, LHost, LISSControlerCstr } from "../types";
 import LISS from "../extends";
 
 import {define} from "../customRegistery";
@@ -255,7 +255,7 @@ async function importComponents<T extends HTMLElement = HTMLElement>(
 							host    = HTMLElement
 						}: importComponents_Opts<T>) {
 
-	const results: Record<string, LISSBaseCstr> = {};
+	const results: Record<string, LISSControlerCstr> = {};
 
 	for(let tagname of components) {
 

@@ -1,5 +1,5 @@
 
-import type { LISSBase, LISSHost } from "../types";
+import type { LISSControler, LISSHost } from "../types";
 import { initializeSync, whenInitialized } from "../state";
 
 interface Components {};
@@ -38,12 +38,12 @@ function _buildQS(selector: string, tagname_or_parent?: string | Element|Documen
 	return [`${selector}${liss_selector(tagname_or_parent as string|undefined)}`, parent] as const;
 }
 
-async function qs<T extends LISSBase>(selector: string,
+async function qs<T extends LISSControler>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): Promise<T>;
 async function qs<N extends keyof Components>(selector: string,
 						tagname  : N,
 						parent  ?: Element|DocumentFragment|Document): Promise< Components[N] >;
-async function qs<T extends LISSBase>(	selector: string,
+async function qs<T extends LISSControler>(	selector: string,
 						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
 						parent  : Element|DocumentFragment|Document = document) {
 
@@ -56,12 +56,12 @@ async function qs<T extends LISSBase>(	selector: string,
 	return result!
 }
 
-async function qso<T extends LISSBase>(selector: string,
+async function qso<T extends LISSControler>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): Promise<T>;
 async function qso<N extends keyof Components>(selector: string,
 						tagname  : N,
 						parent  ?: Element|DocumentFragment|Document): Promise< Components[N] >;
-async function qso<T extends LISSBase>(	selector: string,
+async function qso<T extends LISSControler>(	selector: string,
 						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
 						parent  : Element|DocumentFragment|Document = document) {
 
@@ -74,12 +74,12 @@ async function qso<T extends LISSBase>(	selector: string,
 	return await whenInitialized<T>( element );
 }
 
-async function qsa<T extends LISSBase>(selector: string,
+async function qsa<T extends LISSControler>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): Promise<T[]>;
 async function qsa<N extends keyof Components>(selector: string,
 						tagname  : N,
 						parent  ?: Element|DocumentFragment|Document): Promise< Components[N][] >;
-async function qsa<T extends LISSBase>(	selector: string,
+async function qsa<T extends LISSControler>(	selector: string,
 						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
 						parent  : Element|DocumentFragment|Document = document) {
 
@@ -95,12 +95,12 @@ async function qsa<T extends LISSBase>(	selector: string,
 	return await Promise.all(promises);
 }
 
-async function qsc<T extends LISSBase>(selector: string,
+async function qsc<T extends LISSControler>(selector: string,
 						element  : Element): Promise<T>;
 async function qsc<N extends keyof Components>(selector: string,
 						tagname  : N,
 						element  : Element): Promise< Components[N] >;
-async function qsc<T extends LISSBase>(	selector: string,
+async function qsc<T extends LISSControler>(	selector: string,
 						tagname_or_parent?: keyof Components | Element,
 						element  ?: Element) {
 
@@ -113,12 +113,12 @@ async function qsc<T extends LISSBase>(	selector: string,
 	return await whenInitialized<T>(result);
 }
 
-function qsSync<T extends LISSBase>(selector: string,
+function qsSync<T extends LISSControler>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): T;
 function qsSync<N extends keyof Components>(selector: string,
 						tagname  : N,
 						parent  ?: Element|DocumentFragment|Document): Components[N];
-function qsSync<T extends LISSBase>(	selector: string,
+function qsSync<T extends LISSControler>(	selector: string,
 						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
 						parent  : Element|DocumentFragment|Document = document) {
 
@@ -132,12 +132,12 @@ function qsSync<T extends LISSBase>(	selector: string,
 	return initializeSync<T>( element );
 }
 
-function qsaSync<T extends LISSBase>(selector: string,
+function qsaSync<T extends LISSControler>(selector: string,
 						parent  ?: Element|DocumentFragment|Document): T[];
 function qsaSync<N extends keyof Components>(selector: string,
 						tagname  : N,
 						parent  ?: Element|DocumentFragment|Document): Components[N][];
-function qsaSync<T extends LISSBase>(	selector: string,
+function qsaSync<T extends LISSControler>(	selector: string,
 						tagname_or_parent?: keyof Components | Element|DocumentFragment|Document,
 						parent  : Element|DocumentFragment|Document = document) {
 
@@ -153,12 +153,12 @@ function qsaSync<T extends LISSBase>(	selector: string,
 	return result;
 }
 
-function qscSync<T extends LISSBase>(selector: string,
+function qscSync<T extends LISSControler>(selector: string,
 						element  : Element): T;
 function qscSync<N extends keyof Components>(selector: string,
 						tagname  : N,
 						element  : Element): Components[N];
-function qscSync<T extends LISSBase>(	selector: string,
+function qscSync<T extends LISSControler>(	selector: string,
 						tagname_or_parent?: keyof Components | Element,
 						element  ?: Element) {
 

@@ -1,9 +1,9 @@
-import type { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "./types";
+import type { LISSControler, LISSControlerCstr, LISSHost, LISSHostCstr } from "./types";
 
 import { _element2tagname } from "./utils";
 
 // Go to state DEFINED
-export function define<T extends LISSBaseCstr>(
+export function define<T extends LISSControlerCstr>(
     tagname       : string,
     ComponentClass: T|LISSHostCstr<T>) {
 
@@ -16,7 +16,7 @@ export function define<T extends LISSBaseCstr>(
 		bry_class = ComponentClass;
 
 		ComponentClass = bry_class.__bases__.filter( (e: any) => e.__name__ === "Wrapper")[0]._js_klass.$js_func;
-		(ComponentClass as any).Host.Base = class {
+		(ComponentClass as any).Host.Controler = class {
 
 			#bry: any;
 
@@ -64,17 +64,17 @@ export function isDefined(name: string) {
 	return customElements.get(name) !== undefined;
 }
 
-export function getName( element: Element|LISSBase|LISSBaseCstr|LISSHost<LISSBase>|LISSHostCstr<LISSBase> ): string {
+export function getName( element: Element|LISSControler|LISSControlerCstr|LISSHost<LISSControler>|LISSHostCstr<LISSControler> ): string {
 
 	if( "Host" in element.constructor)
-		element = element.constructor.Host as LISSHostCstr<LISSBase>;
+		element = element.constructor.Host as LISSHostCstr<LISSControler>;
 	if( "Host" in element)
 		// @ts-ignore
 		element = element.Host;
-	if( "Base" in element.constructor)
-		element = element.constructor as LISSHostCstr<LISSBase>;
+	if( "Controler" in element.constructor)
+		element = element.constructor as LISSHostCstr<LISSControler>;
 
-	if( "Base" in element) {
+	if( "Controler" in element) {
 		const name = customElements.getName( element );
 		if(name === null)
 			throw new Error("not defined!");
@@ -93,10 +93,10 @@ export function getName( element: Element|LISSBase|LISSBaseCstr|LISSHost<LISSBas
 	return name;
 }
 
-export function getHostCstr<T extends LISSHostCstr<LISSBase>>(name: string): T {
+export function getHostCstr<T extends LISSHostCstr<LISSControler>>(name: string): T {
 	return customElements.get(name) as T;
 }
 
-export function getBaseCstr<T extends LISSBaseCstr>(name: string): T {
-	return getHostCstr<LISSHostCstr<T>>(name).Base as T;
+export function getControlerCstr<T extends LISSControlerCstr>(name: string): T {
+	return getHostCstr<LISSHostCstr<T>>(name).Controler as T;
 }

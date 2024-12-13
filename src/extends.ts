@@ -1,5 +1,5 @@
-import type { Class, Constructor, LISS_Opts, LISSBaseCstr, LISSHost } from "./types";
-import {LISS as _LISS} from "./LISSBase";
+import type { Class, Constructor, LISS_Opts, LISSControlerCstr, LISSHost } from "./types";
+import {LISS as _LISS} from "./LISSControler";
 import { buildLISSHost } from "./LISSHost";
 
 // used for plugins.
@@ -8,33 +8,33 @@ export default LISS as typeof LISS & ILISS;
 
 // extends signature
 export function LISS<
-    ExtendsCstr extends LISSBaseCstr,
+    ExtendsCstr extends LISSControlerCstr,
     //todo: constrainsts on Constructor<HTMLElement>
     Opts extends LISS_Opts<ExtendsCstr, Constructor<HTMLElement>>
     >(opts: {extends: ExtendsCstr} & Partial<Opts>): ReturnType<typeof _extends<ExtendsCstr, Opts>>
-// LISSBase signature
+// LISSControler signature
 export function LISS<
         ExtendsCtr extends Constructor<Class>  = Constructor<Class>,
         Params     extends Record<string, any> = {}, //Record<string, unknown>, /* RO ? */
         // HTML Base
         HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>,
-    >(opts?: Partial<LISS_Opts<ExtendsCtr, HostCstr>>): LISSBaseCstr<ExtendsCtr, HostCstr>
-export function LISS(opts: any = {}): LISSBaseCstr
+    >(opts?: Partial<LISS_Opts<ExtendsCtr, HostCstr>>): LISSControlerCstr<ExtendsCtr, HostCstr>
+export function LISS(opts: any = {}): LISSControlerCstr
 {
-    if( opts.extends !== undefined && "Host" in opts.extends ) // we assume this is a LISSBaseCstr
+    if( opts.extends !== undefined && "Host" in opts.extends ) // we assume this is a LISSControlerCstr
         return _extends(opts);
 
     return _LISS(opts);
 }
 
 export function _extends<
-        ExtendsCstr extends LISSBaseCstr,
+        ExtendsCstr extends LISSControlerCstr,
         //todo: constrainsts on Constructor<HTMLElement>
         Opts extends LISS_Opts<ExtendsCstr, Constructor<HTMLElement>>
     >(opts: {extends: ExtendsCstr} & Partial<Opts>) {
 
     if( opts.extends === undefined) // h4ck
-        throw new Error('please provide a LISSBase!');
+        throw new Error('please provide a LISSControler!');
 
     const cfg = opts.extends.Host.Cfg;
     opts = Object.assign({}, opts, cfg, cfg.args);

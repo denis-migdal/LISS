@@ -1,7 +1,7 @@
-import { Class, Constructor, ShadowCfg, type LISSBaseCstr } from "./types";
+import { Class, Constructor, ShadowCfg, type LISSControlerCstr } from "./types";
 
 import { LISSState } from "./state";
-import { setCstrHost } from "./LISSBase";
+import { setCstrHost } from "./LISSControler";
 import { ContentGenerator_Opts, ContentGeneratorCstr } from "./ContentGenerator";
 
 // LISSHost must be build in define as it need to be able to build
@@ -14,15 +14,15 @@ export function getSharedCSS() {
 	return sharedCSS;
 }
 
-let __cstr_base  : any = null;
+let __cstr_controler  : any = null;
 
-export function setCstrBase(_: any) {
-	__cstr_base = _;
+export function setCstrControler(_: any) {
+	__cstr_controler = _;
 }
 
-type inferHostCstr<T> = T extends LISSBaseCstr<infer A extends Constructor<Class>, infer B extends Constructor<HTMLElement>> ? B : never;
+type inferHostCstr<T> = T extends LISSControlerCstr<infer A extends Constructor<Class>, infer B extends Constructor<HTMLElement>> ? B : never;
 
-export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTMLElement> = inferHostCstr<T> >(
+export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructor<HTMLElement> = inferHostCstr<T> >(
 							Liss: T,
 							// can't deduce : cause type deduction issues...
 							hostCstr: U,
@@ -54,15 +54,15 @@ export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTM
 		}
 
 		// ============ INITIALIZATION ==================================
-		static Base = Liss;
+		static Controler = Liss;
 
-		#base: any|null = null;
-		get base() {
-			return this.#base;
+		#controler: any|null = null;
+		get controler() {
+			return this.#controler;
 		}
 
 		get isInitialized() {
-			return this.#base !== null;
+			return this.#controler !== null;
 		}
 		readonly whenInitialized: Promise<InstanceType<T>>;
 		#whenInitialized_resolver;
@@ -81,12 +81,12 @@ export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTM
 				this.#params = params;
 			}
 
-			this.#base = this.init();
+			this.#controler = this.init();
 
 			if( this.isConnected )
-				this.#base.connectedCallback();
+				this.#controler.connectedCallback();
 
-			return this.#base;
+			return this.#controler;
 		}
 
 		// ============== Content ===================
@@ -145,11 +145,11 @@ export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTM
 			this.whenInitialized = promise;
 			this.#whenInitialized_resolver = resolve;
 
-			const base = __cstr_base;
-			__cstr_base = null;
+			const controler = __cstr_controler;
+			__cstr_controler = null;
 
-			if( base !== null) {
-				this.#base = base;
+			if( controler !== null) {
+				this.#controler = controler;
 				this.init(); // call the resolver
 			}
 
@@ -160,15 +160,15 @@ export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTM
 		// ====================== DOM ===========================		
 
 		disconnectedCallback() {
-			if(this.base !== null)
-				this.base.disconnectedCallback();
+			if(this.controler !== null)
+				this.controler.disconnectedCallback();
 		}
 
 		connectedCallback() {
 
 			// TODO: life cycle options
 			if( this.isInitialized ) {
-				this.base!.connectedCallback();
+				this.controler!.connectedCallback();
 				return;
 			}
 
@@ -190,8 +190,8 @@ export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTM
 
 		static observedAttributes = Liss.observedAttributes;
 		attributeChangedCallback(name: string, oldValue: string|null, newValue: string|null) {
-			if(this.#base)
-				this.#base.attributeChangedCallback(name, oldValue, newValue);
+			if(this.#controler)
+				this.#controler.attributeChangedCallback(name, oldValue, newValue);
 		}
 
 		shadowMode: ShadowCfg|null = null;
@@ -212,15 +212,15 @@ export function buildLISSHost<	T extends LISSBaseCstr, U extends Constructor<HTM
 			//@ts-ignore
 			//this.#content.addEventListener('dblclick', onClickEvent);
 
-			if( this.#base === null) {
+			if( this.#controler === null) {
 				// h4ck, okay because JS is monothreaded.
 				setCstrHost(this);
-				this.#base = new LISSHost.Base(...this.#params) as InstanceType<T>;
+				this.#controler = new LISSHost.Controler(...this.#params) as InstanceType<T>;
 			}
 
-			this.#whenInitialized_resolver(this.base);
+			this.#whenInitialized_resolver(this.controler);
 
-			return this.base;
+			return this.controler;
 		}
 	};
 

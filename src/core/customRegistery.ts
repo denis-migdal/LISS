@@ -1,5 +1,5 @@
 
-import { define, getBaseCstr, getHostCstr, getName, isDefined, whenAllDefined, whenDefined } from "../customRegistery";
+import { define, getControlerCstr, getHostCstr, getName, isDefined, whenAllDefined, whenDefined } from "../customRegistery";
 
 import LISS from "../extends";
 declare module "../extends" {
@@ -10,7 +10,7 @@ declare module "../extends" {
 		isDefined      : typeof isDefined;
 		getName        : typeof getName;
 		getHostCstr    : typeof getHostCstr;
-		getBaseCstr    : typeof getBaseCstr;
+		getControlerCstr    : typeof getControlerCstr;
     }
 }
 
@@ -20,4 +20,4 @@ LISS.whenAllDefined = whenAllDefined;
 LISS.isDefined      = isDefined;
 LISS.getName        = getName;
 LISS.getHostCstr    = getHostCstr;
-LISS.getBaseCstr    = getBaseCstr;
+LISS.getControlerCstr    = getControlerCstr;

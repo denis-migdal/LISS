@@ -127,8 +127,6 @@ export default class ContentGenerator {
             style.replaceSync(css); // replace() if issues
             return style;
         }
-    
-        console.warn(css);
         throw new Error("Should not occur");
     }
 

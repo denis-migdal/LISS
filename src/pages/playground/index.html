@@ -1,41 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
-        <title>Playground</title>
-        <link rel="stylesheet" href="./index.css" />
-        <script src="./index.js" type="module" defer></script>
+        <meta charset="utf8"/>
+        <title>LISS Playground</title>
+        <!--
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="cyan" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black" />
+        -->
+        <meta name="color-scheme" content="dark light">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link   href="./index.css"  rel="stylesheet" blocking="render">
+        <script  src="./index.js"  type="module"     blocking="render" async></script>
     </head>
     <body>
-        <div>
-            <h2>WebPage JS/Brython</h2>
-            <div id="pjs" lang="js" contenteditable></div>
-        </div>
-        <div>
-            <h2>WebPage HTML</h2>
-            <div id="page" lang="html" contenteditable></div>
-        </div>
-        <div>
-            <h2>Result</h2>
-            <iframe></iframe>
-        </div>
-        <div>
-            <h2>WebComponent JS/Brython</h2>
-            <div id="js" lang="js" contenteditable>
-                [TODO]
-            </div>
-        </div>
-        <div>
-            <h2>WebComponent HTML</h2>
-            <div id="html" lang="html" contenteditable></div>
-        </div>
-        <div>
-            <h2>WebComponent CSS</h2>
-            <div id="css" lang="css" contenteditable></div>
-        </div>
-        <div style="flex-direction: row;grid-area: span 1 / span 3">
-            Example: <select></select>
-            WebComponent name: <input/>
-            [TODO: JS OR BRY]
-        </div>
+        <main>
+            <header>
+                <select></select>
+            </header>
+            <liss-playground></liss-playground>
+            <footer>
+                WebComponent (
+                    <input type="checkbox" value="index.js" /> js
+                    <input type="checkbox" value="index.bry" /> bry
+                    <input type="checkbox" value="index.html" /> html
+                    <input type="checkbox" value="index.css" /> css
+                )
+                WebPage (
+                    <input type="checkbox" value="page.js" /> js
+                    <input type="checkbox" value="page.bry" /> bry
+                    <input type="checkbox" value="page.html" /> html
+                )
+                Output (
+                    <input type="checkbox" value="output" /> iframe
+                    <input type="checkbox" value="" disabled /> html
+                )
+            </footer>
+        </main>
     </body>
 </html>

@@ -1,29 +1,78 @@
-import {hl, initContentEditableCode} from "../docs/skeleton/code/hl";
-
-let iframe = document.querySelector('iframe')!;
+import "../docs/skeleton";
 
 const examples = [
     "auto-html",
     "auto-html-tr",
     "auto-html-slots",
-    "cstr-params"
+
+    "bry-params"
 ];
 
-const resources = [
-    'page.html',
-    'page.js',
-    'page.bry',
-    'index.html',
-    'index.css',
-    'index.js',
-    'index.bry'
-]
+// liss-playground
+const playground = document.querySelector<HTMLElement>('liss-playground')!;
+function setExample(name: string) {
+    selector.value = name;
+    playground.removeAttribute('show');
+    playground.setAttribute('name', name);
+}
 
-const searchParams = new URLSearchParams(location.search);
-const example = searchParams.get('example');
+// init checkboxes
+
+const checks = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+
+playground.addEventListener('change', () => {
+    const codes = playground.getAttribute('show')!.split(',');
+    for(let check of checks)
+        check.checked = codes.includes(check.value);
+})
+
+for(let check of checks) {
+
+    check.addEventListener('input', (ev) => {
+
+        const target = ev.target! as HTMLInputElement;
+        const checked = target.checked;
+        const page    = target.value;
+
+        const layouts = playground.getAttribute('show')!.split(',');
+        
+        if( checked ) {
+
+            const isJS  = page.endsWith('.js');
+            const isBry = page.endsWith('.bry');
+
+            if( isJS || isBry ) {
+                
+                let  ext = isJS ? "js"  : "bry";
+                let rext = isJS ? "bry" : "js";
+                let rpage = page.slice(0, - ext.length - 1) + "." + rext;
+
+                const rcheck = checks.find( c => c.value === rpage)!;
+                rcheck.checked = false;
+                
+                const idx = layouts.indexOf(rpage);
+                if(idx !== -1)
+                    layouts.splice(idx, 1, page);
+            }
+
+            if( ! layouts.includes(page) )
+                layouts.push(page);
+        } else {
+
+            const idx = layouts.indexOf(page );
+            if(idx !== -1)
+                layouts.splice(idx, 1);
+        }
+
+        playground.setAttribute('show', layouts.join(','));
+    });
+
+}
+
+// init select
 
 const selector = document.querySelector<HTMLSelectElement>('select')!;
-const webcomp_name = document.querySelector<HTMLInputElement>('input')!;
+//const webcomp_name = document.querySelector<HTMLInputElement>('input')!;
 
 for(let example of examples)
     selector.append( new Option(example, example));
@@ -36,119 +85,9 @@ selector.addEventListener('change', () => {
     setExample(selector.value);
 });
 
-webcomp_name.addEventListener('input', update);
+// init current example
 
-if( example !== null)
-    setExample(example);
+const searchParams = new URLSearchParams(location.search);
+const example = searchParams.get('example');
 
-
-async function fetchResources(name: string) {
-    const result = await Promise.all( resources.map( async(file) => {
-
-        const answer = await fetch(`../../assets/examples/${name}/${file}`);
-
-        if( answer.status !== 200 )
-            return [file, ""];
-
-        return [file, await answer.text()];
-    }) );
-
-    return Object.fromEntries(result);
-}
-
-async function setExample(name: string) {
-
-    selector.value = webcomp_name.value = name;
-
-    const files = await fetchResources(name);
-
-    inputs["page"].innerHTML = hl(values["page"] = files["page.html" ], "html");
-    inputs["html"].innerHTML = hl(values["html"] = files["index.html"], "html");
-    inputs["css" ].innerHTML = hl(values["css" ] = files["index.css" ], "css");
-
-    if( files["index.js"] !== "")
-        inputs["js"].innerHTML = hl(values["js"] = files["index.js"], "js");
-    else if( files["index.bry"] !== "" )
-        inputs["js"].innerHTML = hl(values["js"] = files["index.bry"], "python");
-    else
-        inputs["js"].innerHTML = values["js"] =  "";
-
-    
-    if( files["page.js"] !== "")
-        inputs["pjs"].innerHTML = hl(values["pjs"] = files["page.js"], "js");
-    else if( files["index.bry"] !== "" )
-        inputs["pjs"].innerHTML = hl(values["pjs"] = files["page.bry"], "python");
-    else
-        inputs["pjs"].innerHTML = values["pjs"] =  "";
-
-    update();
-}
-
-
-function update() {
-
-    let cmpjs = values.js;
-    if( cmpjs === "")
-        cmpjs = `const host = document.querySelector('[is]')?.constructor;
-                 const content_generator = LISSAuto_ContentGenerator;
-                 LISS.define('${webcomp_name.value}', LISS({host, html, css, content_generator}) );`;
-
-    const html =
-`<!DOCTYPE html>
-    <head>
-        <style>
-            body {
-                margin: 0;
-                background-color: white;
-            }
-        </style>
-        <script type="module" defer>
-            import LISS, {LISSAuto_ContentGenerator, ContentGenerator} from '../../index.js';
-
-            const html = "${values.html.replaceAll('\n', '\\n').replaceAll('"', '\\"')}";
-            const css  = "${values.css .replaceAll('\n', '\\n').replaceAll('"', '\\"')}";
-
-            ${cmpjs}
-
-            //await LISS.whenAllDefined();
-
-            ${values.pjs}
-        </script>
-    </head>
-    <body>
-${values.page}
-    </body>
-</html>
-`;
-
-    const new_iframe = document.createElement('iframe');
-    iframe.replaceWith(new_iframe);
-    iframe = new_iframe;
-
-    iframe.src = "about:blank";
-    // iframe.srcdoc also possible
-    iframe.contentWindow!.document.open();
-    iframe.contentWindow!.document.write( html );
-    iframe.contentWindow!.document.close();
-}
-
-const inputs_names = ['page', 'pjs', 'html', 'css', 'js'];
-const inputs: Record<string, HTMLElement> = {};
-const values: Record<string, string> = {};
-
-for(let name of inputs_names ) {
-
-    const input = inputs[name] = document.querySelector<HTMLElement>(`#${name}`)!;
-
-    input.addEventListener('input', () => {
-        const value = values[name] = input.textContent!;
-        localStorage.setItem(name, value);
-        update();
-    });
-
-    values[name] = input.textContent = localStorage.getItem(name) ?? "";
-
-    initContentEditableCode(input);
-}
-
-update();
+setExample(example ?? "auto-html");

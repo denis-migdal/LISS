@@ -1,10 +1,10 @@
-import type { LISSBase } from "../types";
+import type { LISSControler } from "../types";
 
 import { initialize, initializeSync } from "../state";
 import { html } from "../utils";
 
 
-export async function liss<T extends LISSBase>(str: readonly string[], ...args: any[]) {
+export async function liss<T extends LISSControler>(str: readonly string[], ...args: any[]) {
 
     const elem = html(str, ...args);
 
@@ -14,7 +14,7 @@ export async function liss<T extends LISSBase>(str: readonly string[], ...args: 
     return await initialize<T>(elem);
 }
 
-export function lissSync<T extends LISSBase>(str: readonly string[], ...args: any[]) {
+export function lissSync<T extends LISSControler>(str: readonly string[], ...args: any[]) {
 
     const elem = html(str, ...args);
 

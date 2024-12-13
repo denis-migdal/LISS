@@ -1,0 +1,3 @@
+- fr/docs:🇫🇷
+- en/docs:🇬🇧
+- playground:Playground

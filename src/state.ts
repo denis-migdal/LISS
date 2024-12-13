@@ -1,4 +1,4 @@
-import type { LISSBase, LISSBaseCstr, LISSHost, LISSHostCstr } from "./types";
+import type { LISSControler, LISSControlerCstr, LISSHost, LISSHostCstr } from "./types";
 
 import { getHostCstr, getName } from "./customRegistery";
 import { _element2tagname, isDOMContentLoaded, whenDOMContentLoaded } from "./utils";
@@ -83,7 +83,7 @@ export class LISSState {
         return customElements.get( getName(this.#elem) ) !== undefined;
     }
     
-    async whenDefined<T extends LISSHostCstr<LISSBase>>(): Promise<T> {
+    async whenDefined<T extends LISSHostCstr<LISSControler>>(): Promise<T> {
         if(this.#elem === null)
             throw new Error('not implemented');
 
@@ -138,7 +138,7 @@ export class LISSState {
         return elem instanceof host;
     }
     
-    async whenUpgraded<T extends LISSHost<LISSBaseCstr>>(): Promise<T> {
+    async whenUpgraded<T extends LISSHost<LISSControlerCstr>>(): Promise<T> {
         
         if(this.#elem === null)
             throw new Error("not supported yet");
@@ -181,7 +181,7 @@ export class LISSState {
         return "isInitialized" in elem && elem.isInitialized;
     }
     
-    async whenInitialized<T extends LISSBase>() {
+    async whenInitialized<T extends LISSControler>() {
     
         if(this.#elem === null)
             throw new Error("not supported yet");
@@ -191,7 +191,7 @@ export class LISSState {
 
         await host.whenInitialized;
 
-        return (elem as LISSHost<T>).base as T;
+        return (elem as LISSHost<T>).controler as T;
     }
 
     // ================== CONVERSIONS ==============================
@@ -243,7 +243,7 @@ export function getState(elem: HTMLElement) {
 // ================== State modifiers (move?) ==============================
 
 // Go to state UPGRADED
-export async function upgrade<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement, strict = false): Promise<T> {
+export async function upgrade<T extends LISSHost<LISSControlerCstr>>(elem: HTMLElement, strict = false): Promise<T> {
 
     const state = getState(elem);
 
@@ -255,7 +255,7 @@ export async function upgrade<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElemen
     return upgradeSync<T>(elem);
 }
 
-export function upgradeSync<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement, strict = false): T {
+export function upgradeSync<T extends LISSHost<LISSControlerCstr>>(elem: HTMLElement, strict = false): T {
    
     const state = getState(elem);
 
@@ -279,13 +279,13 @@ export function upgradeSync<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement,
 
 // Go to state INITIALIZED
 
-export async function initialize<T extends LISSBase>(elem : HTMLElement|LISSHost<T>, strict: boolean|any[] = false): Promise<T> {
+export async function initialize<T extends LISSControler>(elem : HTMLElement|LISSHost<T>, strict: boolean|any[] = false): Promise<T> {
     
     const state = getState(elem);
 
     if( state.isInitialized ) {
         if( strict === false )
-            return (elem as any).base as T;
+            return (elem as any).controler as T;
         throw new Error(`Already initialized!`);
     }
 
@@ -296,14 +296,14 @@ export async function initialize<T extends LISSBase>(elem : HTMLElement|LISSHost
     let params = typeof strict === "boolean" ? [] : strict;
     host.initialize(...params);
 
-    return host.base as T;
+    return host.controler as T;
 }
-export function initializeSync<T extends LISSBase>(elem : HTMLElement|LISSHost<T>, strict: boolean|any[] = false): T {
+export function initializeSync<T extends LISSControler>(elem : HTMLElement|LISSHost<T>, strict: boolean|any[] = false): T {
 
     const state = getState(elem);
     if( state.isInitialized ) {
         if( strict === false)
-            return (elem as any).base as T;
+            return (elem as any).controler as T;
         throw new Error(`Already initialized!`);
     }
 
@@ -315,11 +315,11 @@ export function initializeSync<T extends LISSBase>(elem : HTMLElement|LISSHost<T
     let params = typeof strict === "boolean" ? [] : strict;
     host.initialize(...params);
 
-    return host.base as T;
+    return host.controler as T;
 }
 // ====================== external WHEN ======================================
 
-export async function whenUpgraded<T extends LISSHost<LISSBaseCstr>>(elem: HTMLElement, force=false, strict=false): Promise<T> {
+export async function whenUpgraded<T extends LISSHost<LISSControlerCstr>>(elem: HTMLElement, force=false, strict=false): Promise<T> {
     
     const state = getState(elem);
 
@@ -329,7 +329,7 @@ export async function whenUpgraded<T extends LISSHost<LISSBaseCstr>>(elem: HTMLE
     return await state.whenUpgraded<T>();
 }
 
-export async function whenInitialized<T extends LISSBase>(elem : HTMLElement|LISSHost<T>, force=false, strict=false): Promise<T> {
+export async function whenInitialized<T extends LISSControler>(elem : HTMLElement|LISSHost<T>, force=false, strict=false): Promise<T> {
     
     const state = getState(elem);
 

@@ -1,5 +1,5 @@
 import type { buildLISSHost } from "./LISSHost";
-import type { LISS } from "./LISSBase";
+import type { LISS } from "./LISSControler";
 import { ContentGenerator_Opts, ContentGeneratorCstr } from "./ContentGenerator";
 import { LISSState } from "./state";
 
@@ -44,26 +44,26 @@ export type LISS_Opts<
         content_generator: ContentGeneratorCstr,
 } & ContentGenerator_Opts;
 
-// LISSBase
+// LISSControler
 
-export type LISSBaseCstr<
+export type LISSControlerCstr<
         ExtendsCtr extends Constructor<Class>       = Constructor<Class>,
         HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>
     > = ReturnType<typeof LISS<ExtendsCtr, HostCstr>>;
 
-export type LISSBase<
+export type LISSControler<
         ExtendsCtr extends Constructor<Class>       = Constructor<Class>,
         HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>
-    > = InstanceType<LISSBaseCstr<ExtendsCtr, HostCstr>>;
+    > = InstanceType<LISSControlerCstr<ExtendsCtr, HostCstr>>;
 
 
-export type LISSBase2LISSBaseCstr<T extends LISSBase> = T extends LISSBase<
+export type LISSControler2LISSControlerCstr<T extends LISSControler> = T extends LISSControler<
             infer ExtendsCtr extends Constructor<Class>,
             infer HostCstr   extends Constructor<HTMLElement>
-        > ? Constructor<T> & LISSBaseCstr<ExtendsCtr,HostCstr> : never;
+        > ? Constructor<T> & LISSControlerCstr<ExtendsCtr,HostCstr> : never;
 
-export type LISSHostCstr<T extends LISSBase|LISSBaseCstr = LISSBase> = ReturnType<typeof buildLISSHost<T extends LISSBase ? LISSBase2LISSBaseCstr<T> : T>>;
-export type LISSHost    <T extends LISSBase|LISSBaseCstr = LISSBase> = InstanceType<LISSHostCstr<T>>;
+export type LISSHostCstr<T extends LISSControler|LISSControlerCstr = LISSControler> = ReturnType<typeof buildLISSHost<T extends LISSControler ? LISSControler2LISSControlerCstr<T> : T>>;
+export type LISSHost    <T extends LISSControler|LISSControlerCstr = LISSControler> = InstanceType<LISSHostCstr<T>>;
 
 // lighter LISSHost def to avoid type issues...
 export type LHost<HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>> = {
