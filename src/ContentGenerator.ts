@@ -94,12 +94,9 @@ export default class ContentGenerator {
 
         let mode = this.#shadow;
         if( mode === null )
-            mode = canHaveShadow ? ShadowCfg.SEMIOPEN : ShadowCfg.NONE;
+            mode = canHaveShadow ? ShadowCfg.OPEN : ShadowCfg.NONE;
 
         host.shadowMode = mode;
-
-        if( mode === ShadowCfg.SEMIOPEN)
-            mode = ShadowCfg.OPEN; // TODO: set to X.
 
         let target: Host|ShadowRoot = host;
         if( mode !== ShadowCfg.NONE)

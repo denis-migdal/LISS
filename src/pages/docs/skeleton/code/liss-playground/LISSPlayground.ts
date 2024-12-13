@@ -45,10 +45,13 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
 
         const webcomp_name = this.host.getAttribute('name')!;
 
+        const use_brython = this.host.hasAttribute("brython");
+        let file = use_brython ? "index.bry" : "index.js";
+        let code = use_brython ? escapeStr(codes["index.bry" ])
+                               : escapeStr(codes["index.js"  ]);
+
         let c_html = escapeStr(codes["index.html"])
         let c_css  = escapeStr(codes["index.css" ]);
-        let c_bry  = escapeStr(codes["index.bry" ]);
-        let c_js   = escapeStr(codes["index.js"  ]);
 
         const p_js    = "";//codes["page.js" ];
         const p_html  = codes["page.html" ];
@@ -69,8 +72,7 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
             window.LISS = LISS;
 
             const files = {
-                "index.js"  : ${c_js },
-                "index.bry" : ${c_bry },
+                "${file}"   : ${code },
                 "index.html": ${c_html},
                 "index.css" : ${c_css },
             }

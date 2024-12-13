@@ -196,12 +196,6 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 
 		shadowMode: ShadowCfg|null = null;
 
-		override get shadowRoot() {
-			if(this.shadowMode === ShadowCfg.SEMIOPEN)
-				return null;
-			return super.shadowRoot;
-		}
-
 		private init() {
 
 			// no needs to set this.#content (already host or set when attachShadow)

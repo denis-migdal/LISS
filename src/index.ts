@@ -19,3 +19,7 @@ export default LISS;
 
 // for debug.
 export {_extends} from "./extends";
+
+// required for auto mode it seems.
+// @ts-ignore
+globalThis.LISS = LISS;

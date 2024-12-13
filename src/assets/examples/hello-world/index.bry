@@ -1,0 +1,8 @@
+from browser import self
+
+WebC = self.LISS()
+
+class WebComponent( wrapjs(WebC) ):
+    def __init__(this):
+        super().__init__()
+        this.content.replaceChildren('Hello World')

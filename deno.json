@@ -1,12 +1,12 @@
 {
     "tasks": {
-        "test": "deno test --allow-read --allow-env --unstable-sloppy-imports"
+        "test": "deno test --allow-all --unstable-sloppy-imports ./src/assets/examples/"
     },
     "imports": {
-        "LISS": "../src/index.ts",
-        "jsdom": "npm:jsdom"
+        "LISS": "./src/index.ts",
+        "TEST_HELPER": "./test_helpers.ts"
     },
     "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
-  }
+        "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
+    }
 }

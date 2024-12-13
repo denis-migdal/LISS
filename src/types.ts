@@ -16,8 +16,7 @@ export type HTML_Source   = HTML_Resource | Promise<HTML_Resource>;
 export enum ShadowCfg {
 	NONE = 'none',
 	OPEN = 'open', 
-	CLOSE= 'closed',
-    SEMIOPEN= 'semi-open'
+	CLOSE= 'closed'
 };
 
 //TODO: implement ?

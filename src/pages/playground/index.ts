@@ -1,6 +1,9 @@
 import "../docs/skeleton";
 
 const examples = [
+    "hello-world",
+
+    // old
     "auto-html",
     "auto-html-tr",
     "auto-html-slots",
@@ -37,32 +40,15 @@ for(let check of checks) {
         const layouts = playground.getAttribute('show')!.split(',');
         
         if( checked ) {
-
-            const isJS  = page.endsWith('.js');
-            const isBry = page.endsWith('.bry');
-
-            if( isJS || isBry ) {
-                
-                let  ext = isJS ? "js"  : "bry";
-                let rext = isJS ? "bry" : "js";
-                let rpage = page.slice(0, - ext.length - 1) + "." + rext;
-
-                const rcheck = checks.find( c => c.value === rpage)!;
-                rcheck.checked = false;
-                
-                const idx = layouts.indexOf(rpage);
-                if(idx !== -1)
-                    layouts.splice(idx, 1, page);
-            }
-
             if( ! layouts.includes(page) )
                 layouts.push(page);
         } else {
-
             const idx = layouts.indexOf(page );
             if(idx !== -1)
                 layouts.splice(idx, 1);
         }
+
+        console.warn("called ?");
 
         playground.setAttribute('show', layouts.join(','));
     });

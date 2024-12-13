@@ -106,11 +106,7 @@ export default class PlaygroundArea extends LISS({
 
         if( codes.length == 1 )
             this.host.style.setProperty('grid', '1fr / 1fr');
-        if( codes.length == 2 )
-            this.host.style.setProperty('grid', '1fr / 1fr 1fr');
-        if( codes.length == 3 )
-            this.host.style.setProperty('grid', '1fr / 1fr 1fr 1fr');
-        if( codes.length === 4 )
+        if( codes.length >= 2  && codes.length <= 4)
             this.host.style.setProperty('grid', 'auto / 1fr 1fr');
         if( codes.length > 4 )
             this.host.style.setProperty('grid', 'auto / 1fr 1fr 1fr');
@@ -118,11 +114,17 @@ export default class PlaygroundArea extends LISS({
 
     updateLayout() {
         const show = this.host.getAttribute('show');
+        
+        console.warn("show", show);
 
         let codes: string[] = [];
-        if( show === null )
+        if( show === null ) {
             codes = Object.keys(this.resources);
-        else
+
+            const cds = codes.filter(c => c.endsWith('.code') ).map( c => c.slice(0, -4) );
+            codes = codes.filter( c => ! cds.some( n => (c.endsWith('.js') || c.endsWith('.bry') ) && c.startsWith(n) ) );
+
+        } else
             codes = show.split(',');
 
         this.content.replaceChildren(...codes.map( e => this.resources[e].html ));
@@ -164,6 +166,12 @@ export default class PlaygroundArea extends LISS({
                 if( resp.status === 200 ) {
                     text = await resp.text();
                     if(text !== "") {
+
+                        if( file.endsWith(".js") )
+                            file = file.slice(0, -2) + "code";
+                        else if( file.endsWith(".bry") )
+                            file = file.slice(0, -3) + "code";
+                        
                         names.push(file);
                     }
                 }
@@ -177,6 +185,9 @@ export default class PlaygroundArea extends LISS({
         this._inUpdate = false;
 
         if( ! this.host.hasAttribute("show") ) {
+
+            names = [...new Set(names)]; // remove .code duplicates.
+
             names.push("output");
             this.host.setAttribute('show', names.join(','));
         }
