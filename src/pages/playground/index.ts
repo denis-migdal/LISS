@@ -3,6 +3,7 @@ import "../docs/skeleton";
 const examples = [
     "hello-world",
     "listen-attributes",
+    "listen-connect",
 
     // old
     "auto-html",

@@ -2,7 +2,7 @@
 <html lang="fr">
     <head>
         <meta charset="utf8"/>
-        <title>Test</title>
+        <title>LISS</title>
         <!--
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="cyan" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black" />
@@ -17,13 +17,24 @@
 
 <h1 id="contrôleur-api">Contrôleur API</h1>
 <script type="c-ts">
-    class Controler<_, HostCstr> {
+    class LISSControler<_, HostCstr> {
 
-        // contenu et hôte (vanilla)
+        // non-vanilla API
             public    readonly host   : InstanceType<HostCstr>;
             protected readonly content: InstanceType<HostCstr>|ShadowRoot;
             
             static    readonly Host   : HostCstr;
+
+        // vanilla API
+            static    readonly observedAttributes: string[];
+            protected attributeChangedCallback( name    : string,
+                                                oldValue: string|null,
+                                                newValue: string|null): void;
+            
+            readonly  isConnected           :boolean;
+            protected    connectedCallback(): void;
+            protected disconnectedCallback(): void;
+
     }
 </script>
 
@@ -46,21 +57,26 @@
 
 
 <h2 id="écouter-les-attributs-vanilla">Écouter les attributs (vanilla)</h2>
-<pre><code>    // readonly observedAttributes: string[];
-
-    // attributeChangedCallback(name: string, oldValue: string|null, newValue: string|null): void;
-</code></pre>
+<p>LISS permet d&#39;écouter les attributs via <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#responding_to_attribute_changes">l&#39;API standard</a> :</p>
+<ul>
+<li><script type="c-js">static observedAttributes = [<h>$ATTR_NAME[,..]</h>]</script> liste le nom des attributs à écouter ;</li>
+<li><script type="c-js">.attributeChangedCallback(name, oldVal, newVal)</script> est appelé lors de la modification d'un attribut écouté.</li>
+</ul>
 <liss-playground name="listen-attributes" show="index.code,output">
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=listen-attributes"><i>Tester l'exemple dans le bac à sable</i></a></div>        
 
-<h2 id="connexion-au-dom-vanilla">Connexion au DOM (vanilla)</h2>
-<pre><code>readonly isConnected  :boolean;
+<h2 id="écouter-les-connexions-au-dom-vanilla">Écouter les connexions au DOM (vanilla)</h2>
+<p>LISS permet d&#39;écouter l&#39;ajout et le retrait du composant Web via <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks">l&#39;API standard</a> :</p>
+<ul>
+<li><script type="c-js">.isConnected</script> indique si l'élément personnalisé est actuellement dans le DOM ;</li>
+<li><script type="c-js">.connectedCallback()</script> est appelé lorsque l'élément est ajouté au DOM ;</li>
+<li><script type="c-js">.disconnectedCallback()</script> est appelé lorsque l'élément est retiré du DOM ;</li>
+</ul>
+<liss-playground name="listen-connect" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=listen-connect"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
-// protected
-// connectedCallback   (): void;
-// disconnectedCallback(): void;
-</code></pre>
 </main>
     </body>
 </html>

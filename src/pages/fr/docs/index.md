@@ -2,7 +2,7 @@
 <html lang="fr">
     <head>
         <meta charset="utf8"/>
-        <title>Test</title>
+        <title>LISS</title>
         <!--
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="cyan" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black" />
@@ -27,7 +27,9 @@ Controler vs Host
 
 Life Cycle
 
-
+- state :
+    - https://developer.mozilla.org/en-US/docs/Web/API/CustomStateSet
+    - https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/attachInternals
 
 
 </main>
