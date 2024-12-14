@@ -134,7 +134,7 @@ export async function test( test_name: string,
             await page.evaluate( callback );
             // https://pptr.dev/api/puppeteer.page.evaluate
 
-            await page.screenshot({ path: "/tmp/example.png" });
+            //await page.screenshot({ path: "/tmp/example.png" });
             await browser.close();
 
 		});

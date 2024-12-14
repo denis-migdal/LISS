@@ -53,7 +53,7 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
         let c_html = escapeStr(codes["index.html"])
         let c_css  = escapeStr(codes["index.css" ]);
 
-        const p_js    = "";//codes["page.js" ];
+        const p_js    = codes["page.js"   ];
         const p_html  = codes["page.html" ];
 
         const result = `<!DOCTYPE html>
@@ -71,24 +71,26 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
 
             window.LISS = LISS;
 
-            const files = {
-                "${file}"   : ${code },
-                "index.html": ${c_html},
-                "index.css" : ${c_css },
+            {
+                const files = {
+                    "${file}"   : ${code },
+                    "index.html": ${c_html},
+                    "index.css" : ${c_css },
+                }
+                
+                const host = document.querySelector('[is]')?.constructor;
+
+                await LISS.importComponent("${webcomp_name}", {
+                    cdir   : null, //TODO...
+                    brython: "${brython}",
+                    host,
+                    files
+                } );
             }
-            
-            const host = document.querySelector('[is]')?.constructor;
-
-            await LISS.importComponent("${webcomp_name}", {
-                cdir   : null, //TODO...
-                brython: "${brython}",
-                host,
-                files
-            } );
-
             //await LISS.whenAllDefined();
-
-            ${p_js}
+            {
+                ${p_js}
+            }
         </script>
     </head>
     <body>

@@ -16,6 +16,8 @@ const RESSOURCES = [
 
 const KnownTags = new Set<string>();
 
+let _cdir: null|string;
+
 if( script !== null ) {
 
 	const SW: Promise<void> = new Promise( async (resolve) => {
@@ -46,9 +48,10 @@ if( script !== null ) {
 		});
 	});
 
-	let components_dir = script.getAttribute('autodir')!;
-	if( components_dir[components_dir.length-1] !== '/')
-		components_dir += '/';
+	_cdir = script.getAttribute('autodir')!;
+	console.warn(_cdir);
+	if( _cdir[_cdir.length-1] !== '/')
+		_cdir += '/';
 
 	const brython = script.getAttribute("brython");
 
@@ -81,7 +84,7 @@ if( script !== null ) {
 
 		importComponent(tagname, {
 			brython,
-			cdir: components_dir, //TODO
+			cdir: _cdir,
 			host
 		});		
 	}
@@ -246,7 +249,7 @@ type importComponents_Opts<T extends HTMLElement> = {
 async function importComponents<T extends HTMLElement = HTMLElement>(
 						components: string[],
 						{
-							cdir    = null,
+							cdir    = _cdir,
 							brython = null,
 							// @ts-ignore
 							host    = HTMLElement
@@ -292,12 +295,12 @@ const bry_wrapper = `def wrapjs(js_klass):
 async function importComponent<T extends HTMLElement = HTMLElement>(
 	tagname: string,
 	{
-		cdir    = null,
+		cdir    = _cdir,
 		brython = null,
 		// @ts-ignore
 		host    = HTMLElement,
 		files   = null
-	}: importComponents_Opts<T> & {files?: Record<string, string>|null}
+	}: importComponents_Opts<T> & {files?: Record<string, string>|null} = {}
 ) {
 
 	KnownTags.add(tagname);

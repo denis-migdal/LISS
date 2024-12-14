@@ -20,14 +20,22 @@ export function define<T extends LISSControlerCstr>(
 
 			#bry: any;
 
-			constructor() {
+			constructor(...args: any[]) {
+
+				console.warn("?", args);
+
 				// @ts-ignore
-				this.#bry = __BRYTHON__.$call(bry_class, [0,0,0])();
+				this.#bry = __BRYTHON__.$call(bry_class, [0,0,0])(...args);
 			}
 
 			#call(name: string, args: any[]) {
 				// @ts-ignore
 				return __BRYTHON__.$call(__BRYTHON__.$getattr_pep657(this.#bry, name, [0,0,0]), [0,0,0])(...args)
+			}
+
+			get host() {
+				// @ts-ignore
+				return __BRYTHON__.$getattr_pep657(this.#bry, "host", [0,0,0])
 			}
 
 			static observedAttributes = bry_class["observedAttributes"];

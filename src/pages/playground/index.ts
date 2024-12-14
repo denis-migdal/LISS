@@ -3,6 +3,9 @@ import "../docs/skeleton";
 const examples = [
     "hello-world",
     "host-attr",
+    "cstr-params",
+    "cstr-params-ctrler",
+    "cstr-params-host",
     "listen-attributes",
     "listen-connect",
 

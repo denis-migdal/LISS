@@ -1,0 +1,12 @@
+from browser import self
+
+async def main():
+
+    await self.LISS.whenDefined('cstr-params-host');
+    Host = self.LISS.getControlerCstr('cstr-params-host')
+
+    host = Host.new("Host");
+    document.body.append( host );
+
+from browser import aio
+aio.run(main())

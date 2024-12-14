@@ -1,8 +1,6 @@
-class CstrParams extends LISS({html, css}) {
-    constructor(value=42) {
+export default class extends LISS() {
+    constructor(value="HTML") {
         super();
-        this.content.append(value);
+        this.content.replaceChildren(value);
     }
 }
-
-LISS.define('cstr-params', CstrParams);

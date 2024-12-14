@@ -17,6 +17,8 @@
 
 # Contrôleur API
 
+[TODO] internal state...
+
 <script type="c-ts">
     class LISSControler<_, HostCstr> {
 
@@ -40,10 +42,30 @@
 </script>
 
 - Rappel diff hôte/content
-- Creation (LISS)/ContentGenerator
-- Creation cstor (new WebComp)
+- Creation (LISS)/+cf ContentGenerator
 
-+ internal state...
+
+## Construire (et ajouter) une instance d'un composant Web
+
+Vous pouvez ajouter des paramètres au constructeur du contrôleur :
+
+<liss-playground name="cstr-params" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=cstr-params"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+💡 Vous pouvez créer une nouvelle instance de votre composant Web en créant une nouvelle instance :
+
+- du contrôleur, puis en ajoutant son hôte au DOM :
+
+<liss-playground name="cstr-params-ctrler" show="page.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=cstr-params-ctrler"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+- de son hôte, puis en l'ajoutant l'hôte DOM :
+
+<liss-playground name="cstr-params-host" show="page.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=cstr-params-host"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
 ## [Non-vanilla] Manipulation du contenu
 

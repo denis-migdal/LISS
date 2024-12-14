@@ -1,0 +1,12 @@
+from browser import self
+
+async def main():
+
+    await self.LISS.whenDefined('cstr-params-ctrler');
+    Ctrler = self.LISS.getControlerCstr('cstr-params-ctrler')
+
+    ctrler = Ctrler.new("Ctrler");
+    document.body.append( ctrler.host );
+
+from browser import aio
+aio.run(main())
