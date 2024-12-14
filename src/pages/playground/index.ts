@@ -2,6 +2,7 @@ import "../docs/skeleton";
 
 const examples = [
     "hello-world",
+    "host-attr",
     "listen-attributes",
     "listen-connect",
 

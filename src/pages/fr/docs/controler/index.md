@@ -41,9 +41,11 @@
 
 - Rappel diff hôte/content
 - Creation (LISS)/ContentGenerator
-- Creation cstor
+- Creation cstor (new WebComp)
 
-## Manipulation du contenu (non-vanilla)
++ internal state...
+
+## [Non-vanilla] Manipulation du contenu
 
 Le contenu du composant Web est manipulé via l'attribut <script type="c-js">.content</script>. Il correspond au <script type="c-js">shadowRoot</script> du composant Web (s'il en possède un), sinon à l'hôte. Il se manipule comme un élément HTML :
 
@@ -51,26 +53,26 @@ Le contenu du composant Web est manipulé via l'attribut <script type="c-js">.co
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
-## Manipulation de l'hôte (non-vanilla)
+## [Non-vanilla] Manipulation de l'hôte
 
 L'hôte du composant Web est manipulé via l'attribut <script type="c-js">.host</script>. Il se manipule comme un élément HTML  :
 
-<liss-playground name="hello-world" show="index.code,output">
+<liss-playground name="host-attr" show="index.code,output">
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=host-attr"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
 
-## Écouter les attributs (vanilla)
+## [Vanilla] Écouter les attributs
 
 LISS permet d'écouter les attributs via [l'API standard](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#responding_to_attribute_changes) :
-- <script type="c-js">static observedAttributes = [<h>$ATTR_NAME[,..]</h>]</script> liste le nom des attributs à écouter ;
+- <script type="c-js">static observedAttributes = [<h>$ATTR_NAME[,..]</h>]</script> liste les noms des attributs à écouter ;
 - <script type="c-js">.attributeChangedCallback(name, oldVal, newVal)</script> est appelé lors de la modification d'un attribut écouté.
 
 <liss-playground name="listen-attributes" show="index.code,output">
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=listen-attributes"><i>Tester l'exemple dans le bac à sable</i></a></div>        
 
-## Écouter les connexions au DOM (vanilla)
+## [Vanilla] Écouter les connexions au DOM
 
 LISS permet d'écouter l'ajout et le retrait du composant Web via [l'API standard](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks) :
 - <script type="c-js">.isConnected</script> indique si l'élément personnalisé est actuellement dans le DOM ;
