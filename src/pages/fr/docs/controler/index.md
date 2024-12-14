@@ -41,9 +41,22 @@
     }
 </script>
 
-- Rappel diff hôte/content
-- Creation (LISS)/+cf ContentGenerator
+## Créer un nouveau composant Web
 
+La création d'un composant Web s'effectue en appelant la fonction <script type="c-js">LISS()</script> :
+
+<liss-playground name="hello-world" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+
+⚠ Brython : Du fait de certaines limitations de Brython, il est nécessaire d'utiliser la fonction <script type="c-js">wrapjs()</script>.
+
+💡 [TODO] : Register link
+
+[TODO] extends Host/Classe (ctrler)
+
+💡 [TODO] : ContentGenerator link
 
 ## Construire (et ajouter) une instance d'un composant Web
 

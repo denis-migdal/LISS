@@ -6,7 +6,7 @@ async def main():
     Ctrler = self.LISS.getControlerCstr('cstr-params-ctrler')
 
     ctrler = Ctrler.new("Ctrler");
-    document.body.append( ctrler.host );
+    self.document.body.append( ctrler.host );
 
 from browser import aio
 aio.run(main())

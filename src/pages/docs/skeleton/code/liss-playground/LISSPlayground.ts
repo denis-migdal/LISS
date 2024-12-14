@@ -53,7 +53,10 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
         let c_html = escapeStr(codes["index.html"])
         let c_css  = escapeStr(codes["index.css" ]);
 
-        const p_js    = codes["page.js"   ];
+        let p_js    = codes["page.js"   ];
+        if( brython )
+            p_js = `globalThis.__BRYTHON__.runPythonSource(\`${codes["page.bry"]}\`, "_");`;
+
         const p_html  = codes["page.html" ];
 
         const result = `<!DOCTYPE html>

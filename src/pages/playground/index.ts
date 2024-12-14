@@ -54,8 +54,6 @@ for(let check of checks) {
                 layouts.splice(idx, 1);
         }
 
-        console.warn("called ?");
-
         playground.setAttribute('show', layouts.join(','));
     });
 
