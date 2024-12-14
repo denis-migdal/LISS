@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf8"/>
+        <title>Test</title>
+        <!--
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="cyan" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black" />
+        -->
+        <meta name="color-scheme" content="dark light">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link   href="./index.css"  rel="stylesheet" blocking="render">
+        <script  src="./index.js"  type="module"     blocking="render" async></script>
+    </head>
+    <body class="hide_h1">
+        <main>
+
+<h1 id="contrôleur-api">Contrôleur API</h1>
+<script type="c-ts">
+    class Controler<_, HostCstr> {
+
+        // contenu et hôte (vanilla)
+            public    readonly host   : InstanceType<HostCstr>;
+            protected readonly content: InstanceType<HostCstr>|ShadowRoot;
+            
+            static    readonly Host   : HostCstr;
+    }
+</script>
+
+<ul>
+<li>Rappel diff hôte/content</li>
+<li>Creation (LISS)/ContentGenerator</li>
+<li>Creation cstor</li>
+</ul>
+<h2 id="manipulation-du-contenu-non-vanilla">Manipulation du contenu (non-vanilla)</h2>
+<p>Le contenu du composant Web est manipulé via l&#39;attribut <script type="c-js">.content</script>. Il correspond au <script type="c-js">shadowRoot</script> du composant Web (s&#39;il en possède un), sinon à l&#39;hôte. Il se manipule comme un élément HTML :</p>
+<liss-playground name="hello-world" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+<h2 id="manipulation-de-lhôte-non-vanilla">Manipulation de l&#39;hôte (non-vanilla)</h2>
+<p>L&#39;hôte du composant Web est manipulé via l&#39;attribut <script type="c-js">.host</script>. Il se manipule comme un élément HTML  :</p>
+<liss-playground name="hello-world" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=host-attr"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+
+<h2 id="écouter-les-attributs-vanilla">Écouter les attributs (vanilla)</h2>
+<pre><code>    // readonly observedAttributes: string[];
+
+    // attributeChangedCallback(name: string, oldValue: string|null, newValue: string|null): void;
+</code></pre>
+<liss-playground name="listen-attributes" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=listen-attributes"><i>Tester l'exemple dans le bac à sable</i></a></div>        
+
+<h2 id="connexion-au-dom-vanilla">Connexion au DOM (vanilla)</h2>
+<pre><code>readonly isConnected  :boolean;
+
+// protected
+// connectedCallback   (): void;
+// disconnectedCallback(): void;
+</code></pre>
+</main>
+    </body>
+</html>

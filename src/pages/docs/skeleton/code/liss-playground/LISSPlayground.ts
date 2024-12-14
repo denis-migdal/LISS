@@ -45,10 +45,10 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
 
         const webcomp_name = this.host.getAttribute('name')!;
 
-        const use_brython = this.host.hasAttribute("brython");
-        let file = use_brython ? "index.bry" : "index.js";
-        let code = use_brython ? escapeStr(codes["index.bry" ])
-                               : escapeStr(codes["index.js"  ]);
+        const brython = this.host.hasAttribute("brython");
+        let file = brython ? "index.bry" : "index.js";
+        let code = brython ? escapeStr(codes["index.bry" ])
+                           : escapeStr(codes["index.js"  ]);
 
         let c_html = escapeStr(codes["index.html"])
         let c_css  = escapeStr(codes["index.css" ]);
@@ -81,7 +81,7 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
 
             await LISS.importComponent("${webcomp_name}", {
                 cdir   : null, //TODO...
-                brython: true, //TODO...
+                brython: "${brython}",
                 host,
                 files
             } );

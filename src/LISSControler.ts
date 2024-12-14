@@ -5,6 +5,49 @@ import { buildLISSHost, setCstrControler } from "./LISSHost";
 import { _element2tagname} from "./utils";
 import ContentGenerator from "./ContentGenerator";
 
+/****/
+
+interface IControler<
+	ExtendsCstr extends Constructor<Class>       = Constructor<Class>,
+	HostCstr    extends Constructor<HTMLElement> = Constructor<HTMLElement>
+> {
+	// non-vanilla JS
+		readonly host: InstanceType<HostCstr>;
+
+	// vanilla JS
+		readonly isConnected  :boolean;
+};
+	// + protected
+		// readonly .content: InstanceType<HostCstr>|ShadowRoot;
+	// vanilla JS
+		// attributeChangedCallback(name: string, oldValue: string|null, newValue: string|null): void;
+		// connectedCallback   (): void;
+		// disconnectedCallback(): void;
+
+interface IControlerCstr<
+	ExtendsCstr extends Constructor<Class>       = Constructor<Class>,
+	HostCstr    extends Constructor<HTMLElement> = Constructor<HTMLElement>
+> {
+	new(): IControler<ExtendsCstr, HostCstr>;
+
+	// vanilla JS
+		readonly observedAttributes: string[];
+}
+	// + "private"
+		// readonly Host: HostCstr
+
+export type Controler<
+	ExtendsCstr extends Constructor<Class>       = Constructor<Class>,
+	HostCstr    extends Constructor<HTMLElement> = Constructor<HTMLElement>
+> = IControler<ExtendsCstr, HostCstr> & InstanceType<ExtendsCstr>;
+
+export type ControlerCstr<
+	ExtendsCstr extends Constructor<Class>       = Constructor<Class>,
+	HostCstr    extends Constructor<HTMLElement> = Constructor<HTMLElement>
+> = IControlerCstr<ExtendsCstr, HostCstr> & ExtendsCstr;
+
+/****/
+
 let __cstr_host  : any = null;
 
 export function setCstrHost(_: any) {
@@ -12,20 +55,19 @@ export function setCstrHost(_: any) {
 }
 
 export function LISS<
-	ExtendsCtr extends Constructor<Class>  = Constructor<Class>,
-	// HTML Base
-	HostCstr   extends Constructor<HTMLElement> = Constructor<HTMLElement>
->(args: Partial<LISS_Opts<ExtendsCtr, HostCstr>> = {}) {
+	ExtendsCstr extends Constructor<Class>       = Constructor<Class>,
+	HostCstr    extends Constructor<HTMLElement> = Constructor<HTMLElement>
+>(args: Partial<LISS_Opts<ExtendsCstr, HostCstr>> = {}) {
 
 	let {
 		/* extends is a JS reserved keyword. */
-		extends: _extends = Object      as unknown as ExtendsCtr,
+		extends: _extends = Object      as unknown as ExtendsCstr,
 		host              = HTMLElement as unknown as HostCstr,
 	
 		content_generator = ContentGenerator,
 	} = args;
 	
-	class LISSControler extends _extends {
+	class LISSControler extends _extends implements IControler<ExtendsCstr, HostCstr>{
 
 		constructor(...args: any[]) { // required by TS, we don't use it...
 
@@ -40,24 +82,8 @@ export function LISS<
 			__cstr_host = null;
 		}
 
-		//TODO: do I really need to expose such structure here ?
-		static get state(): LISSState {
-			return this.Host.state;
-		}
-
-		get state(): LISSState {
-			return this.#host.state;
-		}
-
 		//TODO: get the real type ?
 		protected get content(): InstanceType<HostCstr>|ShadowRoot {
-
-			try {
-				this.#host.content!;
-			} catch(e) {
-				console.warn(e);
-			}
-
 			return this.#host.content!;
 		}
 
@@ -86,7 +112,16 @@ export function LISS<
 			}
 			return this._Host;
 		}
+
+		// for debug purposes ?
+		static get state(): LISSState {
+			return this.Host.state;
+		}
+
+		get state(): LISSState {
+			return this.#host.state;
+		}
 	}
 
-	return LISSControler;
+	return LISSControler satisfies ControlerCstr<ExtendsCstr, HostCstr>;
 }

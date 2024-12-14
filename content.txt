@@ -1,3 +1,4 @@
 - fr/docs:🇫🇷
+    - controler:Contrôler API
 - en/docs:🇬🇧
 - playground:Playground

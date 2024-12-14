@@ -22,12 +22,18 @@ export function define<T extends LISSControlerCstr>(
 
 			constructor() {
 				// @ts-ignore
-				this.#bry = __BRYTHON__.$call(bry_class, [0,0,0])()
+				this.#bry = __BRYTHON__.$call(bry_class, [0,0,0])();
 			}
 
 			#call(name: string, args: any[]) {
 				// @ts-ignore
-				__BRYTHON__.$call(__BRYTHON__.$getattr_pep657(this.#bry, name, [0,0,0]), [0,0,0])(...args)
+				return __BRYTHON__.$call(__BRYTHON__.$getattr_pep657(this.#bry, name, [0,0,0]), [0,0,0])(...args)
+			}
+
+			static observedAttributes = bry_class["observedAttributes"];
+
+			attributeChangedCallback(...args: any[]) {
+				return this.#call("attributeChangedCallback", args);
 			}
 
 			connectedCallback(...args: any[]) {
@@ -36,7 +42,6 @@ export function define<T extends LISSControlerCstr>(
 			disconnectedCallback(...args: any[]) {
 				return this.#call("disconnectedCallback", args);
 			}
-
 		}
 	}
 

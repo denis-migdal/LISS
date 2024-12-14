@@ -188,7 +188,9 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 			})();
 		}
 
-		static observedAttributes = Liss.observedAttributes;
+		static get observedAttributes() {
+			return LISSHost.Controler.observedAttributes;
+		}
 		attributeChangedCallback(name: string, oldValue: string|null, newValue: string|null) {
 			if(this.#controler)
 				this.#controler.attributeChangedCallback(name, oldValue, newValue);

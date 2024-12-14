@@ -1,0 +1,19 @@
+from browser import self
+
+WebC = wrapjs(self.LISS())
+
+class WebComponent(WebC):
+    def __init__(this):
+        super().__init__()
+
+        # simulate some changes
+        def simul():
+            this.host.setAttribute("a", "1")
+            this.host.setAttribute("a", "2")
+        self.setTimeout(simul, 0)
+
+    observedAttributes = ["a"]
+
+    def attributeChangedCallback(this, name,
+                                 _, value):
+        this.content.append(f"{name}={value},")

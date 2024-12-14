@@ -2,6 +2,7 @@ import "../docs/skeleton";
 
 const examples = [
     "hello-world",
+    "listen-attributes",
 
     // old
     "auto-html",
