@@ -1,5 +1,4 @@
 import { LHostCstr, type Class, type Constructor, type LISS_Opts } from "./types";
-import type { LISSState } from "./state";
 
 import { buildLISSHost, setCstrControler } from "./LISSHost";
 import { _element2tagname} from "./utils";
@@ -111,15 +110,6 @@ export function LISS<
 											args);
 			}
 			return this._Host;
-		}
-
-		// for debug purposes ?
-		static get state(): LISSState {
-			return this.Host.state;
-		}
-
-		get state(): LISSState {
-			return this.#host.state;
 		}
 	}
 

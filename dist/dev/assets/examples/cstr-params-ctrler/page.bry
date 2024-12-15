@@ -2,8 +2,7 @@ from browser import self
 
 async def main():
 
-    await self.LISS.whenDefined('cstr-params-ctrler');
-    Ctrler = self.LISS.getControlerCstr('cstr-params-ctrler')
+    Ctrler = await self.LISS.getControlerCstr('cstr-params-ctrler')
 
     ctrler = Ctrler.new("Ctrler");
     self.document.body.append( ctrler.host );

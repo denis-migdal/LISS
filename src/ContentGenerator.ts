@@ -1,6 +1,6 @@
 import { getSharedCSS } from "./LISSHost";
 import { LHost, ShadowCfg } from "./types";
-import { _element2tagname, isDOMContentLoaded, isShadowSupported, waitDOMContentLoaded } from "./utils";
+import { _element2tagname, isDOMContentLoaded, isShadowSupported, whenDOMContentLoaded } from "./utils";
 
 type HTML = DocumentFragment|HTMLElement|string;
 type CSS  = string|CSSStyleSheet|HTMLStyleElement;
@@ -36,7 +36,7 @@ export default class ContentGenerator {
         this.#stylesheets = this.prepareCSS(css);
 
         this.#isReady   = isDOMContentLoaded();
-        this.#whenReady = waitDOMContentLoaded();
+        this.#whenReady = whenDOMContentLoaded();
 
         //TODO: other deps...
     }

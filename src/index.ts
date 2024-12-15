@@ -1,7 +1,6 @@
 import LISS from "./extends";
 
-import "./core/state";
-import "./core/customRegistery";
+import "./core/LifeCycle";
 
 export {default as ContentGenerator} from "./ContentGenerator";
 

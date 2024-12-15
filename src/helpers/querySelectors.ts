@@ -1,10 +1,10 @@
 
 import type { LISSControler, LISSHost } from "../types";
-import { initializeSync, whenInitialized } from "../state";
 
 interface Components {};
 
 import LISS from "../extends";
+import { initializeSync, whenInitialized } from "LifeCycle/INITIALIZED";
 declare module "../extends" {
     interface ILISS {
         // async

@@ -2,8 +2,7 @@ from browser import self
 
 async def main():
 
-    await self.LISS.whenDefined('cstr-params-host');
-    Host = self.LISS.getHostCstr('cstr-params-host')
+    Host = await self.LISS.getHostCstr('cstr-params-host')
 
     host = Host.new("Host");
     self.document.body.append( host );

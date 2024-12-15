@@ -35,13 +35,15 @@ export class Scripts extends LISS({
         const replaced: string[] = [];
         code = code.replaceAll(/\<h\>(.*?)\<\/h\>/g, (_, match) => {
             replaced.push(match);
-            return ` __${replaced.length-1}__ `
+            return `__${replaced.length-1}__`
         });
 
         code = hl(code, 
             this.host.getAttribute("lang")!);
 
-        code = code.replaceAll(/ __([\d]*)__ /g, (_, match) => {
+        code = code.replaceAll(/__([\d]*)__/g, (_, match) => {
+
+            console.warn(code, match);
 
             let content = replaced[+match];
             content = content.replaceAll(/(\$[\w_]*)/g, (_, match) => {

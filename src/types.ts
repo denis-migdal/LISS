@@ -1,7 +1,6 @@
 import type { buildLISSHost } from "./LISSHost";
 import type { LISS } from "./LISSControler";
 import { ContentGenerator_Opts, ContentGeneratorCstr } from "./ContentGenerator";
-import { LISSState } from "./state";
 
 export interface Class {}
 
@@ -19,17 +18,6 @@ export enum ShadowCfg {
 	CLOSE= 'closed'
 };
 
-//TODO: implement ?
-export enum LifeCycle {
-    DEFAULT                   = 0,
-	// not implemented yet
-    INIT_AFTER_CHILDREN       = 1 << 1,
-    INIT_AFTER_PARENT         = 1 << 2,
-    // quid params/attrs ?
-    RECREATE_AFTER_CONNECTION = 1 << 3, /* requires rebuild content + destroy/dispose when removed from DOM */
-    /* sleep when disco : you need to implement it yourself */
-}
-
 // Using Constructor<T> instead of T as generic parameter
 // enables to fetch static member types.
 export type LISS_Opts<
@@ -43,6 +31,7 @@ export type LISS_Opts<
         content_generator: ContentGeneratorCstr,
 } & ContentGenerator_Opts;
 
+//TODO: rewrite...
 // LISSControler
 
 export type LISSControlerCstr<
@@ -67,7 +56,6 @@ export type LISSHost    <T extends LISSControler|LISSControlerCstr = LISSControl
 // lighter LISSHost def to avoid type issues...
 export type LHost<HostCstr extends Constructor<HTMLElement> = Constructor<HTMLElement>> = {
 
-    state  : LISSState;
     content: ShadowRoot|InstanceType<HostCstr>;
 
     shadowMode: ShadowCfg|null;
@@ -84,7 +72,5 @@ export type LHostCstr<HostCstr extends Constructor<HTMLElement> = Constructor<HT
         content_generator: ContentGeneratorCstr,
         args             : ContentGenerator_Opts
     }
-
-    state  : LISSState;
 
 } & HostCstr;

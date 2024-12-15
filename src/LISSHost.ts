@@ -1,8 +1,8 @@
 import { Class, Constructor, ShadowCfg, type LISSControlerCstr } from "./types";
 
-import { LISSState } from "./state";
 import { setCstrHost } from "./LISSControler";
 import { ContentGenerator_Opts, ContentGeneratorCstr } from "./ContentGenerator";
+import { States } from "LifeCycle/states";
 
 // LISSHost must be build in define as it need to be able to build
 // the defined subclass.
@@ -43,9 +43,6 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 			args
 		}
 
-		// adopt state if already created.
-		readonly state = (this as any).state ?? new LISSState(this);
-
 		// ============ DEPENDENCIES ==================================
 
 		static readonly whenDepsResolved = content_generator.whenReady();
@@ -67,6 +64,7 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 		readonly whenInitialized: Promise<InstanceType<T>>;
 		#whenInitialized_resolver;
 
+		//TODO: get real TS type ?
 		#params: any[];
 		initialize(...params: any[]) {
 
@@ -91,6 +89,8 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 
 		// ============== Content ===================
 
+		#internals = this.attachInternals();
+		#states    = this.#internals.states;
 		#content: Host|ShadowRoot = this as Host;
 
 		get content() {
@@ -138,6 +138,11 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 		constructor(...params: any[]) {
 			super();
 
+			this.#states.add(States.LISS_UPGRADED);
+			content_generator.whenReady().then(() => {
+				this.#states.add(States.LISS_READY);
+			});
+
 			this.#params = params;
 
 			let {promise, resolve} = Promise.withResolvers<InstanceType<T>>();
@@ -172,15 +177,15 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 				return;
 			}
 
-			// TODO: life cycle options
-			if( this.state.isReady ) {
+			// TODO: instance deps
+			if( content_generator.isReady ) {
 				this.initialize(); // automatically calls onDOMConnected
 				return;
 			}
 
 			( async () => {
 
-				await this.state.isReady;
+				await content_generator.whenReady();
 
 				if( ! this.isInitialized )
 					this.initialize();
@@ -213,6 +218,8 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 				setCstrHost(this);
 				this.#controler = new LISSHost.Controler(...this.#params) as InstanceType<T>;
 			}
+
+			this.#states.add(States.LISS_INITIALIZED);
 
 			this.#whenInitialized_resolver(this.controler);
 

@@ -9,11 +9,9 @@ await test("cstr-params-ctrler",
         await LISS.importComponent('cstr-params-ctrler');
 
         // @ts-ignore
-        await LISS.whenDefined('cstr-params-ctrler');
-        // @ts-ignore
-        const CstrParams = LISS.getControlerCstr('cstr-params-ctrler')
+        const Controler = await LISS.getControlerCstr('cstr-params-ctrler')
 
-        const ctrler = new CstrParams("Ctrler");
+        const ctrler = new Controler("Ctrler");
         document.body.append( ctrler.host );
 
         // @ts-ignore
