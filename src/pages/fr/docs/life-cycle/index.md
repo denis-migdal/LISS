@@ -52,7 +52,7 @@ LISS défini aussi d'autres fonctions :
 
 + whenAllDefined
 
-💡 :state
+💡 :state + --
 + other states.
 + visible/active state ?
 

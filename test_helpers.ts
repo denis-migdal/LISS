@@ -1,5 +1,6 @@
 // https://x.com/deno_land/status/1684616962553634816
 import puppeteer from 'https://deno.land/x/puppeteer_plus/mod.ts';
+import { executablePath } from 'puppeteer-core';
 
 let files: Record<string, {body: string, contentType: string}> = {};
 
@@ -75,7 +76,7 @@ export async function test( test_name: string,
             sanitizeOps: false
         }, async() => {
 
-            const browser = await puppeteer.launch();
+            const browser = await puppeteer.launch({executablePath: "/snap/bin/chromium"            });
             const page = await browser.newPage();
 
             page.on('console'      , message  => {

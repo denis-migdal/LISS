@@ -1,5 +1,5 @@
 - fr/docs:🇫🇷
-    - controler:Contrôler API
+    - controler:Contrôleur API
     - life-cycle:Cycle de vie
 - en/docs:🇬🇧
 - playground:Playground
