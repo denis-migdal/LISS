@@ -94,6 +94,9 @@ if( script !== null ) {
 async function defineWebComponent(tagname: string, files: Record<string, any>, opts: {html: string, css: string, host: Constructor<HTMLElement>}) {
 
 	const c_js      = files["index.js"];
+	opts.html     ??= files["index.html"];
+
+	console.warn(opts, files);
 
 	let klass: null| ReturnType<typeof LISS> = null;
 	if( c_js !== undefined ) {
@@ -307,12 +310,26 @@ async function importComponent<T extends HTMLElement = HTMLElement>(
 
 	const compo_dir = `${cdir}${tagname}/`;
 
+	console.warn("import", tagname, files);
+
 	if( files === null ) {
 		files = {};
 
 		const file = brython === "true" ? 'index.bry' : 'index.js';
 
 		files[file] = (await _fetchText(`${compo_dir}${file}`, true))!;
+
+		//TODO!!!
+		try {
+			files["index.html"] = (await _fetchText(`${compo_dir}index.html`, true))!;
+		} catch(e) {
+
+		}
+		try {
+			files["index.css" ] = (await _fetchText(`${compo_dir}index.css` , true))!;
+		} catch(e) {
+			
+		}
 	}
 
 	if( brython === "true" && files['index.bry'] !== undefined) {

@@ -34,7 +34,7 @@
                                                 oldValue: string|null,
                                                 newValue: string|null): void;
             
-            readonly  isConnected           :boolean;
+            readonly  isConnected           : boolean;
             protected    connectedCallback(): void;
             protected disconnectedCallback(): void;
 

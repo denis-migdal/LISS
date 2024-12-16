@@ -1,6 +1,5 @@
 // https://x.com/deno_land/status/1684616962553634816
 import puppeteer from 'https://deno.land/x/puppeteer_plus/mod.ts';
-import { executablePath } from 'puppeteer-core';
 
 let files: Record<string, {body: string, contentType: string}> = {};
 
@@ -65,79 +64,96 @@ function generateHTMLPage(page_html: string, brython: string) {
     }
 }
 
+const browsers = {
+    "chrome" : "/snap/bin/chromium",
+    //"firefox": "/snap/bin/firefox"
+}
+
 export async function test( test_name: string,
                             page_html: string,
                             callback: () => Promise<void>) {
 
-    for(let use_brython of ["true", "false"]) {
-		const lang = use_brython === "true" ? "bry" : "js";
-		await Deno.test(`${test_name} (${lang})`, {
-            sanitizeResources: false,
-            sanitizeOps: false
-        }, async() => {
+        
 
-            const browser = await puppeteer.launch({executablePath: "/snap/bin/chromium"            });
-            const page = await browser.newPage();
+    for(let browser in browsers) {
+        // @ts-ignore
+        const executablePath = browsers[browser];
+        for(let use_brython of ["true", "false"]) {
+            const lang = use_brython === "true" ? "bry" : "js";
+            await Deno.test(`${test_name} (${browser}-${lang})`, {
+                sanitizeResources: false,
+                sanitizeOps: false
+            }, async() => {
+                // @ts-ignore
+                const pupet = await puppeteer.launch({product: browser, executablePath});
+                const page = await pupet.newPage();
 
-            page.on('console'      , message  => {
-                    const location = message.location();
+                page.on('console'      , message  => {
+                        const location = message.location();
 
-                    if(location.url === "http://localhost/favicon.ico")
+                        if(location.url === "http://localhost/favicon.ico")
+                            return;
+
+                        const location_text = `${location.url}:${location.lineNumber}`;
+                        console.log(`[${message.type().substr(0, 3).toUpperCase()}] ${message.text()}\n\t${location_text}`)
+                    })
+                    .on('pageerror'    , error    => console.log(error) )
+                    //.on('response'     , response => console.log(`${response.status()} ${response.url()}`))
+                    .on('requestfailed', request  => {
+                        if( new URL(request.url()).pathname === "/favicon.ico" )
+                            return;
+                        console.warn(new URL(request.url()).pathname);
+                        console.log(`${request.failure()!.errorText} ${request.url()}`)
+                    })
+
+                await page.setRequestInterception(true);
+                page.on('request', async req => {
+                    const url = req.url();
+
+                    const path = new URL(url).pathname;
+                    const host = new URL(url).host;
+
+                    if( host !== "localhost" ) {
+                        req.continue();
                         return;
+                    }
 
-                    const location_text = `${location.url}:${location.lineNumber}`;
-                    console.log(`[${message.type().substr(0, 3).toUpperCase()}] ${message.text()}\n\t${location_text}`)
-                })
-                .on('pageerror'    , error    => console.log(error) )
-                //.on('response'     , response => console.log(`${response.status()} ${response.url()}`))
-                .on('requestfailed', request  => {
-                    if( new URL(request.url()).pathname === "/favicon.ico" )
+                    if( path === "/favicon.ico") {
+                        req.respond({
+                            status: 404
+                        });
                         return;
-                    console.warn(new URL(request.url()).pathname);
-                    console.log(`${request.failure()!.errorText} ${request.url()}`)
-                })
+                    }
 
-            await page.setRequestInterception(true);
-            page.on('request', async req => {
-                const url = req.url();
+                    if( ! (url in files) ) {
 
-                const path = new URL(url).pathname;
-                const host = new URL(url).host;
+                        try {
+                            const body = await Deno.readTextFile("./"+path);
 
-                if( host !== "localhost" ) {
-                    req.continue();
-                    return;
-                }
+                            req.respond({
+                                body
+                            });
+                            return;
+                        } catch(e) {
+                            console.warn('WARN', (e as Error).message);
+                            req.respond({status: 404});
+                            return;
+                        }
+                    }
+                    req.respond(files[url]);
+                });
+        
+                generateHTMLPage(page_html, use_brython);
 
-                if( path === "/favicon.ico") {
-                    req.respond({
-                        status: 404
-                    });
-                    return;
-                }
+                await page.goto("http://localhost/dist/dev/", {waitUntil: "domcontentloaded"});
+                
+                await page.evaluate( callback );
+                // https://pptr.dev/api/puppeteer.page.evaluate
 
-                if( ! (url in files) ) {
+                //await page.screenshot({ path: "/tmp/example.png" });
+                await pupet.close();
 
-                    const body = await Deno.readTextFile("./"+path);
-
-                    req.respond({
-                        body
-                    });
-                    return;
-                }
-                req.respond(files[url]);
             });
-    
-            generateHTMLPage(page_html, use_brython);
-
-            await page.goto("http://localhost/dist/dev/", {waitUntil: "domcontentloaded"});
-			
-            await page.evaluate( callback );
-            // https://pptr.dev/api/puppeteer.page.evaluate
-
-            //await page.screenshot({ path: "/tmp/example.png" });
-            await browser.close();
-
-		});
+        }
     }
 }
