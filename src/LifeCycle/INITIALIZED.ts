@@ -25,7 +25,10 @@ export async function getControler<T extends LISSControler>(elem: Param<T>): Pro
     await whenReady(host);
 
     //TODO: initializeSync vs initialize ?
-    return host.initialize();
+    if( ! host.isInitialized )
+        return host.initialize();
+
+    return host.controler;
 }
 
 export function getControlerSync<T extends LISSControler>(elem: Param<T>): T {
@@ -34,7 +37,7 @@ export function getControlerSync<T extends LISSControler>(elem: Param<T>): T {
     if( ! isReady(host) )
         throw new Error("Dependancies not ready !")
 
-    if( ! isInitialized )
+    if( ! host.isInitialized )
         return host.initialize();
 
     return host.controler;
