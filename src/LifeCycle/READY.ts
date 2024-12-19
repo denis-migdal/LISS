@@ -1,4 +1,4 @@
-import { LISSControlerCstr, LISSHostCstr } from "types";
+import { LISSControlerCstr, LISSHostCstr } from "../types";
 import { getHostCstrSync, isDefined, whenDefined } from "./DEFINED";
 
 type Param<T extends LISSControlerCstr> = string|T|LISSHostCstr<T>|InstanceType<LISSHostCstr<T>>|HTMLElement;

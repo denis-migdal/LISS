@@ -1,4 +1,4 @@
-import { LISSControler, LISSControlerCstr, LISSHost, LISSHostCstr } from "types";
+import { LISSControler, LISSControlerCstr, LISSHost, LISSHostCstr } from "../types";
 
 import { _element2tagname } from "../utils";
 

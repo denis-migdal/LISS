@@ -1,5 +1,4 @@
-import { LISSControler, LISSControlerCstr, LISSHost } from "types";
-import { getHostCstrSync, isDefined, whenDefined } from "./DEFINED";
+import { LISSControler, LISSControlerCstr, LISSHost } from "../types";
 import { isUpgraded, upgrade, upgradeSync, whenUpgraded } from "./UPGRADED";
 import { isReady, whenReady } from "./READY";
 

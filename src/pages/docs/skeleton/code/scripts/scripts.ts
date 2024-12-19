@@ -5,7 +5,7 @@ import {hl} from "../hl";
 import css  from "!!raw-loader!./scripts.css";
 // @ts-ignore
 import theme from "!!raw-loader!../themes/Tomorrow.css";
-import { whenDOMContentLoaded } from "utils";
+import { whenDOMContentLoaded } from "../../../../../utils";
 
 
 export class Scripts extends LISS({

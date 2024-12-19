@@ -1,4 +1,4 @@
-import { initialize, initializeSync } from "LifeCycle/INITIALIZED";
+import { initialize, initializeSync } from "../LifeCycle/INITIALIZED";
 import type { LISSControler } from "../types";
 
 import { html } from "../utils";

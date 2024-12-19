@@ -78,8 +78,8 @@ export default class ContentGenerator {
         if( host.shadowMode !== ShadowCfg.NONE || target.childNodes.length === 0 )
             target.replaceChildren(content);
 
-        if( target instanceof ShadowRoot && target.childNodes.length === 0)
-			target.append( document.createElement('slot') );
+        //if( target instanceof ShadowRoot && target.childNodes.length === 0)
+		//	target.append( document.createElement('slot') );
 
         customElements.upgrade(host);
 

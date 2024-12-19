@@ -2,7 +2,7 @@ import { Constructor, LHost, LISSControlerCstr } from "../types";
 import LISS from "../extends";
 
 import ContentGenerator from "../ContentGenerator";
-import { define } from "LifeCycle/DEFINED";
+import { define } from "../LifeCycle/DEFINED";
 
 // should be improved (but how ?)
 const script = document.querySelector('script[autodir]');

@@ -37,7 +37,7 @@ export function _extends<
         throw new Error('please provide a LISSControler!');
 
     const cfg = opts.extends.Host.Cfg;
-    opts = Object.assign({}, opts, cfg, cfg.args);
+    opts = Object.assign({}, cfg, cfg.args, opts);
 
     class ExtendedLISS extends opts.extends! {
 
