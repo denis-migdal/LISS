@@ -1,13 +1,13 @@
 class SignalEvent {
 
-    #callbacks = new Set<(pthis: this) => void>();
+    #callbacks = new Set<(pthis: SignalEvent) => void>();
 
-    listen(callback: (pthis: this) => void) {
+    listen(callback: (pthis: SignalEvent) => void) {
         this.#callbacks.add(callback);
 
         return this;
     }
-    unlisten(callback: (pthis: this) => void) {
+    unlisten(callback: (pthis: SignalEvent) => void) {
         this.#callbacks.delete(callback);
 
         return this;
@@ -21,7 +21,7 @@ class SignalEvent {
     }
 }
 
-class ROSignal<T> extends SignalEvent {
+export class ROSignal<T> extends SignalEvent {
 
     constructor(initialValue?: T|null) {
         super();
@@ -38,7 +38,11 @@ class ROSignal<T> extends SignalEvent {
     }
 }
 
-class Signal<T> extends ROSignal<T> {
+export class Signal<T> extends ROSignal<T> {
+
+    override get value() {
+        return super.value;
+    }
 
     override set value(value: T|null) {
 
@@ -59,7 +63,7 @@ class Signal<T> extends ROSignal<T> {
     }
 }
 
-class SignalEventMerger extends SignalEvent {
+export class SignalEventMerger extends SignalEvent {
     
     #callback = () => {
         this.trigger();
@@ -84,38 +88,45 @@ class SignalEventMerger extends SignalEvent {
     }
 }
 
-class LazyComputedSignal<T extends Record<string, ROSignal<unknown>>, U> extends ROSignal<U> {
-    #sources: T;
+export class LazyComputedSignal<T extends ROSignal<unknown> = ROSignal<unknown>, U = unknown> extends ROSignal<U> {
+    
+    #source: T;
 
     #compute: (sources: T) => U|null;
     #cached  = false;
 
+    addComputation( callback: (sources: T, previous: (sources: T) => U|null) => U|null) {
+        const previous = this.#compute;
+        this.#compute = (sources: T) => callback(sources, previous);
+    }
+
     override get value() {
         if(this.#cached !== true)
-            this._value = this.#compute(this.#sources);
+            this._value = this.#compute(this.#source);
 
         return this._value;
     }
 
-    constructor(sources: T, compute: (sources: T) => U|null) {
+    constructor(source: T, compute: (source: T) => U|null) {
         super();
 
         this.#compute = compute;
-        this.#sources = {...sources};
+        this.#source = source;
 
-        for(let source in this.#sources)
-            this.#sources[source].listen( () => {
+        console.warn("src", this.#source);
+
+        this.#source.listen( () => {
                 
-                // lazy computation...
-                this.#cached = false;
-                /* const value = compute(this.#sources);
+            // lazy computation...
+            this.#cached = false;
+            /* const value = compute(this.#sources);
 
-                // do not trigger if value didn't changed.
-                if( this._value === value )
-                    return;
-                this._value = value;*/
-                this.trigger();
-            });
+            // do not trigger if value didn't changed.
+            if( this._value === value )
+                return;
+            this._value = value;*/
+            this.trigger();
+        });
     }
 }
 
@@ -211,21 +222,3 @@ class ThrottledSignalEvent extends SignalEvent {
         this.#throttledMethod.block(blocked);
     }
 }
-
-// test on chartsHTML v2...
-
-// block => requestTrigger() => unblock at co/block at disco (or attach/detach ?) => or parentSignal ??
-
-// StringEval
-    // -> observe content
-    // -> signalCompute
-    // done.
-
-// .color
-    // => signal...
-
-
-//TODO:
-    // global signals...
-    // listen attrs/content/parent
-    // attach/detach (on compatible parents that listen their children)
