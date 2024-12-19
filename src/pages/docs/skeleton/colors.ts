@@ -1,8 +1,6 @@
 const root = document.documentElement;
 root.classList.add( localStorage.getItem("LISS.color-scheme") ?? 'dark-mode');
 
-console.warn("colors", ...root.classList.entries() );
-
 const btn = document.createElement('span');
 btn.classList.add('color-scheme-gui-btn');
 

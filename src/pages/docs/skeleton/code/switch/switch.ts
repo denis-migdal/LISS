@@ -1,23 +1,32 @@
-const code_switch = document.createElement('span');
-code_switch.classList.add('code_switch');
-
 const body = document.body;
 
-const url = new URL(location as any);
-const is_bry = url.searchParams.get("bry") === "true";
+const codes = body.getAttribute("code-langs")?.split(",");
 
-body.classList.toggle('code_js' , !is_bry);
-body.classList.toggle('code_bry',  is_bry);
-
-code_switch.addEventListener('click', () => {
-    body.classList.toggle('code_js');
-    body.classList.toggle('code_bry');
+if(codes !== undefined) {
 
     const url = new URL(location as any);
-    url.searchParams.set("bry", `${body.classList.contains('code_bry')}` );
-    history.pushState({}, "", url);
+    let code = url.searchParams.get("code-lang") ?? localStorage.getItem("LISS.code-lang") ?? "js";
 
-    body.dispatchEvent( new Event('code_changed') );
-});
+    const code_switch = document.createElement('span');
+    code_switch.classList.add('code-lang_switch');
 
-body.append(code_switch);
+    body.setAttribute("code-lang", code );
+
+    let pos = codes.indexOf(code);
+
+    code_switch.addEventListener('click', () => {
+
+        pos = (++pos)%codes.length;
+        code = codes[pos];
+
+        const url = new URL(location as any);
+        url.searchParams.set("code-lang", code );
+        history.pushState({}, "", url);
+
+        localStorage.setItem("LISS.code-lang", code);
+        body.setAttribute("code-lang", code );
+        body.dispatchEvent( new Event('code-lang_changed') );
+    });
+
+    body.append(code_switch);
+}
