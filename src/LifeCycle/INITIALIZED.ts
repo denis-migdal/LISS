@@ -34,7 +34,10 @@ export function getControlerSync<T extends LISSControler>(elem: Param<T>): T {
     if( ! isReady(host) )
         throw new Error("Dependancies not ready !")
 
-    return host.initialize();
+    if( ! isInitialized )
+        return host.initialize();
+
+    return host.controler;
 }
 
 export const initialize     = getControler;
