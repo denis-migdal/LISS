@@ -60,7 +60,6 @@ export function define<T extends LISSControlerCstr>(
     const opts = htmltag === undefined ? {}
                 : {extends: htmltag};
 
-    console.warn("define", tagname);
     customElements.define(tagname, Host, opts);
 };
 

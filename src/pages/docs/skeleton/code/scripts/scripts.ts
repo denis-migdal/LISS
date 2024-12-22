@@ -43,8 +43,6 @@ export class Scripts extends LISS({
 
         code = code.replaceAll(/__([\d]*)__/g, (_, match) => {
 
-            console.warn(code, match);
-
             let content = replaced[+match];
             content = content.replaceAll(/(\$[\w_]*)/g, (_, match) => {
                 return `<var>${match}</var>`

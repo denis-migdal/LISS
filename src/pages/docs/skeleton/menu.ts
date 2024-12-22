@@ -210,12 +210,18 @@ function generateMenuHTML(target: MenuNode) {
 function updatePageMenu(menu: PageMenuNode) {
 
     //TODO: scale...
-    let last = searchCurPageHeader( menu, document.documentElement.scrollTop)!;
+    const last = searchCurPageHeader( menu, document.documentElement.scrollTop)!;
 
     const html = generateMenuHTML(last ?? menu);
 
     menu_page.replaceChildren(...html);
 }
+
+const cur_page =  searchCurPagesHeader(buildPagesMenu(content));
+menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
+
+const idx = cur_page.parent!.children.indexOf(cur_page);
+document.body.style.setProperty('counter-set', `h1 ${idx}` );
 
 const hasH1 = document.body.querySelector("h1") !== null;
 
@@ -225,8 +231,4 @@ if( hasH1 ) {
 
     window.addEventListener('scroll', () => updatePageMenu(menu) );
     updatePageMenu(menu);
-
 }
-
-const cur_page =  searchCurPagesHeader(buildPagesMenu(content));
-menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
