@@ -25,7 +25,7 @@ type MenuNode<T extends Record<string,any> = {}> = {
 } & T;
 
 type PageMenuNode  = MenuNode<{html: HTMLElement}>;
-type PagesMenuNode = MenuNode;
+type PagesMenuNode = MenuNode<{dir: string}>;
 
 // @ts-ignore
 import content  from "!!raw-loader!/content.txt";
@@ -33,9 +33,12 @@ import { rootdir } from "./code/playground-area/PlaygroundArea";
 
 function buildPagesMenu(content: string) {
 
+    const root_dir = rootdir + "/dist/dev/pages/";
+
     const root: PagesMenuNode = {
+        dir     : root_dir,
         text    : "",
-        href    : rootdir + "/dist/dev/pages/",
+        href    : root_dir, // should not be used.
         level   : 1,
         parent  : null,
         children: []
@@ -46,7 +49,7 @@ function buildPagesMenu(content: string) {
 
     for(let item of content.split("\n") ) {
 
-        const offset = item.indexOf('-');
+        const offset = item.search(/(\-|\+)/);
         const level = offset / 4 + 2;
 
         const sep = item.indexOf(":");
@@ -56,13 +59,29 @@ function buildPagesMenu(content: string) {
 
         const parent = current[level-1];
 
+        const isVirtual = item[offset] === "+";
+
+        const dir  = parent.dir + target + "/";
+        const href = (isVirtual ? null : dir) as string;  // h4ck
+
         const node = {
             text,
-            href: parent.href + target + "/",
+            dir,
+            href,
             level,
             parent,
             children: []
         };
+
+        if( ! isVirtual && parent.href === null) {
+
+            let cur = parent;
+            do {
+                cur.href = node.href;
+                cur = cur.parent!;
+            } while(cur.href === null);
+        }
+
         parent.children.push(node);
         current[level] = node;
     }
@@ -128,7 +147,7 @@ function searchCurPagesHeader(htree: PagesMenuNode): PagesMenuNode {
     let cur = htree;
     
     while(true) {
-        const find = cur.children.find( (node) => curpage.startsWith(node.href) )
+        const find = cur.children.find( (node) => curpage.startsWith(node.dir) )
         if(find === undefined)
             return cur;
         cur = find;
@@ -219,6 +238,8 @@ function updatePageMenu(menu: PageMenuNode) {
 
 const cur_page =  searchCurPagesHeader(buildPagesMenu(content));
 menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
+
+console.warn(cur_page);
 
 const idx = cur_page.parent!.children.indexOf(cur_page);
 document.body.style.setProperty('counter-set', `h1 ${idx}` );
