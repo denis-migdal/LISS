@@ -6,4 +6,5 @@ import "./code/switch/switch";
 import "./menu";
 import "./code/liss-playground/LISSPlayground";
 import "./code/scripts/scripts";
+import "./code/html-output/HTMLOutput";
 //import "./code/code-block/CodeBlock";

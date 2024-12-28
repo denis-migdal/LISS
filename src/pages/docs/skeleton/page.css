@@ -43,3 +43,8 @@ main {
         margin-right: auto;
     }
 }
+
+.flex-2 {
+    display: grid;
+    grid: auto / 1fr 1fr;
+}
