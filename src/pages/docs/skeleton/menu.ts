@@ -239,8 +239,6 @@ function updatePageMenu(menu: PageMenuNode) {
 const cur_page =  searchCurPagesHeader(buildPagesMenu(content));
 menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
 
-console.warn(cur_page);
-
 const idx = cur_page.parent!.children.indexOf(cur_page);
 document.body.style.setProperty('counter-set', `h1 ${idx}` );
 

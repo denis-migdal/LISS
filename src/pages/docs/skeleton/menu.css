@@ -68,7 +68,8 @@
                 }
             }
 
-            body.hide_h1 & > span:first-child {
+            /* body.hide_h1 & > span:first-child { */
+            & > span:first-child {
                 display: none;
             }
 
