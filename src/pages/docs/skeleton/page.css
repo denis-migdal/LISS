@@ -45,6 +45,7 @@ main {
 }
 
 .flex-2 {
+    gap: 1px;
     display: grid;
     grid: auto / 1fr 1fr;
 }
