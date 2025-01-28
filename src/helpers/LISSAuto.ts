@@ -272,27 +272,30 @@ async function importComponents<T extends HTMLElement = HTMLElement>(
 	return results;
 }
 
-const bry_wrapper = `def wrapjs(js_klass):
+const bry_wrapper = `from browser import self
 
-    class Wrapper:
+def wrapjs(js_klass):
 
-        _js_klass = js_klass
-        _js = None
+	class Wrapper:
 
-        def __init__(self, *args):
-            self._js = js_klass.new(*args)
+		_js_klass = js_klass
+		_js = None
 
-        def __getattr__(self, name: str):
-            return self._js[name];
+		def __init__(this, *args):
+			this._js = js_klass.new(*args)
 
-        def __setattr__(self, name: str, value):
-            if name == "_js":
-                super().__setattr__(name, value)
-                return
-            self._js[name] = value
+		def __getattr__(this, name: str):
+			return this._js[name];
 
-    return Wrapper
+		def __setattr__(this, name: str, value):
+			if name == "_js":
+				super().__setattr__(name, value)
+				return
+			this._js[name] = value
+	
+	return Wrapper
 
+self.wrapjs = wrapjs
 `;
 
 async function importComponent<T extends HTMLElement = HTMLElement>(
@@ -309,8 +312,6 @@ async function importComponent<T extends HTMLElement = HTMLElement>(
 	KnownTags.add(tagname);
 
 	const compo_dir = `${cdir}${tagname}/`;
-
-	console.warn("import", tagname, files);
 
 	if( files === null ) {
 		files = {};
@@ -334,11 +335,12 @@ async function importComponent<T extends HTMLElement = HTMLElement>(
 
 	if( brython === "true" && files['index.bry'] !== undefined) {
 
-		const code = bry_wrapper + files["index.bry"];
+		const code = files["index.bry"];
 
 		files['index.js'] =
 `const $B = globalThis.__BRYTHON__;
 
+$B.runPythonSource(\`${bry_wrapper}\`, "_");
 $B.runPythonSource(\`${code}\`, "_");
 
 const module = $B.imported["_"];

@@ -1,6 +1,6 @@
 from browser import self
 
-WebC = wrapjs(self.LISS())
+WebC = self.wrapjs(self.LISS())
 
 class WebComponent(WebC):
     def __init__(this, value="HTML"):

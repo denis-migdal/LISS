@@ -8,7 +8,7 @@ css  = LISS.require("./index.css" )
 WebC = LISS({"html": html,
              "css" : css})
 
-class WebComponent( wrapjs(WebC) ):
+class WebComponent( self.wrapjs(WebC) ):
     
     def __init__(self, value=42):
         super().__init__()

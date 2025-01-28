@@ -1,6 +1,6 @@
 from browser import self
 
-WebC = wrapjs(self.LISS({
+WebC = self.wrapjs(self.LISS({
     "css" : ':host([a="42"]){ background: red; }'
 }))
 

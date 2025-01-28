@@ -92,9 +92,6 @@ export default class PlaygroundArea extends LISS({
 
         const is_bry = this.host.toggleAttribute('brython', force);
 
-        console.warn("switch", is_bry);
-        console.trace();
-
         const keys = Object.keys(this.resources).filter( n => n.endsWith('.bry') );
         const ext  = is_bry ? ".bry" : ".js";
         
@@ -121,8 +118,6 @@ export default class PlaygroundArea extends LISS({
 
     updateLayout() {
         const show = this.host.getAttribute('show');
-        
-        console.warn("show", show);
 
         let codes: string[] = [];
         if( show === null ) {
