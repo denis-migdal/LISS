@@ -89,8 +89,8 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 
 		// ============== Content ===================
 
-		#internals = this.attachInternals();
-		#states    = this.#internals.states;
+		//#internals = this.attachInternals();
+		//#states    = this.#internals.states;
 		#content: Host|ShadowRoot = this as Host;
 
 		get content() {
@@ -138,9 +138,9 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 		constructor(...params: any[]) {
 			super();
 
-			this.#states.add(States.LISS_UPGRADED);
+			//this.#states.add(States.LISS_UPGRADED);
 			content_generator.whenReady().then(() => {
-				this.#states.add(States.LISS_READY);
+				//this.#states.add(States.LISS_READY);
 			});
 
 			this.#params = params;
@@ -219,7 +219,7 @@ export function buildLISSHost<	T extends LISSControlerCstr, U extends Constructo
 				this.#controler = new LISSHost.Controler(...this.#params) as InstanceType<T>;
 			}
 
-			this.#states.add(States.LISS_INITIALIZED);
+			//this.#states.add(States.LISS_INITIALIZED);
 
 			this.#whenInitialized_resolver(this.controler);
 
