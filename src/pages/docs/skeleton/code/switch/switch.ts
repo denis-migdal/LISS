@@ -25,6 +25,7 @@ if(codes !== undefined) {
 
         localStorage.setItem("LISS.code-lang", code);
         body.setAttribute("code-lang", code );
+
         body.dispatchEvent( new Event('code-lang_changed') );
     });
 
