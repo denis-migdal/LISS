@@ -88,9 +88,15 @@ export default class PlaygroundArea extends LISS({
 
     }
 
+    #lang: string = "js";
+    get code_lang() {
+        return this.#lang;
+    }
+
     changeLang(lang: string) {
 
-        this.host.setAttribute('code-lang', lang);
+        this.#lang = lang;
+        //this.host.setAttribute('code-lang', lang);
 
         //TODO...
         const keys = Object.keys(this.resources).filter( n => n.endsWith('.js') );
