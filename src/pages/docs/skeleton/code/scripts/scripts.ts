@@ -16,6 +16,7 @@ export class Scripts extends LISS({
         super();
 
         let code = this.host.textContent!;
+        const lang = this.host.getAttribute("lang")!;
 
         if(code[0] === '\n') {
 
@@ -38,12 +39,14 @@ export class Scripts extends LISS({
             return `__${replaced.length-1}__`
         });
 
-        code = hl(code, 
-            this.host.getAttribute("lang")!);
+        if(lang === "html") {
+            code = code.replace("<xbody>", "</body>");
+            code = code.replace("<xscript>", "</script>");
+        }
+
+        code = hl(code, lang);
 
         code = code.replaceAll(/__([\d]*)__/g, (_, match) => {
-
-            console.warn(code, match);
 
             let content = replaced[+match];
             content = content.replaceAll(/(\$[\w_]*)/g, (_, match) => {

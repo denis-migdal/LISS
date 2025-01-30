@@ -55,7 +55,7 @@
                 bottom: 0;
                 transform: translate(0, 100%);
                 left: 0;
-                background-color: black;
+                background-color: light-dark(white, black);
                 border: 1px solid gray;
                 border-top: none;
                 & > a {
@@ -63,12 +63,13 @@
                     white-space: nowrap;
                     padding: 5px 10px;
                     &:hover {
-                        background-color: #222;
+                        background-color: light-dark(#DDD, #222);
                     }
                 }
             }
 
-            body.hide_h1 & > span:first-child {
+            /* body.hide_h1 & > span:first-child { */
+            & > span:first-child {
                 display: none;
             }
 

@@ -43,3 +43,13 @@ main {
         margin-right: auto;
     }
 }
+
+.flex-2 {
+    gap: 1px;
+    display: grid;
+    grid: auto / 1fr 1fr;
+
+    & img {
+        width: 100%;
+    }
+}

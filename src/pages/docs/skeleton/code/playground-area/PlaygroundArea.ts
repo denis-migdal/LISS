@@ -28,9 +28,11 @@ export default class PlaygroundArea extends LISS({
     constructor(resources: readonly Resource[] = []) {
         super();
 
-        document.body.addEventListener('code_changed', () => {
-            this.switchJSBry();
-        })
+        //TODO...
+        document.body.addEventListener('code-lang_changed', () => {
+            const is_bry = document.body.getAttribute("code-lang") === "bry";
+            this.switchJSBry(is_bry);
+        });
 
         const output = this.#iframe = document.createElement('iframe');
         let card = document.createElement('div');
@@ -77,15 +79,18 @@ export default class PlaygroundArea extends LISS({
             });
         }
 
-        this.switchJSBry();
+        //TODO...
+        const is_bry = document.body.getAttribute("code-lang") === "bry";
+        this.switchJSBry(is_bry);
+
         if( this.host.hasAttribute('name') )
             this.updateCodes();
 
     }
 
-    switchJSBry() {
+    switchJSBry(force?: boolean) {
 
-        const is_bry = document.body.classList.contains('code_bry');
+        const is_bry = this.host.toggleAttribute('brython', force);
 
         const keys = Object.keys(this.resources).filter( n => n.endsWith('.bry') );
         const ext  = is_bry ? ".bry" : ".js";
@@ -95,7 +100,6 @@ export default class PlaygroundArea extends LISS({
             this.resources[`${file}.code`] = this.resources[`${file}${ext}`];
         }
 
-        this.host.toggleAttribute('brython', is_bry);
         this.updateLayout();
 
     }
@@ -114,8 +118,6 @@ export default class PlaygroundArea extends LISS({
 
     updateLayout() {
         const show = this.host.getAttribute('show');
-        
-        console.warn("show", show);
 
         let codes: string[] = [];
         if( show === null ) {
@@ -213,6 +215,8 @@ export default class PlaygroundArea extends LISS({
     async updateResult() {
 
         const iframe = document.createElement('iframe');
+        iframe.src = "about:blank";
+
         this.#iframe.replaceWith(iframe);
         this.#iframe = iframe;
 
@@ -234,11 +238,16 @@ export default class PlaygroundArea extends LISS({
         }
 
         /**/
-        iframe.src = "about:blank";
         // iframe.srcdoc also possible
-        iframe.contentWindow!.document.open();
-        iframe.contentWindow!.document.write( content );
-        iframe.contentWindow!.document.close();
+
+        const doc = iframe.contentDocument!;
+
+        // called twice ?? -> update first when it shouldn't ???
+        if(doc !== null) {
+            doc.open();
+            doc.write( content );
+            doc.close();
+        }
         /**/
     }
 
