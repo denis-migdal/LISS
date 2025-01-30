@@ -1,3 +1,15 @@
+// SignalEvent
+// ^ ROSignal<T>
+// ^ Signal<T>
+
+// SignalEventMerger : notify if event from several sources (can be added/removed)
+// LazyComputedSignal : transform value (one signal)
+// TODO: IndirectSignal/SourceMerger ?
+
+// ThrottledSignalEvent
+// ThrottledMethod
+// ^ AnimationFrameThrottledMethod
+
 class SignalEvent {
 
     #callbacks = new Set<(pthis: SignalEvent) => void>();
@@ -88,17 +100,39 @@ export class SignalEventMerger extends SignalEvent {
     }
 }
 
-export class LazyComputedSignal<T extends ROSignal<unknown> = ROSignal<unknown>, U = unknown> extends ROSignal<U> {
+export class LazyComputedSignal<T = unknown, U = unknown> extends ROSignal<U> {
     
-    #source: T;
+    #source: ROSignal<T>;
 
-    #compute: (sources: T) => U|null;
-    #cached  = false;
+    constructor(source: ROSignal<T>, compute: (source: ROSignal<T>) => U|null) {
+        super();
 
-    addComputation( callback: (sources: T, previous: (sources: T) => U|null) => U|null) {
-        const previous = this.#compute;
-        this.#compute = (sources: T) => callback(sources, previous);
+        this.#compute = compute;
+        this.#source = source;
+
+        this.#source.listen( this.#callback );
     }
+
+    get source() {
+        return this.#source;
+    }
+
+    set source(source: ROSignal<T>) {
+
+        this.#source.unlisten(this.#callback);
+        this.#source = source;
+        this.#source.listen(this.#callback);
+        this.#callback();
+    }
+
+    #compute: (sources: ROSignal<T>) => U|null;
+
+    changeComputeFunction(cmp: (sources: ROSignal<T>) => U|null) {
+        this.#compute = cmp;
+        this.#callback();
+    }
+
+    #cached  = false;
 
     override get value() {
         if(this.#cached !== true)
@@ -107,27 +141,11 @@ export class LazyComputedSignal<T extends ROSignal<unknown> = ROSignal<unknown>,
         return this._value;
     }
 
-    constructor(source: T, compute: (source: T) => U|null) {
-        super();
-
-        this.#compute = compute;
-        this.#source = source;
-
-        console.warn("src", this.#source);
-
-        this.#source.listen( () => {
-                
-            // lazy computation...
-            this.#cached = false;
-            /* const value = compute(this.#sources);
-
-            // do not trigger if value didn't changed.
-            if( this._value === value )
-                return;
-            this._value = value;*/
-            this.trigger();
-        });
-    }
+    #callback = () => {
+        // lazy computation...
+        this.#cached = false;
+        this.trigger();
+    };
 }
 
 type ThrottledMethodCstr = {
