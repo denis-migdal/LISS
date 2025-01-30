@@ -30,8 +30,8 @@ export default class PlaygroundArea extends LISS({
 
         //TODO...
         document.body.addEventListener('code-lang_changed', () => {
-            const is_bry = document.body.getAttribute("code-lang") === "bry";
-            this.switchJSBry(is_bry);
+            const lang = document.body.getAttribute("code-lang");
+            this.changeLang(lang ?? "js");
         });
 
         const output = this.#iframe = document.createElement('iframe');
@@ -80,24 +80,24 @@ export default class PlaygroundArea extends LISS({
         }
 
         //TODO...
-        const is_bry = document.body.getAttribute("code-lang") === "bry";
-        this.switchJSBry(is_bry);
+        const lang = document.body.getAttribute("code-lang");
+        this.changeLang(lang ?? "js");
 
         if( this.host.hasAttribute('name') )
             this.updateCodes();
 
     }
 
-    switchJSBry(force?: boolean) {
+    changeLang(lang: string) {
 
-        const is_bry = this.host.toggleAttribute('brython', force);
+        this.host.setAttribute('code-lang', lang);
 
-        const keys = Object.keys(this.resources).filter( n => n.endsWith('.bry') );
-        const ext  = is_bry ? ".bry" : ".js";
+        //TODO...
+        const keys = Object.keys(this.resources).filter( n => n.endsWith('.js') );
         
         for(let key of keys) {
-            const file = key.slice(0, -'.bry'.length);
-            this.resources[`${file}.code`] = this.resources[`${file}${ext}`];
+            const file = key.slice(0, -'.js'.length);
+            this.resources[`${file}.code`] = this.resources[`${file}.${lang}`];
         }
 
         this.updateLayout();
