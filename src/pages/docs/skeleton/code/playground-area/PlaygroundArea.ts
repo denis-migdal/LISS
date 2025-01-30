@@ -31,7 +31,7 @@ export default class PlaygroundArea extends LISS({
         //TODO...
         document.body.addEventListener('code-lang_changed', () => {
             const lang = document.body.getAttribute("code-lang");
-            this.changeLang(lang ?? "js");
+            this.code_lang = lang ?? "js";
         });
 
         const output = this.#iframe = document.createElement('iframe');
@@ -81,7 +81,7 @@ export default class PlaygroundArea extends LISS({
 
         //TODO...
         const lang = document.body.getAttribute("code-lang");
-        this.changeLang(lang ?? "js");
+        this.code_lang = lang ?? "js";
 
         if( this.host.hasAttribute('name') )
             this.updateCodes();
@@ -93,7 +93,7 @@ export default class PlaygroundArea extends LISS({
         return this.#lang;
     }
 
-    changeLang(lang: string) {
+    set code_lang(lang: string) {
 
         this.#lang = lang;
         //this.host.setAttribute('code-lang', lang);
