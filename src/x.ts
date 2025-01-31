@@ -119,6 +119,9 @@ export class LazyComputedSignal<T = unknown, U = unknown> extends ROSignal<U> {
 
     set source(source: ROSignal<T>) {
 
+        if( this.#source === source )
+            return;
+
         this.#source.unlisten(this.#callback);
         this.#source = source;
         this.#source.listen(this.#callback);
@@ -128,6 +131,8 @@ export class LazyComputedSignal<T = unknown, U = unknown> extends ROSignal<U> {
     #compute: (sources: ROSignal<T>) => U|null;
 
     changeComputeFunction(cmp: (sources: ROSignal<T>) => U|null) {
+        if( this.#compute === cmp )
+            return;
         this.#compute = cmp;
         this.#callback();
     }
