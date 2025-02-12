@@ -3,14 +3,17 @@
 // ^ Signal<T>
 
 // SignalEventMerger : notify if event from several sources (can be added/removed)
-// LazyComputedSignal : transform value (one signal)
-// TODO: IndirectSignal/SourceMerger ?
+// IndirectSignal
+// ^ LazyComputedSignal : transform value (one signal)
+    
+
+// SignalManager
 
 // ThrottledSignalEvent
 // ThrottledMethod
 // ^ AnimationFrameThrottledMethod
 
-class SignalEvent {
+export class SignalEvent {
 
     #callbacks = new Set<(pthis: SignalEvent) => void>();
 
@@ -100,32 +103,60 @@ export class SignalEventMerger extends SignalEvent {
     }
 }
 
-export class LazyComputedSignal<T = unknown, U = unknown> extends ROSignal<U> {
-    
-    #source: ROSignal<T>;
+export class IndirectSignal<T = unknown, U = T> extends ROSignal<U> {
 
-    constructor(source: ROSignal<T>, compute: (source: ROSignal<T>) => U|null) {
+    #source: ROSignal<T>|null = null;
+
+    constructor(source: ROSignal<T>|null = null, callback?: ()=> void) {
         super();
 
-        this.#compute = compute;
         this.#source = source;
+        if(callback !== undefined)
+            this._callback = callback;
 
-        this.#source.listen( this.#callback );
+        this.#source?.listen( this._callback );
     }
 
-    get source() {
+    protected _callback = () => {
+        this.trigger();
+    };
+
+
+    get source(): ROSignal<T>|null {
         return this.#source;
     }
 
-    set source(source: ROSignal<T>) {
+    set source(source: ROSignal<T>|null) {
 
         if( this.#source === source )
             return;
 
-        this.#source.unlisten(this.#callback);
+        if( this.#source !== null)
+            this.#source.unlisten(this._callback);
         this.#source = source;
-        this.#source.listen(this.#callback);
-        this.#callback();
+        if( this.#source !== null)
+           this.#source.listen(this._callback);
+
+        this._callback();
+    }
+
+    override hasValue(): boolean {
+        return this.#source !== null && this.#source.hasValue();
+    }
+
+    override get value(): U|null {
+        if( this.#source === null)
+            return null;
+        return this.#source.value as U|null;
+    }
+}
+
+export class LazyComputedSignal<T = unknown, U = unknown> extends IndirectSignal<T, U> {
+    
+    constructor(source: ROSignal<T>, compute: (source: ROSignal<T>) => U|null) {
+        super(source);
+
+        this.#compute = compute;
     }
 
     #compute: (sources: ROSignal<T>) => U|null;
@@ -134,23 +165,67 @@ export class LazyComputedSignal<T = unknown, U = unknown> extends ROSignal<U> {
         if( this.#compute === cmp )
             return;
         this.#compute = cmp;
-        this.#callback();
+        this._callback();
     }
 
     #cached  = false;
 
     override get value() {
+
+        if( this.source === null)
+            return null;
+
         if(this.#cached !== true)
-            this._value = this.#compute(this.#source);
+            this._value = this.#compute(this.source);
 
         return this._value;
     }
 
-    #callback = () => {
+    protected override _callback = () => {
         // lazy computation...
         this.#cached = false;
         this.trigger();
     };
+}
+
+export class SignalManager extends ROSignal<SignalManager> {
+
+    #signals: Record<string, IndirectSignal<any>> = {};
+
+    constructor() {
+        super();
+        this._value = this;
+    }
+
+    init<T>(name: string): IndirectSignal<T> {
+        const signal = this.#signals[name] = new IndirectSignal<T>();
+        signal.listen( () => this.trigger() );
+
+        return signal;
+    }
+
+    get<T>(name: string): IndirectSignal<T> {
+
+        let signal = this.#signals[name];
+        if( signal === undefined )
+            signal = this.init(name);
+
+        return signal;
+    }
+
+    set(name: string, signal: ROSignal<any>) {
+        const _signal = this.get(name);
+        _signal.source = signal;
+    }
+
+    names(): readonly string[] {
+        return Object.keys(this.#signals);
+    }
+
+    clear(name: string) {
+        const _signal = this.get(name);
+        _signal.source = null;
+    }
 }
 
 type ThrottledMethodCstr = {
@@ -224,7 +299,7 @@ class AnimationFrameThrottledMethod extends ThrottledMethod {
     }
 }
 
-class ThrottledSignalEvent extends SignalEvent {
+export class ThrottledSignalEvent extends SignalEvent {
 
     #throttledMethod: ThrottledMethod;
 

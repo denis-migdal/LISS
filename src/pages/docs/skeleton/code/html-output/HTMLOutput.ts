@@ -1,4 +1,4 @@
-import { whenDOMContentLoaded } from "utils";
+import { whenDOMContentLoaded } from "../../../../../utils";
 import LISS from "../../../../../index";
 
 
