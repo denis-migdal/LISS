@@ -66,6 +66,15 @@ export default class ContentGenerator {
         // + cf at the end...
     }
 
+    fillContent(shadow: ShadowRoot) {
+        this.injectCSS(shadow, this.#stylesheets);
+
+        const content = this.#template!.content.cloneNode(true);
+        shadow.append(content);
+
+        customElements.upgrade(shadow);
+    }
+
     generate<Host extends LHost>(host: Host): HTMLElement|ShadowRoot {
 
         //TODO: wait parents/children depending on option...     

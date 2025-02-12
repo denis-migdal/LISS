@@ -1,6 +1,9 @@
 import "../docs/skeleton";
 
 const examples = [
+
+    "v3-attrs",
+
     "hello-world",
     "host-attr",
     "cstr-params",

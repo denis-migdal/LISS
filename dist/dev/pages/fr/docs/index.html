@@ -28,6 +28,22 @@
 </ul>
 </li>
 </ul>
+<h2 id="old">OLD</h2>
+<h3 id="contenu-dynamique-en-fonction-du-contenu-de-lhôte">Contenu dynamique en fonction du contenu de l&#39;hôte</h3>
+<p>Le contenu de votre composant Web peut dépendre du contenu de l&#39;élément hôte. Pour cela, il suffit d&#39;indiquer des slots dans lesquels le contenu de l&#39;hôte sera affiché.</p>
+<pre><code class="language-html">&lt;slot name=&quot;invite&quot;&gt;&lt;/slot&gt;: &lt;br/&gt;
+&lt;slot&gt;&lt;/slot&gt; &lt;!-- slot par défaut --&gt;
+</code></pre>
+<pre><code class="language-html">&lt;hello-world&gt;
+    &lt;span slot=&quot;invite&quot;&gt;Hello&lt;/span&gt;
+    &lt;span&gt;User&lt;/span&gt; &lt;!-- slot par défaut --&gt;
+&lt;/hello-world&gt;
+</code></pre>
+<p>⚠ Les slots ne peuvent être utilisés sur les composants Web héritant de certains éléments HTML.</p>
+<p><em>Example :</em></p>
+<ul>
+<li><a href="https://denis-migdal.github.io/LISS/dist/dev/pages/playground/?example=auto-html-slots">auto-html-slots</a></li>
+</ul>
 </main>
     </body>
 </html>

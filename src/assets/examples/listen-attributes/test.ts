@@ -13,7 +13,7 @@ await test("listen-attributes",
 
         // @ts-ignore
         await assertElemEquals('listen-attributes', {
-            shadow_html: "<slot></slot>a=1,a=2,",
+            shadow_html: "a=1,a=2,",
             css: {
                 ":scope": ""
             }

@@ -54,7 +54,7 @@ function generateHTMLPage(page_html: string, brython: string) {
 
             }
         </script>
-        <script src="./index.js" brython="${brython}" autodir="./assets/examples/" type="module" defer></script>
+        <script src="./index.js" brython="${brython}" autodir="./assets/examples/" type="module"></script>
     </head>
     <body>
         ${page_html}
@@ -78,14 +78,19 @@ export async function test( test_name: string,
     for(let browser in browsers) {
         // @ts-ignore
         const executablePath = browsers[browser];
+
         for(let use_brython of ["true", "false"]) {
             const lang = use_brython === "true" ? "bry" : "js";
             await Deno.test(`${test_name} (${browser}-${lang})`, {
                 sanitizeResources: false,
                 sanitizeOps: false
             }, async() => {
+
+                // launch required inside each tests...
                 // @ts-ignore
                 const pupet = await puppeteer.launch({product: browser, executablePath});
+
+                // @ts-ignore
                 const page = await pupet.newPage();
 
                 page.on('console'      , message  => {
@@ -151,8 +156,8 @@ export async function test( test_name: string,
                 // https://pptr.dev/api/puppeteer.page.evaluate
 
                 //await page.screenshot({ path: "/tmp/example.png" });
-                await pupet.close();
 
+                await pupet.close();
             });
         }
     }

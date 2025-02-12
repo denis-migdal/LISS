@@ -31,6 +31,31 @@ Life Cycle
     - https://developer.mozilla.org/en-US/docs/Web/API/CustomStateSet
     - https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/attachInternals
 
+## OLD
+
+
+### Contenu dynamique en fonction du contenu de l'hôte
+
+Le contenu de votre composant Web peut dépendre du contenu de l'élément hôte. Pour cela, il suffit d'indiquer des slots dans lesquels le contenu de l'hôte sera affiché.
+
+```html
+<slot name="invite"></slot>: <br/>
+<slot></slot> <!-- slot par défaut -->
+```
+
+```html
+<hello-world>
+    <span slot="invite">Hello</span>
+    <span>User</span> <!-- slot par défaut -->
+</hello-world>
+```
+
+⚠ Les slots ne peuvent être utilisés sur les composants Web héritant de certains éléments HTML.
+
+*Example :*
+- [auto-html-slots](https://denis-migdal.github.io/LISS/dist/dev/pages/playground/?example=auto-html-slots)
+
+
 
 </main>
     </body>

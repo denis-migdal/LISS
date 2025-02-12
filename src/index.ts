@@ -16,6 +16,11 @@ export {eventMatches, WithEvents, EventTarget2, CustomEvent2} from './helpers/ev
 export {html} from "./utils";
 export default LISS;
 
+import {LISSv3} from "./V3";
+// @ts-ignore
+LISS.LISSv3 = LISSv3;
+
+
 // for debug.
 export {_extends} from "./extends";
 

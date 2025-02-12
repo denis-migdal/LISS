@@ -53,9 +53,12 @@ export function define<T extends LISSControlerCstr>(
 
 	if( "Host" in ComponentClass )
 		Host = ComponentClass.Host as any;
-    
-    const Class  = Host.Cfg.host;
-    let htmltag  = _element2tagname(Class)??undefined;
+
+    let htmltag = undefined;
+    if( "Cfg" in Host) {
+        const Class  = Host.Cfg.host;
+        htmltag  = _element2tagname(Class)??undefined;
+    }
 
     const opts = htmltag === undefined ? {}
                 : {extends: htmltag};

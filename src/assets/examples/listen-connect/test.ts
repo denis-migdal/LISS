@@ -13,7 +13,7 @@ await test("listen-connect",
 
         // @ts-ignore
         await assertElemEquals('listen-connect', {
-            shadow_html: "<slot></slot>+true,-false,+true,",
+            shadow_html: "+true,-false,+true,",
             css: {
                 ":scope": ""
             }
