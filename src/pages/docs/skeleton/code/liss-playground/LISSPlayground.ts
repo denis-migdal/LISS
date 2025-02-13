@@ -59,7 +59,7 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
 
         const p_html  = codes["page.html" ];
 
-        const result = `<!DOCTYPE html>
+        return `<!DOCTYPE html>
     <head>
         <style>
             body {
@@ -68,41 +68,19 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
             }
         </style>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
-        <script type="module" src='${rootdir}/dist/dev/index.js'></script>
-        <script type="module" defer>
-            import LISS from '${rootdir}/dist/dev/index.js';
-
-            window.LISS = LISS;
-
-            {
-                const files = {
-                    "${file}"   : ${code },
-                    "index.html": ${c_html},
-                    "index.css" : ${c_css },
-                }
-                
-                const host = document.querySelector('[is]')?.constructor;
-
-                await LISS.importComponent("${webcomp_name}", {
-                    cdir   : null, //TODO...
-                    brython: "${brython}",
-                    host,
-                    files
-                } );
-            }
-            //await LISS.whenAllDefined();
-            {
-                ${p_js}
-            }
+        <script type="module" src='${rootdir}/dist/dev/index.js'
+                liss-mode="auto-load"
+                liss-cdir="${rootdir}/dist/dev/assets/examples/"
+        ></script>
+        <script type="module">
+            ${p_js}
         </script>
     </head>
     <body>
-${p_html}
+        ${p_html}
     </body>
 </html>
 `;
-
-        return result;
     }
 }
 

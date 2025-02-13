@@ -21,7 +21,8 @@ Il s'utilise en ajoutant une balise <script type="c-html"><script></script> à l
     <!DOCTYPE html>
     <html>
         <head>
-            <script type="module" src="<h>$LISS</h>" defer
+            ...
+            <script type="module" src="<h>$LISS</h>"
                 liss-cdir="<h>$CDIR</h>"
                 liss-mode="auto-load"
             ><xscript>
@@ -48,9 +49,7 @@ La page Web pourra alors afficher une instance du composant Web via la balise HT
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
-## Définir un composant Web
-
-### Le contenu
+## Définir le contenu
 
 Par défaut, le contenu d'un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.html</script> :
 
@@ -58,7 +57,7 @@ Par défaut, le contenu d'un composant Web <script type="c-text"><h>$NAME</h></s
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
-### L'affichage
+## Définir l'affichage
 
 Pour définir l'affichage de votre composant Web, il vous suffit d'indiquer les règles CSS à appliquer dans un fichier `index.css` :
 
@@ -71,14 +70,13 @@ Pour définir l'affichage de votre composant Web, il vous suffit d'indiquer les 
 }
 ```
 
-### Le comportement
+## Définir le comportement
 
-## Fonctionnalités additionnelles
+## Contenu en fonction des attributs
+
 
 -> HTML possible
 -> quelques fonctionnalités avancées en mode automatique si pas de JS/Brython pour faciliter le prototypage
-
-### Contenu
 
 Le contenu du composant Web peut être dynamique, i.e. dépendre de l'élément hôte.
 
@@ -100,24 +98,7 @@ Hello ${name}
 
 ⚠ Pour le moment, `${ATTR_NAME}` ne fonctionne que pour du texte. Il ne fonctionne pas à l'intérieur des attributs HTML.
 
-### Affichage
-
-L'affichage de votre composant Web peut dépendre des attributs de l'élément hôte.
-Pour ce faire, les attributs `css-$NAME` de l'hôte sont transformés en une variable CSS `--$NAME`.
-
-```html
-<hello-world name="user" css-color="blue" ></hello-world>
-```
-
-```css
-:host {
-    background-color: var(--color, red);
-}
-```
-
-💡 Ce comportement est une fonctionnalité du mode automatique de LISS permettant de définir des variables CSS sans nécessiter de JS/Brython.
-
-## Fonctionnement interne
+## Fonctionnement interne (pour les développeurs)
 
 -> fetch
 -> donc requêtes/certaines inutile, pas perfs, proto/dev.
