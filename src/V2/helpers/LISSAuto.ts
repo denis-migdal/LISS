@@ -67,7 +67,6 @@ function autoload(script: HTMLElement) {
 
 	// observe for new injected tags.
 	new MutationObserver( (mutations) => {
-
 		for(let mutation of mutations)
 			for(let addition of mutation.addedNodes)
 				if(addition instanceof HTMLElement)
@@ -116,8 +115,6 @@ function autoload(script: HTMLElement) {
 
 //TODO: rename from files ?
 async function defineWebComponentV3(tagname: string, files: Record<string, any>) {
-
-	console.warn(files);
 
 	let klass = LISSv3({
 		content_generator: LISSAuto_ContentGenerator,
@@ -175,8 +172,6 @@ async function defineWebComponent(tagname: string, files: Record<string, any>, o
 	const c_js      = files["index.js"];
 	opts.html     ??= files["index.html"];
 
-	console.warn(opts, files);
-
 	let klass: null| ReturnType<typeof LISS> = null;
 	if( c_js !== undefined ) {
 
@@ -208,7 +203,7 @@ async function defineWebComponent(tagname: string, files: Record<string, any>, o
 		});
 	}
 
-	if(klass === null)
+	if( klass === null )
 		throw new Error(`Missing files for WebComponent ${tagname}.`);
 
 	define(tagname, klass);
@@ -417,6 +412,7 @@ async function importComponentV3<T extends HTMLElement = HTMLElement>(
 	const files: Record<string,string> = {};
 
 	const ext = "html";
+
 	files[ext] = (await _fetchText(`${compo_dir}index.${ext}`, true))!;
 	// try/catch ?
 	// strats : JS -> Bry -> HTML+CSS.

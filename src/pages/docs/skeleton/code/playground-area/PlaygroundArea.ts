@@ -1,4 +1,4 @@
-import LISS from "../../../../../index";
+import LISS from "../../../../../";
 import CodeBlock from "../code-block/CodeBlock";
 
 type Resource = {
@@ -10,15 +10,15 @@ type Resource = {
 
 export const rootdir = location.host === "denis-migdal.github.io" ? `/${location.pathname.split("/")[1]}` : "";
 
-//TODO : path
-export const ASSETS = `${rootdir}/dist/dev/assets/examples`;
-
 // @ts-ignore
 import css  from "!!raw-loader!./PlaygroundArea.css";
 
 export default class PlaygroundArea extends LISS({
     css
 }) {
+    get ASSETS_DIR() {
+        return `${rootdir}/dist/dev/assets/examples`;
+    }; 
 
     protected resources: Record<string, {
         html  : HTMLElement,
@@ -169,7 +169,7 @@ export default class PlaygroundArea extends LISS({
             const code_api = this.resources[file].ctrler!;
 
             promises.push( (async() => {
-                const resp = await fetch(`${ASSETS}/${example}/${file}`);
+                const resp = await fetch(`${this.ASSETS_DIR}/${example}/${file}`);
                 let text = "";
                 if( resp.status === 200 ) {
                     text = await resp.text();

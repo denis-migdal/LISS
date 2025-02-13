@@ -69,8 +69,7 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
         </style>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
         <script type="module" src='${rootdir}/dist/dev/index.js'
-                liss-mode="auto-load"
-                liss-cdir="${rootdir}/dist/dev/assets/examples/"
+                autodir="${rootdir}/dist/dev/assets/examples/"
         ></script>
         <script type="module">
             ${p_js}
