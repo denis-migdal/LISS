@@ -1,4 +1,4 @@
-import LISS from "../../../../../index";
+import LISS from "../../../../../";
 import PlaygroundArea, { rootdir } from "../playground-area/PlaygroundArea";
 
 

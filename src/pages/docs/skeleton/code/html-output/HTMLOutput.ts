@@ -1,5 +1,5 @@
 import { whenDOMContentLoaded } from "../../../../../V2/utils";
-import LISS from "../../../../../index";
+import LISS from "../../../../../";
 
 
 export class HTMLOutput extends LISS() {
