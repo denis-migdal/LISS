@@ -1,6 +1,8 @@
 - fr/docs:🇫🇷
-    - auto-mode:Mode Automatique
-    - controler:Contrôleur API
-    - life-cycle:Cycle de vie
+    + V2:V2
+        - controler:Contrôleur API
+        - life-cycle:Cycle de vie
+    + V3:V3 (en développement)
+        - auto-mode:Mode Automatique
 - en/docs:🇬🇧
 - playground:Playground

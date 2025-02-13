@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf8"/>
+        <title>LISS</title>
+        <!--
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="cyan" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black" />
+        -->
+        <meta name="color-scheme" content="dark light">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link   href="./index.css"  rel="stylesheet" blocking="render">
+        <script  src="./index.js"  type="module"     blocking="render" async></script>
+    </head>
+    <body class="hide_h1">
+        <main>
+
+<h1 id="documentation-liss">Documentation LISS</h1>
+<p>[TODO] Intro</p>
+<p>Why/motivation</p>
+<p>Auto-mode</p>
+<p>Controler vs Host</p>
+<p>Life Cycle</p>
+<ul>
+<li>state :<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomStateSet">https://developer.mozilla.org/en-US/docs/Web/API/CustomStateSet</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/attachInternals">https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/attachInternals</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="old">OLD</h2>
+<h3 id="contenu-dynamique-en-fonction-du-contenu-de-lhôte">Contenu dynamique en fonction du contenu de l&#39;hôte</h3>
+<p>Le contenu de votre composant Web peut dépendre du contenu de l&#39;élément hôte. Pour cela, il suffit d&#39;indiquer des slots dans lesquels le contenu de l&#39;hôte sera affiché.</p>
+<pre><code class="language-html">&lt;slot name=&quot;invite&quot;&gt;&lt;/slot&gt;: &lt;br/&gt;
+&lt;slot&gt;&lt;/slot&gt; &lt;!-- slot par défaut --&gt;
+</code></pre>
+<pre><code class="language-html">&lt;hello-world&gt;
+    &lt;span slot=&quot;invite&quot;&gt;Hello&lt;/span&gt;
+    &lt;span&gt;User&lt;/span&gt; &lt;!-- slot par défaut --&gt;
+&lt;/hello-world&gt;
+</code></pre>
+<p>⚠ Les slots ne peuvent être utilisés sur les composants Web héritant de certains éléments HTML.</p>
+<p><em>Example :</em></p>
+<ul>
+<li><a href="https://denis-migdal.github.io/LISS/dist/dev/pages/playground/?example=auto-html-slots">auto-html-slots</a></li>
+</ul>
+</main>
+    </body>
+</html>
