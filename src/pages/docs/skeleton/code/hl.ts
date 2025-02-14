@@ -30,9 +30,6 @@ export function getCursorXPos(target: HTMLElement, type: "start"|"end"): CursorP
     let path = [];
     let cur  = rrange[`${type}Container`];
 
-    console.warn(  )
-    console.warn(rrange, rrange[`${type}Container`]);
-
     while(cur !== target) {
         path.push(cur); 
         cur = cur.parentNode!;

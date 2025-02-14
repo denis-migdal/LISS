@@ -23,25 +23,53 @@ export async function importComponentV3<T extends HTMLElement = HTMLElement>(
 
 	// strats : JS -> Bry -> HTML+CSS (cf script attr).
 
-	// try/catch ?
-    const promises = [
-        _fetchText(`${compo_dir}index.html`, true)!,
-        _fetchText(`${compo_dir}index.css` , true)!
-    ];
-	[files["html"], files["css" ]] = await Promise.all(promises);
+    files["js"] = await _fetchText(`${compo_dir}index.js`, true);
+
+    console.warn("Loaded", tagname, files["js"]);
+
+    if( files["js"] === undefined) {
+        // try/catch ?
+        const promises = [
+            _fetchText(`${compo_dir}index.html`, true)!,
+            _fetchText(`${compo_dir}index.css` , true)!
+        ];
+        [files["html"], files["css" ]] = await Promise.all(promises);
+    }
 
 	return await defineWebComponent(tagname, files);
 }
 
+async function execute(code: string, type: "js") {
 
+    let result;
+
+    if( type === "js" ) {
+        const file = new Blob([code], { type: 'application/javascript' });
+        const url  = URL.createObjectURL(file);
+
+        result = (await import(/* webpackIgnore: true */ url));
+        
+        URL.revokeObjectURL(url);
+    }
+
+    return result;
+}
 
 //TODO: rename from files ?
-async function defineWebComponent(tagname: string, files: Record<string, any>) {
+async function defineWebComponent(tagname: string,
+                                  files: Record<string, any>
+                                ) {
+    
+    let klass;
+    if( "js" in files ) {
+        klass = (await execute(files["js"], "js")).default;
+    }
 
-    let klass = LISSv3({
-        content_generator: LISSAuto_ContentGenerator,
-        ...files
-    });
+    if( klass === undefined )
+        klass = LISSv3({
+            content_generator: LISSAuto_ContentGenerator,
+            ...files
+        });
 
     define(tagname, klass);
 
@@ -101,7 +129,10 @@ export class LISSAuto_ContentGenerator extends ContentGenerator {
 
 declare global {
     var LISSContext: {
-        fetch?: Record<string, string>
+        fetch?: {
+            cwd  : string,
+            files: Record<string, string>
+        }
     }
 }
 
@@ -111,9 +142,13 @@ export async function _fetchText(uri: string|URL, hide404: boolean = false) {
 
     const fetchContext = globalThis.LISSContext.fetch;
     if( fetchContext !== undefined ) {
-        const file = fetchContext[uri.toString()];
-        if(file !== undefined )
-            return file;
+        const path = new URL(uri, fetchContext.cwd );
+        console.warn(path);
+        const value = fetchContext.files[path.toString()];
+        if( value === "" )
+            return undefined;
+        if( value !== undefined)
+            return value;
     }
 
     const options = hide404
@@ -134,4 +169,13 @@ export async function _fetchText(uri: string|URL, hide404: boolean = false) {
         return undefined;
 
     return answer
+}
+
+// @ts-ignore
+globalThis.require = async function(url: string) {
+
+    //TODO: non playground...
+    const result = await _fetchText(url);
+    console.warn("!!", url, globalThis.LISSContext, result);
+    return result;
 }

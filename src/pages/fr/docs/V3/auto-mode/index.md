@@ -84,6 +84,26 @@ Par défaut, l'affichage d'un composant Web <script type="c-text"><h>$NAME</h></
 
 ## Définir le comportement
 
+Par défaut, le comportement d'un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>js|ts|bry</h></script> :
+
+<liss-playground name="auto-code" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=auto-code"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+⚠ Si vous définissez le comportement du composant Web, il vous faudra explicitement charger le contenu et l'affichage :
+
+<liss-playground name="auto-require" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=auto-require"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+- import JS
+    - rewrite imports
+    - async ContentGenerator
+    - require() outside of playground
+- import Py
+- import TS
+    - convert...
+
 ## Fonctionnement interne (pour les développeurs)
 
 1. si script liss-mode=auto-load + liss-cdir

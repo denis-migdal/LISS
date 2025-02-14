@@ -48,13 +48,20 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
         
         const codes = this.getAllCodes(); // TODO select code...
 
-        console.warn(codes);
-
         const tagname = this.host.getAttribute('name');
+
+        const cwd = `${location.origin}${this.ASSETS_DIR}/${tagname}/`;
+
+        let files: Record<string, string> = {};
+        for(let ext of ["html", "css", "js"])
+            files[`${cwd}index.${ext}`] = codes[`index.${ext}`];
+
+        console.warn(tagname, Object.keys(codes), Object.keys(files) );
+
         return {
             fetch: {
-                [`${this.ASSETS_DIR}/${tagname}/index.html`]: codes['index.html'],
-                [`${this.ASSETS_DIR}/${tagname}/index.css` ]: codes['index.css' ]
+                cwd,
+                files
             }
         }
     }
