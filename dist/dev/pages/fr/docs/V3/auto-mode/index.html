@@ -50,14 +50,11 @@
 <div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
 <h2 id="définir-laffichage">Définir l&#39;affichage</h2>
-<p>Pour définir l&#39;affichage de votre composant Web, il vous suffit d&#39;indiquer les règles CSS à appliquer dans un fichier <code>index.css</code> :</p>
-<pre><code class="language-css">:host {
-    /* vos règles CSS */
-    &amp; .name {
-        background-color: red;
-    }
-}
-</code></pre>
+<p>Par défaut, l&#39;affichage d&#39;un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.css</script> :</p>
+<liss-playground name="hello-world" show="index.css,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
 <h2 id="définir-le-comportement">Définir le comportement</h2>
 <h2 id="contenu-en-fonction-des-attributs">Contenu en fonction des attributs</h2>
 <p>-&gt; HTML possible
@@ -75,6 +72,13 @@ Pour indiquer cela, il suffit d&#39;ajouter à votre composant Web des valeurs &
 <p>⚠ Par défaut, <code>${ATTR_NAME}</code> n&#39;est fixé qu&#39;à l&#39;initialisé du composant Web, il n&#39;est ainsi pas mis à jour si l&#39;attribut correspondant est modifié par la suite.</p>
 <p>⚠ Pour le moment, <code>${ATTR_NAME}</code> ne fonctionne que pour du texte. Il ne fonctionne pas à l&#39;intérieur des attributs HTML.</p>
 <h2 id="fonctionnement-interne-pour-les-développeurs">Fonctionnement interne (pour les développeurs)</h2>
+<ol>
+<li>si script liss-mode=auto-load + liss-cdir</li>
+<li>detect all tags</li>
+<li>addTag if not defined (check if already defined)</li>
+<li>importComponentV3 (fetch files from cdir)</li>
+<li>defineWebComponentV3 (build class + define it)</li>
+</ol>
 <p>-&gt; fetch
 -&gt; donc requêtes/certaines inutile, pas perfs, proto/dev.</p>
 <p>Le mode automatique de LISS est principalement conçu pour la conception de prototypes. Il n&#39;est ainsi pas conçu pour être performant.</p>

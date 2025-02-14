@@ -4,14 +4,15 @@ import LISS from "../extends";
 import ContentGenerator from "../ContentGenerator";
 import { define } from "../LifeCycle/DEFINED";
 import LISSv3 from "V3/";
+import { importComponentV3 } from "V3/LISSAuto";
 
-const KnownTags = new Set<string>();
+export const KnownTags = new Set<string>();
 
 let script = document.querySelector<HTMLElement>('script[autodir]');
 if( script === null)
 	script =  document.querySelector<HTMLElement>('script[liss-mode="auto-load"]');
 
-const DEFAULT_CDIR = script?.getAttribute('autodir') ?? script?.getAttribute('liss-cdir') ?? null;
+export const DEFAULT_CDIR = script?.getAttribute('autodir') ?? script?.getAttribute('liss-cdir') ?? null;
 
 if(script !== null)
 	autoload(script)
@@ -114,7 +115,7 @@ function autoload(script: HTMLElement) {
 }
 
 //TODO: rename from files ?
-async function defineWebComponentV3(tagname: string, files: Record<string, any>) {
+export async function defineWebComponentV3(tagname: string, files: Record<string, any>) {
 
 	let klass = LISSv3({
 		content_generator: LISSAuto_ContentGenerator,
@@ -215,7 +216,7 @@ async function defineWebComponent(tagname: string, files: Record<string, any>, o
 // =============== LISS internal tools ============
 // ================================================
 
-async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
+export async function _fetchText(uri: string|URL, isLissAuto: boolean = false) {
 
 	const options = isLissAuto
 						? {headers:{"liss-auto": "true"}}
@@ -336,10 +337,6 @@ declare module "../extends" {
     }
 }
 
-type importComponents_OptsV3<T extends HTMLElement> = {
-	cdir   ?: string|null
-};
-
 type importComponents_Opts<T extends HTMLElement> = {
 	cdir   ?: string|null,
 	brython?: string|null,
@@ -394,33 +391,6 @@ def wrapjs(js_klass):
 
 self.wrapjs = wrapjs
 `;
-
-
-
-async function importComponentV3<T extends HTMLElement = HTMLElement>(
-	tagname: string,
-	{
-		cdir    = DEFAULT_CDIR,
-		// brython = null
-	}: importComponents_OptsV3<T> = {}
-) {
-
-	KnownTags.add(tagname);
-
-	const compo_dir = `${cdir}${tagname}/`;
-
-	const files: Record<string,string> = {};
-
-	const ext = "html";
-
-	files[ext] = (await _fetchText(`${compo_dir}index.${ext}`, true))!;
-	// try/catch ?
-	// strats : JS -> Bry -> HTML+CSS.
-
-	return await defineWebComponentV3(tagname, files);
-}
-
-
 
 
 async function importComponent<T extends HTMLElement = HTMLElement>(

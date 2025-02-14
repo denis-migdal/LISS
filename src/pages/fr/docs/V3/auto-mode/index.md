@@ -59,16 +59,11 @@ Par défaut, le contenu d'un composant Web <script type="c-text"><h>$NAME</h></s
 
 ## Définir l'affichage
 
-Pour définir l'affichage de votre composant Web, il vous suffit d'indiquer les règles CSS à appliquer dans un fichier `index.css` :
+Par défaut, l'affichage d'un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.css</script> :
 
-```css
-:host {
-    /* vos règles CSS */
-    & .name {
-        background-color: red;
-    }
-}
-```
+<liss-playground name="hello-world" show="index.css,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
 ## Définir le comportement
 
@@ -99,6 +94,13 @@ Hello ${name}
 ⚠ Pour le moment, `${ATTR_NAME}` ne fonctionne que pour du texte. Il ne fonctionne pas à l'intérieur des attributs HTML.
 
 ## Fonctionnement interne (pour les développeurs)
+
+1. si script liss-mode=auto-load + liss-cdir
+1. detect all tags
+1. addTag if not defined (check if already defined)
+1. importComponentV3 (fetch files from cdir)
+1. defineWebComponentV3 (build class + define it)
+
 
 -> fetch
 -> donc requêtes/certaines inutile, pas perfs, proto/dev.

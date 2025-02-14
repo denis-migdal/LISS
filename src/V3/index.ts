@@ -11,6 +11,8 @@
  7. pure JS (?)
 */
 
+//TODO: dev log : parfois dossiers bien major rewrite ou API vers //
+
 // example : playground v3 (?)
     // liss-version="v3"
     // liss-v3="auto" (c'est la v3 qu'il faut utiliser)
