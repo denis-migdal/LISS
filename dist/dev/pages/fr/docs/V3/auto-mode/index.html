@@ -49,6 +49,19 @@
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
+
+<h2 id="contenu-en-fonction-des-attributs">Contenu en fonction des attributs</h2>
+<p>Le mode automatique de LISS permet d&#39;<em>initialiser</em> le contenu du composant Web à partir des attributs de l&#39;hôte :</p>
+<liss-playground name="auto-attrs" show="page.html,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=auto-attrs"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+<p>Dans le contenu du composant Web, chaque <script type="c-text">${<h>$ATTR</h>}</script> est remplacé par la valeur de l&#39;attribut <script type="c-text"><h>$ATTR</h></script> de l&#39;hôte :</p>
+<liss-playground name="auto-attrs" show="index.html,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../../playground/?example=auto-attrs"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+<p>⚠ Pour le moment, les valeurs ne sont pas mises à jour lors de la modification des attributs de l&#39;hôte.</p>
 <h2 id="définir-laffichage">Définir l&#39;affichage</h2>
 <p>Par défaut, l&#39;affichage d&#39;un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.css</script> :</p>
 <liss-playground name="hello-world" show="index.css,output">
@@ -56,21 +69,6 @@
 <div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
 <h2 id="définir-le-comportement">Définir le comportement</h2>
-<h2 id="contenu-en-fonction-des-attributs">Contenu en fonction des attributs</h2>
-<p>-&gt; HTML possible
--&gt; quelques fonctionnalités avancées en mode automatique si pas de JS/Brython pour faciliter le prototypage</p>
-<p>Le contenu du composant Web peut être dynamique, i.e. dépendre de l&#39;élément hôte.</p>
-<p>Le contenu de votre composant Web peut dépendre des attributs de l&#39;élément hôte.
-Pour indiquer cela, il suffit d&#39;ajouter à votre composant Web des valeurs &quot;magiques&quot; avec <code>${}</code> :</p>
-<pre><code class="language-html">Hello ${name}
-</code></pre>
-<p>À l&#39;initialisation du composant Web, LISS remplace les <code>${ATTR_NAME}</code> par la valeur de l&#39;attribut <code>ATTR_NAME</code> de l&#39;hôte, e.g. :</p>
-<pre><code class="language-html">&lt;hello-world name=&quot;user&quot;&gt;&lt;/hello-world&gt;
-&lt;!-- affiche &quot;Hello user&quot; --&gt;
-</code></pre>
-<p>💡 Ce comportement &quot;magique&quot; est une fonctionnalité du mode automatique de LISS permettant de définir du contenu dynamique sans nécessiter de JS/Brython.</p>
-<p>⚠ Par défaut, <code>${ATTR_NAME}</code> n&#39;est fixé qu&#39;à l&#39;initialisé du composant Web, il n&#39;est ainsi pas mis à jour si l&#39;attribut correspondant est modifié par la suite.</p>
-<p>⚠ Pour le moment, <code>${ATTR_NAME}</code> ne fonctionne que pour du texte. Il ne fonctionne pas à l&#39;intérieur des attributs HTML.</p>
 <h2 id="fonctionnement-interne-pour-les-développeurs">Fonctionnement interne (pour les développeurs)</h2>
 <ol>
 <li>si script liss-mode=auto-load + liss-cdir</li>

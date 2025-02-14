@@ -254,7 +254,7 @@ async function _import(uri: string, isLissAuto: boolean = false) {
 
 const converter = document.createElement('span');
 
-function encodeHTML(text: string) {
+export function encodeHTML(text: string) {
 	converter.textContent = text;
 	return converter.innerHTML;
 }
@@ -287,7 +287,7 @@ export class LISSAuto_ContentGenerator extends ContentGenerator {
 		
 		// https://stackoverflow.com/questions/29182244/convert-a-string-to-a-template-string
 		if( this.data !== null) {
-			const str = (this.data as string).replace(/\$\{(.+?)\}/g, (_, match) => encodeHTML(host.getAttribute(match) ?? '' ));
+			const str = (this.data as string).replace(/\$\{(.+?)\}/g, (_, match) => encodeHTML(shadow.host.getAttribute(match) ?? '' ));
 			super.setTemplate( super.prepareHTML(str)! );
 		}
 
