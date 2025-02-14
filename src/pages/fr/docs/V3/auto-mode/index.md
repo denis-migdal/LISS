@@ -99,6 +99,7 @@ Hello ${name}
 1. detect all tags
 1. addTag if not defined (check if already defined)
 1. importComponentV3 (fetch files from cdir)
+    1. _fetchText() => override if playground.
 1. defineWebComponentV3 (build class + define it)
 
 

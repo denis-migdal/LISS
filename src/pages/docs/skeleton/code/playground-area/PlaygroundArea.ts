@@ -218,6 +218,10 @@ export default class PlaygroundArea extends LISS({
 
     #lastURL: string|null = null;
 
+    generateIFrameContext(): any {
+        return {};
+    }
+
     async updateResult() {
 
         const iframe = document.createElement('iframe');
@@ -250,6 +254,7 @@ export default class PlaygroundArea extends LISS({
 
         // called twice ?? -> update first when it shouldn't ???
         if(doc !== null) {
+            (iframe.contentWindow as any).LISSContext = this.generateIFrameContext();
             doc.open();
             doc.write( content );
             doc.close();

@@ -19,10 +19,19 @@ export function getCursorXPos(target: HTMLElement, type: "start"|"end"): CursorP
     if( (target.getRootNode() as any).activeElement !== target )
         return null;
 
-    let rrange = window.getSelection()!.getRangeAt(0);
+    // Chromium/FF compatibility
+    const root = target.getRootNode();
+    // @ts-ignore
+    let selection = root.getSelection?.();
+    if( selection === undefined )
+        selection = window.getSelection();
 
+    let rrange = selection!.getRangeAt(0);
     let path = [];
     let cur  = rrange[`${type}Container`];
+
+    console.warn(  )
+    console.warn(rrange, rrange[`${type}Container`]);
 
     while(cur !== target) {
         path.push(cur); 

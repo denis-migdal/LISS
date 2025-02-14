@@ -42,27 +42,37 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
 
     override get ASSETS_DIR() {
         return `${rootdir}/dist/dev/assets/${VERSION}`;
-    }; 
+    };
+
+    override generateIFrameContext() {
+        
+        const codes = this.getAllCodes(); // TODO select code...
+
+        console.warn(codes);
+
+        const tagname = this.host.getAttribute('name');
+        return {
+            fetch: {
+                [`${this.ASSETS_DIR}/${tagname}/index.html`]: codes['index.html'],
+                [`${this.ASSETS_DIR}/${tagname}/index.css` ]: codes['index.css' ]
+            }
+        }
+    }
     
     override async generateIFrameContent() {
 
         const codes = this.getAllCodes();
 
-        const webcomp_name = this.host.getAttribute('name')!;
-
+        //TODO:
         const brython = this.host.hasAttribute("brython");
         let file = brython ? "index.bry" : "index.js";
         let code = brython ? escapeStr(codes["index.bry" ])
                            : escapeStr(codes["index.js"  ]);
 
-        let c_html = escapeStr(codes["index.html"])
-        let c_css  = escapeStr(codes["index.css" ]);
-
+        //TODO
         let p_js    = codes["page.js"   ];
         if( brython )
             p_js = `globalThis.__BRYTHON__.runPythonSource(\`${codes["page.bry"]}\`, "_");`;
-
-        const p_html  = codes["page.html" ];
 
         return `<!DOCTYPE html>
     <head>
@@ -72,7 +82,9 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
                 background-color: white;
             }
         </style>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
+        <script>
+            console.warn("?", window.LISSContext);
+        </script>
         <script type="module" src='${rootdir}/dist/dev/index.js'
                 liss-mode="auto-load"
                 liss-cdir="${this.ASSETS_DIR}/"
@@ -82,7 +94,7 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
         </script>
     </head>
     <body>
-        ${p_html}
+        ${codes["page.html"]}
     </body>
 </html>
 `;
