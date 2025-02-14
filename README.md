@@ -4,6 +4,11 @@
   <p>Build safe and simple vanilla WebComponents</p>
 </div>
 
+## Documentation :
+
+- V3: https://denis-migdal.github.io/LISS/dist/dev/pages/fr/docs/V3/auto-mode/
+- V2: https://denis-migdal.github.io/LISS/dist/dev/pages/fr/docs/V2/
+
 ## Build
 
 - `npm run build`
