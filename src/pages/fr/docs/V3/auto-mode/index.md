@@ -72,6 +72,8 @@ Dans le contenu du composant Web, chaque <script type="c-text">${<h>$ATTR</h>}</
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=auto-attrs"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
+💡 Permis par : AutoContentGenerator (cf content gen)
+
 ⚠ Pour le moment, les valeurs ne sont pas mises à jour lors de la modification des attributs de l'hôte.
 
 ## Définir l'affichage
@@ -84,17 +86,29 @@ Par défaut, l'affichage d'un composant Web <script type="c-text"><h>$NAME</h></
 
 ## Définir le comportement
 
-Par défaut, le comportement d'un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>js|ts|bry</h></script> :
+Par défaut, le comportement d'un composant Web <script type="c-text"><h>$NAME</h></script> est défini par un fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>js|ts|bry</h></script>.
 
-<liss-playground name="auto-code" show="index.code,output">
+⚠ Le contenu et l'affichage définis dans les fichiers <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>html|css</h></script> devront être explicitement chargés.
+
+### Avec LISS
+
+<liss-playground name="auto-liss" show="index.code,output">
 </liss-playground>
-<div style="text-align:right"><a href="../../../playground/?example=auto-code"><i>Tester l'exemple dans le bac à sable</i></a></div>
+<div style="text-align:right"><a href="../../../playground/?example=auto-liss"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
-⚠ Si vous définissez le comportement du composant Web, il vous faudra explicitement charger le contenu et l'affichage :
 
-<liss-playground name="auto-require" show="index.code,output">
+### Sans LISS
+
+<liss-playground name="auto-vanilla" show="index.code,output">
 </liss-playground>
-<div style="text-align:right"><a href="../../../playground/?example=auto-require"><i>Tester l'exemple dans le bac à sable</i></a></div>
+<div style="text-align:right"><a href="../../../playground/?example=auto-vanilla"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+
+TODO: vous pouvez vous aider de ... (plusieurs helpers)
+- LISS.AutoContentGenerator
+- handle async in content gen + define new version.
+- waiting 2 be defined => they are known
+
 
 - import JS
     - rewrite imports

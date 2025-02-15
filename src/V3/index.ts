@@ -1,23 +1,6 @@
-/*
- 1. override fetch/import/whatever
-    -> expliquer le fonctionnement (sinon je vais m'y perdre)
-    -> v3 directory ?
-        -> sources inside ?
- 2. CSS
- 3. HTML in fct attr
- 4. Fct interne
- 5. Conseils
- 6. JS... 
- 7. pure JS (?)
-*/
-
-//TODO: dev log : parfois dossiers bien major rewrite ou API vers //
-
 // example : playground v3 (?)
     // liss-version="v3"
     // liss-v3="auto" (c'est la v3 qu'il faut utiliser)
-// unit test de l'exemple ajouté
-// => continue other examples
 
 // TODO: in playground brython src only if brython
 // TODO: remove v2 (autodir) + v2 fcts
@@ -34,8 +17,6 @@
             // default HTML in test if (null)...
             // like playground (?) => different file for cleaner code ?
     // files="js,ts,bry,html" - default (html+css+js) ?
-        // override fetch (ofc) [sw override ?]
-        // build default js (with ${}) support
 
 // docs (+ examples playground/tests // Bry/JS).
     // non-auto first.
@@ -53,7 +34,6 @@
     // remove events + qs ?
     // TODO: state (internal state)
     // TODO: bliss
-    // TODO: css--[prop_name].
     // TODO: sharedCSS
 
 // TODO: upgrade
@@ -68,46 +48,22 @@
     // TODO: show error...
     // TODO: debounce/throttle editor...
 
-import ContentGenerator from "../V2/ContentGenerator";
+import ContentGenerator from "V3/ContentGenerators/ContentGenerator";
+import LISSFull from "./LISS/LISSFull";
 
-// Only extends HTMLElement, else issues :
-    // not supported by all browsers.
-    // may not support shadowRoot -> then init can be troublesome.
-    // be careful when trying to build : createElement call cstr.
-    // if possible, do not expect content (attr good ? no children ?)
+export function getInitialValue<E extends HTMLElement, N extends keyof E>
+                            (e: E, name: N): undefined|E[N]
+export function getInitialValue<E extends HTMLElement, N extends keyof E, D>
+                            (e: E, name: N, defaultValue: D) : D|E[N]
+export function getInitialValue<E extends HTMLElement, N extends keyof E, D>
+                            (e: E, name: N, defaultValue?: D): undefined|D|E[N] {
 
-// Wait DOM ContentLoaded, else will lack children (e.g. blocking script)
-// Upgrade order is def order => do not depend father/children.
-    // father should upgrade children ? (as it listen its children) ?
-        // (can't listen children father)
-        // upgrade fct
-        // children can't assume he is in a (compatible) father.
-            // attach()/detach() // onAttach() / onDetach()
-                // add ?
+    if( ! Object.hasOwn(e, name) )
+        return defaultValue;
 
-// defer/after DOMContentLoaded for querying DOM
-// WTF for custom elements???
-
-class LISSBase extends HTMLElement {
-
-    protected readonly content: ShadowRoot;
-
-    constructor(generator?: ContentGenerator) {
-        super();
-
-        this.content = this.attachShadow({mode: "open"});
-        if(generator !== undefined)
-            generator.fillContent(this.content);
-    }
-
-    // for better suggestions
-    get controler(): Omit<this, keyof HTMLElement> {
-        return this;
-    }
-
-    get host(): HTMLElement {
-        return this;
-    }
+    const  _ = e[name];
+    delete     e[name];
+    return _;
 }
 
 type Cstr<T> = new(...args:any[]) => T
@@ -120,11 +76,14 @@ export default function LISSv3<T extends Cstr<ContentGenerator> = Cstr<ContentGe
     
     const content_generator = opts.content_generator ?? ContentGenerator;
     // @ts-ignore
-    const _generator: ContentGenerator = new content_generator(opts);
+    const generator: ContentGenerator = new content_generator(opts);
     
-    return class _LISS extends LISSBase {
-        constructor(generator = _generator) {
-            super(generator);
-        }
+    return class _LISS extends LISSFull {
+
+        // TODO: no content if... ???
+        // override attachShadow  ???
+        static override readonly SHADOW_MODE       = "open";
+        static override readonly CONTENT_GENERATOR = generator;
+
     }
 }

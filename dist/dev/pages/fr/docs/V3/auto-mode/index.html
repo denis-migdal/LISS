@@ -61,6 +61,7 @@
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=auto-attrs"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
+<p>💡 Permis par : AutoContentGenerator (cf content gen)</p>
 <p>⚠ Pour le moment, les valeurs ne sont pas mises à jour lors de la modification des attributs de l&#39;hôte.</p>
 <h2 id="définir-laffichage">Définir l&#39;affichage</h2>
 <p>Par défaut, l&#39;affichage d&#39;un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.css</script> :</p>
@@ -69,25 +70,39 @@
 <div style="text-align:right"><a href="../../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
 <h2 id="définir-le-comportement">Définir le comportement</h2>
-<p>Par défaut, le comportement d&#39;un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>js|ts|bry</h></script> :</p>
-<liss-playground name="auto-code" show="index.code,output">
+<p>Par défaut, le comportement d&#39;un composant Web <script type="c-text"><h>$NAME</h></script> est défini par un fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>js|ts|bry</h></script>.</p>
+<p>⚠ Le contenu et l&#39;affichage définis dans les fichiers <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>html|css</h></script> devront être explicitement chargés.</p>
+<h3 id="avec-liss">Avec LISS</h3>
+<liss-playground name="auto-liss" show="index.code,output">
 </liss-playground>
-<div style="text-align:right"><a href="../../../playground/?example=auto-code"><i>Tester l'exemple dans le bac à sable</i></a></div>
+<div style="text-align:right"><a href="../../../playground/?example=auto-liss"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
-<p>⚠ Si vous définissez le comportement du composant Web, il vous faudra explicitement charger le contenu et l&#39;affichage :</p>
-<liss-playground name="auto-require" show="index.code,output">
+
+<h3 id="sans-liss">Sans LISS</h3>
+<liss-playground name="auto-vanilla" show="index.code,output">
 </liss-playground>
-<div style="text-align:right"><a href="../../../playground/?example=auto-require"><i>Tester l'exemple dans le bac à sable</i></a></div>
+<div style="text-align:right"><a href="../../../playground/?example=auto-vanilla"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
+
+<p>TODO: vous pouvez vous aider de ... (plusieurs helpers)</p>
 <ul>
-<li>import JS<ul>
+<li><p>LISS.AutoContentGenerator</p>
+</li>
+<li><p>handle async in content gen + define new version.</p>
+</li>
+<li><p>waiting 2 be defined =&gt; they are known</p>
+</li>
+<li><p>import JS</p>
+<ul>
 <li>rewrite imports</li>
 <li>async ContentGenerator</li>
 <li>require() outside of playground</li>
 </ul>
 </li>
-<li>import Py</li>
-<li>import TS<ul>
+<li><p>import Py</p>
+</li>
+<li><p>import TS</p>
+<ul>
 <li>convert...</li>
 </ul>
 </li>

@@ -4,5 +4,6 @@
         - life-cycle:Cycle de vie
     + V3:V3 (en développement)
         - auto-mode:Mode Automatique
+        - advices:Conseils d'utilisation
 - en/docs:🇬🇧
 - playground:Playground

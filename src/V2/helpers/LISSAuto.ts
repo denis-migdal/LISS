@@ -4,7 +4,7 @@ import LISS from "../extends";
 import ContentGenerator from "../ContentGenerator";
 import { define } from "../LifeCycle/DEFINED";
 import LISSv3 from "V3/";
-import { importComponentV3 } from "V3/LISSAuto";
+import { importComponentV3 } from "V3/LISS/LISSAuto";
 
 export const KnownTags = new Set<string>();
 

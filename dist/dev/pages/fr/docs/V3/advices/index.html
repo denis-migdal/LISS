@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf8"/>
+        <title>LISS</title>
+        <meta name="color-scheme" content="dark light">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link   href="./index.css"  rel="stylesheet" blocking="render">
+        <script  src="./index.js"  type="module"     blocking="render" async></script>
+    </head>
+    <body code-langs="js,bry">
+        <main>
+
+<h1 id="conseils-dutilisation">Conseils d&#39;utilisation</h1>
+<h2 id="mise-à-niveau-du-composant-web">Mise à niveau du composant Web</h2>
+<p>-&gt; ElementHTML
+-&gt; defini =&gt; transforme les ElementHTML correspondant en X.
+-&gt; quand on manipule : des problèmes, peut être upgradé ou non.
+=&gt; querySelectorAll(x:defined) =&gt; peut en oublier...</p>
+<p>=&gt; DOMContentLoaded / document =&gt; interactive =&gt; ensure all children
+    =&gt; can&#39;t ensure children upgraded : DO NOT DEPEND ON IT, NEVER.
+=&gt; could even load =&gt; remove body, define, put body back =&gt; then upgrade order ensured.</p>
+<p>Cela implique qu&#39;il faut le traiter comme un HTML normal.
+-&gt; attr/children (string/Nodes)
+-&gt; values avec astuce
+-&gt; sinon des fonctions externes (waitUpgrade()/upgrade()/etc.)
+    -&gt; async (promise) ou sync passif (erreur si pas) ou sync actif (pousse l&#39;upgrade).</p>
+<h2 id="données">Données</h2>
+<p>attrs / content =&gt; parser (garantir le type autant que possible).
+    +&gt; values.
+=&gt; attrs/content si def dans fichier HTML + modifié dans inspecteur.</p>
+<p>Eviter de manipuler l&#39;HTMLElement directement, problème de upgrade (+ perfs pour attrs/content =&gt; converted to Node/String).</p>
+<p>Afficher et afficher seulement, pas de manipulation (autant que possible).
+Le mieux est données séparées et compo se contente d&#39;afficher
+    =&gt; même données pour plusieurs compo.
+    =&gt; récup les données d&#39;un compo =&gt; une fois fait peut manipuler sans problèmes.
+=&gt; signal / indirectSignal + fonctions...
+    =&gt; mergerKlass (?)</p>
+<p>requestUpdate
+    - validate/require all valid (si each signals)
+        -&gt; onUpdate() [par defaut, rien]
+        -&gt; clear()    [par defaut, recreer le HTML de 0].
+    - peut être throttle pour opti.</p>
+<p>Constant instance ou special update (updateAll)
+    =&gt; recréer ou set (pas garanti)
+        =&gt; recréer : évite mises à jour struct non notifiées.
+        =&gt; merger
+            =&gt; key/value
+            =&gt; another merger
+            =&gt; lazy .get =&gt; si changements problèmes.
+                =&gt; trigger event...
+                =&gt; valeur peut-être changée, mais ok.
+                    =&gt; merge ROSignal &amp; indirect ?
+                    =&gt; props is a signal.</p>
+<h2 id="dépendances">Dépendances</h2>
+<ul>
+<li>shadow child can depend parent (by construction)</li>
+<li>children can&#39;t assume he is in a (compatible) father.</li>
+<li>parent must not assume he has children.</li>
+<li>parent -&gt; shadow child =&gt; must add as a content_generator deps if known.</li>
+<li>Parent/host child =&gt; attach/detach system.</li>
+<li>do NOT call upgrade(this) dans constructeur =&gt; appel connectedCallback too soon.
+  =&gt; upgrade(des children) plutôt</li>
+</ul>
+<h2 id="heritage">Heritage</h2>
+<p>// Only extends HTMLElement, else issues :
+    // not supported by all browsers.
+    // may not support shadowRoot -&gt; then init can be troublesome.
+    // be careful when trying to build : createElement call cstr.
+    // if possible, do not expect content (attr good ? no children ?)</p>
+<h2 id="loading">Loading</h2>
+<ul>
+<li>non Auto</li>
+<li>blocking=&quot;render&quot; (FF not implemented)</li>
+<li>:not(:defined) =&gt; visibility: hidden + :not(:defined)::after =&gt; loading etc.</li>
+</ul>
+</main>
+    </body>
+</html>

@@ -56,8 +56,6 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
         for(let ext of ["html", "css", "js"])
             files[`${cwd}index.${ext}`] = codes[`index.${ext}`];
 
-        console.warn(tagname, Object.keys(codes), Object.keys(files) );
-
         return {
             fetch: {
                 cwd,
@@ -89,9 +87,6 @@ class LISSPlayground extends LISS({extends: PlaygroundArea}) {
                 background-color: white;
             }
         </style>
-        <script>
-            console.warn("?", window.LISSContext);
-        </script>
         <script type="module" src='${rootdir}/dist/dev/index.js'
                 liss-mode="auto-load"
                 liss-cdir="${this.ASSETS_DIR}/"
