@@ -38,10 +38,7 @@ attrs / content => parser (garantir le type autant que possible).
 
 Eviter de manipuler l'HTMLElement directement, problème de upgrade (+ perfs pour attrs/content => converted to Node/String).
 
-Afficher et afficher seulement, pas de manipulation (autant que possible).
-Le mieux est données séparées et compo se contente d'afficher
-    => même données pour plusieurs compo.
-    => récup les données d'un compo => une fois fait peut manipuler sans problèmes.
+=> récup les données d'un compo => une fois fait peut manipuler sans problèmes.
 => signal / indirectSignal + fonctions...
     => mergerKlass (?)
 

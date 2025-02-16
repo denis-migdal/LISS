@@ -3,7 +3,13 @@
         - controler:Contrôleur API
         - life-cycle:Cycle de vie
     + V3:V3 (en développement)
+        - ?:Qu'est-ce qu'un composant Web ? (Home ?)
+        - conception:Concevoir un composant Web
+        - declare:Déclarer un composant Web (TODO)
         - auto-mode:Mode Automatique
-        - advices:Conseils d'utilisation
+        - content:Manipuler le contenu d'un composant Web (TODO)
+        - manipulate:Manipuler un composant Web (TODO)
+        - signals:Signaux (TODO)
+        - advices:Conseils d'utilisation (TODO)
 - en/docs:🇬🇧
 - playground:Playground
