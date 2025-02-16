@@ -103,16 +103,8 @@ Par défaut, le comportement d'un composant Web <script type="c-text"><h>$NAME</
 </liss-playground>
 <div style="text-align:right"><a href="../../../playground/?example=auto-vanilla"><i>Tester l'exemple dans le bac à sable</i></a></div>
 
-
-TODO: vous pouvez vous aider de ... (plusieurs helpers)
-- LISS.AutoContentGenerator
-- handle async in content gen + define new version.
-- waiting 2 be defined => they are known
-
-
 - import JS
     - rewrite imports
-    - async ContentGenerator
     - require() outside of playground
 - import Py
 - import TS

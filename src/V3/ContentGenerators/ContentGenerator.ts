@@ -1,7 +1,7 @@
 import { isRessourceReady, Ressource, waitRessource } from "V3/utils/ressource";
 import { getSharedCSS } from "V2/LISSHost";
-import { LHost, ShadowCfg } from "V2/types";
-import { _element2tagname, isDOMContentLoaded, isShadowSupported, whenDOMContentLoaded } from "V2/utils";
+import { ShadowCfg } from "V2/types";
+import { isDOMContentLoaded, whenDOMContentLoaded } from "V2/utils";
 import template, { HTML } from "V3/utils/template";
 import style   , {CSS}    from "V3/utils/style";
 
@@ -13,7 +13,6 @@ export type ContentGenerator_Opts = {
     shadow ?: ShadowCfg|null
 }
 
-const alreadyDeclaredCSS = new Set();
 const sharedCSS = getSharedCSS(); // from LISSHost...
 
 export default class ContentGenerator {
@@ -61,15 +60,15 @@ export default class ContentGenerator {
 
     protected prepare(html: HTML|undefined, css: STYLE|undefined) {
         if( html !== undefined )
-            this.prepareHTML(html);
+            this.prepareTemplate(html);
         if( css  !== undefined )
-            this.prepareCSS (css);
+            this.prepareStyle   (css);
     }
 
-    protected prepareHTML(html: HTML) {
+    protected prepareTemplate(html: HTML) {
         this.template = template(html);
     }
-    protected prepareCSS(css: STYLE) {
+    protected prepareStyle(css: STYLE) {
 
         if( ! Array.isArray(css) )
             css = [css];
@@ -79,79 +78,30 @@ export default class ContentGenerator {
 
     /*** Generate contents ***/
 
-    // fill / generate / init / inject
+    initContent(target: HTMLElement, mode:"open"|"closed"|null) {
 
-    fillContent(shadow: ShadowRoot) {
-        this.injectCSS(shadow, this.stylesheets);
-
-        if( this.template !== null)
-            shadow.append( this.template.cloneNode(true) );
-
-        customElements.upgrade(shadow);
-    }
-
-    generate<Host extends LHost>(host: Host): HTMLElement|ShadowRoot {
-
-        //TODO: wait parents/children depending on option...     
-
-        const target = this.initShadow(host);
-
-        this.injectCSS(target, this.stylesheets);
-
-        const content = this.template!.cloneNode(true);
-        if( host.shadowMode !== ShadowCfg.NONE || target.childNodes.length === 0 )
-            target.replaceChildren(content);
-
-        //if( target instanceof ShadowRoot && target.childNodes.length === 0)
-		//	target.append( document.createElement('slot') );
-
-        customElements.upgrade(host);
-
-        return target;
-    }
-
-    protected initShadow<Host extends LHost>(host: Host) {
-
-        const canHaveShadow = isShadowSupported(host);
-        if( this.#shadow !== null && this.#shadow !== ShadowCfg.NONE && ! canHaveShadow )
-            throw new Error(`Host element ${_element2tagname(host)} does not support ShadowRoot`);
-
-        let mode = this.#shadow;
-        if( mode === null )
-            mode = canHaveShadow ? ShadowCfg.OPEN : ShadowCfg.NONE;
-
-        host.shadowMode = mode;
-
-        let target: Host|ShadowRoot = host;
-        if( mode !== ShadowCfg.NONE)
-            target = host.attachShadow({mode});
-
-        return target;
-    }
-
-    injectCSS<Host extends LHost>(target: ShadowRoot|Host, stylesheets: any[]) {
-
-        if( target instanceof ShadowRoot ) {
-            target.adoptedStyleSheets.push(sharedCSS, ...stylesheets);
-            return;
+        let content: ShadowRoot|HTMLElement = target;
+        if( mode !== null) {
+            content = target.attachShadow({mode});
+            content.adoptedStyleSheets.push(sharedCSS, ...this.stylesheets);
         }
+        //TODO: CSS for no shadow ???
+        
+        this.fillContent(content);
 
-        const cssselector = target.CSSSelector; //TODO...
+        return content;
+    }
 
-        if( alreadyDeclaredCSS.has(cssselector) )
-            return;
-            
-        let style = document.createElement('style');
-        style.setAttribute('for', cssselector);
+    fillContent(target: ShadowRoot|HTMLElement|DocumentFragment) {
+        
+        if( this.template !== null)
+            target.replaceChildren( this.createContent() );
 
-        let html_stylesheets = "";
-        for(let style of stylesheets)
-            for(let rule of style.cssRules)
-                html_stylesheets += rule.cssText + '\n';
+        //TODO...
+        customElements.upgrade(target);
+    }
 
-        style.innerHTML = html_stylesheets.replace(':host', `:is(${cssselector})`);
-
-        document.head.append(style);
-        alreadyDeclaredCSS.add(cssselector);
+    createContent() {
+        return this.template!.cloneNode(true);
     }
 }

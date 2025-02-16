@@ -6,7 +6,7 @@ const regex = /\$\{(.+?)\}/g;
 
 export default class AutoContentGenerator extends ContentGenerator {
 
-    protected override prepareHTML(html: HTML) {
+    protected override prepareTemplate(html: HTML) {
         
         this.data = null;
 
@@ -24,7 +24,7 @@ export default class AutoContentGenerator extends ContentGenerator {
                 // - replace. 
         }
         
-        super.prepareHTML(html);
+        super.prepareTemplate(html);
     }
 
     override fillContent(shadow: ShadowRoot) {
@@ -38,7 +38,7 @@ export default class AutoContentGenerator extends ContentGenerator {
                 return encodeHTML(value);
             });
 
-            this.template = template(str);
+            super.prepareTemplate(str);
         }
 
         super.fillContent(shadow);

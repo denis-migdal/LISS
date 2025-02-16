@@ -12,35 +12,22 @@ export default class LISSBase extends HTMLElement {
         return getInitialValue(this, name, defaultValue);
     }*/
 
-    readonly #content?: ShadowRoot;
-
     static readonly SHADOW_MODE      : "open"|"closed"|null = null;
+    // TODO: static cache getter + use static HTML/CSS.
     static readonly CONTENT_GENERATOR: ContentGenerator|null = null;
+
+    readonly content  : ShadowRoot|HTMLElement        = this;
+    readonly host     : HTMLElement                   = this;
+    readonly controler: Omit<this, keyof HTMLElement> = this;
 
     constructor() {
         super();
 
         const klass = this.constructor as typeof LISSBase;
 
-        if( klass.SHADOW_MODE !== null) {
-            this.#content = this.attachShadow({mode: klass.SHADOW_MODE});
-            if(klass.CONTENT_GENERATOR !== null)
-                klass.CONTENT_GENERATOR.fillContent(this.content);
+        if( klass.CONTENT_GENERATOR !== null ) {
+            this.content = klass.CONTENT_GENERATOR.initContent(this, klass.SHADOW_MODE);
+            console.warn(this.tagName);
         }
-    }
- 
-    // for better suggestions + 2 layer webcomponent.
-    get controler(): Omit<this, keyof HTMLElement> {
-        return this;
-    }
-
-    get host(): HTMLElement {
-        return this;
-    }
-
-    get content(): ShadowRoot {
-        if( this.#content === undefined )
-            throw new Error("This custom element doesn't have a ShadowRoot!");
-        return this.#content;
     }
 }
