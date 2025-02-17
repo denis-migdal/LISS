@@ -3,16 +3,12 @@ import LISS from "../extends";
 
 import ContentGenerator from "../ContentGenerator";
 import { define } from "../LifeCycle/DEFINED";
-import LISSv3 from "V3/";
-import { importComponentV3 } from "V3/LISS/LISSAuto";
 
 export const KnownTags = new Set<string>();
 
 let script = document.querySelector<HTMLElement>('script[autodir]');
-if( script === null)
-	script =  document.querySelector<HTMLElement>('script[liss-mode="auto-load"]');
 
-export const DEFAULT_CDIR = script?.getAttribute('autodir') ?? script?.getAttribute('liss-cdir') ?? null;
+export const DEFAULT_CDIR = script?.getAttribute('autodir') ?? null;
 
 if(script !== null)
 	autoload(script)
@@ -52,15 +48,6 @@ function autoload(script: HTMLElement) {
 
 	cdir = script.getAttribute('autodir')!;
 
-	let addTag = addTagV2;
-
-	if( cdir === null) {
-		cdir = script.getAttribute('liss-cdir')!;
-		addTag = addTagV3;
-	}
-
-
-
 	if( cdir[cdir.length-1] !== '/')
 		cdir += '/';
 
@@ -78,7 +65,7 @@ function autoload(script: HTMLElement) {
 	for( let elem of document.querySelectorAll<HTMLElement>("*") )
 		addTag( elem );
 
-	async function addTagV2(tag: HTMLElement) {
+	async function addTag(tag: HTMLElement) {
 
 		await SW; // ensure SW is installed.
 
@@ -97,75 +84,6 @@ function autoload(script: HTMLElement) {
 			host
 		});		
 	}
-
-	async function addTagV3(tag: HTMLElement) {
-
-		await SW; // ensure SW is installed.
-
-		const tagname = tag.tagName.toLowerCase();
-
-		if( ! tagname.includes('-') || KnownTags.has( tagname ) )
-			return;
-
-		importComponentV3(tagname, {
-			//brython,
-			cdir
-		});		
-	}
-}
-
-//TODO: rename from files ?
-export async function defineWebComponentV3(tagname: string, files: Record<string, any>) {
-
-	let klass = LISSv3({
-		content_generator: LISSAuto_ContentGenerator,
-		...files
-	});
-
-	// todo bry... 
-	//TODO: tagname in v3
-
-	// TODO....
-	/*
-	const c_js      = files["index.js"];
-	let klass: null| ReturnType<typeof LISS> = null;
-	if( c_js !== undefined ) {
-
-		const file = new Blob([c_js], { type: 'application/javascript' });
-		const url  = URL.createObjectURL(file);
-
-		const oldreq = LISS.require;
-
-		LISS.require = function(url: URL|string) {
-
-			if( typeof url === "string" && url.startsWith('./') ) {
-				const filename = url.slice(2);
-				if( filename in files)
-					return files[filename];
-			}
-
-			return oldreq(url);
-		}
-
-		klass = (await import(/* webpackIgnore: true *//* url)).default;
-
-		LISS.require = oldreq;
-	}
-	else if( opts.html !== undefined ) {
-
-		klass = LISS({
-			...opts,
-			content_generator: LISSAuto_ContentGenerator
-		});
-	}
-
-	if(klass === null)
-		throw new Error(`Missing files for WebComponent ${tagname}.`);
-*/
-
-	define(tagname, klass);
-
-	return klass;
 }
 
 async function defineWebComponent(tagname: string, files: Record<string, any>, opts: {html: string, css: string, host: Constructor<HTMLElement>}) {

@@ -5,4 +5,6 @@ import LISS from "./LISS";
 import "./define";
 import "./utils/parsers";
 
+import "./define/autoload";
+
 export default LISS;

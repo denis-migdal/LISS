@@ -7,8 +7,6 @@ export default async function define(tagname: string, Klass: new(...args:any[]) 
 
     //TODO: Python class...
 
-    console.warn("ask define", tagname, Klass);
-
     //TODO: type safe
     if( "CONTENT_GENERATOR" in Klass ) {
         const generator = Klass.CONTENT_GENERATOR as ContentGenerator;
@@ -19,8 +17,6 @@ export default async function define(tagname: string, Klass: new(...args:any[]) 
             WaitingDefine.delete(tagname);
         }
     }
-
-    console.warn("defined", tagname, Klass);
 
     customElements.define(tagname, Klass);
 

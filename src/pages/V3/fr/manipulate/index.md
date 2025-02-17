@@ -18,7 +18,7 @@
 ### Via son constructeur
 
 Il est possible de construire une instance du composant Web (donc déjà mis à niveau) via son constructeur. Cependant, il convient de s'assurer que :
-- le constructeur puisse être appelé sans arguments ;
+- les arguments du constructeur sont facultatifs ;
 - le composant Web est bien défini.
 
 Pour cela, plusieurs fonctions sont utiles :

@@ -6,7 +6,7 @@ import css  from "!!raw-loader!./scripts.css";
 // @ts-ignore
 import theme from "!!raw-loader!pages/V3/skeleton/components/theme/Tomorrow.css";
 import { whenDOMContentLoaded } from "V2/utils";
-import createElement from "V3/utils/createElement";
+import createElement from "V3/utils/DOM/createElement";
 
 
 export class Scripts extends LISS({
@@ -15,8 +15,6 @@ export class Scripts extends LISS({
 
     constructor() {
         super();
-
-        console.warn("!!", this.host);
 
         let code = this.host.textContent!;
         const lang = this.host.getAttribute("code-lang")!;
@@ -77,8 +75,6 @@ for(let script of document.querySelectorAll('script[type^="c-"]') ) {
 
     document.adoptNode(code);
     customElements.upgrade(code);
-
-    console.warn("adopted+upgrade");
 
     script.replaceWith(code);
 
