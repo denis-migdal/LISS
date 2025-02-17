@@ -1,29 +1,41 @@
--> doc LISS
-	-> + simple tuto + do/don't
--> LISS Update/Signal/Properties
--> some features
--> python + TS code
-	-> true import
-	-> TS code fill JS code.
-    -> brython script in playground only if brython
--> replace imports...
--> other V2 used in V3...
+-> unit tests v3
+    -> default HTML tag if not given
+    -> autoload + explicit ?
+    -> not await (?)
+
+-> doc
+	-> simple tuto + do/don't
+
+-> dev+doc
+    -> playground : if no pages => default tag
+    -> LISS Update/Signal/Properties
+    -> add shared css
+
+-> dev
+    -> python + TS code
+        -> files="js,bry,html" - default (html+css+js) ?
+        -> JS: replace imports or true import() when possible (?)
+        -> TS code fill JS code (only accepted in playground)
+        -> BRY brython script in playground only if brython
+            -> emulate string prefix
+                https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
+
 -> refactor
-	-> SW in playground (add thingy + strange error messages).
-	-> directories in utils
-	-> playground/skeleton move
+	-> SW in playground (+doc?)
 	-> update VSHS + ChartsHTML (doc + LISS)
 
-// TODO: auto-mode (all with auto...)
-    // TODO: true auto-mode in tests (change Brython...)
-        // testv3
-            // default HTML in test if (null)...
-            // like playground (?) => different file for cleaner code ?
-    // files="js,ts,bry,html" - default (html+css+js) ?
-
 // TODO: playground
-    // TODO: facultative HTML in editor/playground
     // TODO: show error...
     // TODO: debounce/throttle editor...
+
+-> doc vanilla DOM ?
+    -> connected
+    -> attributeObs
+    -> parts
+    -> slots
+    -> composedEvent
+
+-> closest fct ?
+-> globalDelegated event listener (??? -> composedEvent? => matches ?)
 
 -> README.md update
