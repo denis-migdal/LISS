@@ -1,4 +1,4 @@
-import template, { HTML } from "V3/utils/template";
+import template, { HTML } from "V3/utils/parsers/template";
 import ContentGenerator from "./ContentGenerator";
 import encodeHTML from "V3/utils/encode";
 

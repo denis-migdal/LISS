@@ -1,9 +1,8 @@
 import { isRessourceReady, Ressource, waitRessource } from "V3/utils/ressource";
-import { getSharedCSS } from "V2/LISSHost";
 import { ShadowCfg } from "V2/types";
 import { isDOMContentLoaded, whenDOMContentLoaded } from "V2/utils";
-import template, { HTML } from "V3/utils/template";
-import style   , {CSS}    from "V3/utils/style";
+import template, { HTML } from "V3/utils/parsers/template";
+import style   , {CSS}    from "V3/utils/parsers/style";
 
 type STYLE = CSS | readonly CSS[];
 
@@ -13,7 +12,8 @@ export type ContentGenerator_Opts = {
     shadow ?: ShadowCfg|null
 }
 
-const sharedCSS = getSharedCSS(); // from LISSHost...
+const sharedCSS = new CSSStyleSheet();
+//const sharedCSS = getSharedCSS(); // from LISSHost...
 
 export default class ContentGenerator {
 

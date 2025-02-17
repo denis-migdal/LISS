@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf8"/>
+        <title>LISS</title>
+        <meta name="color-scheme" content="dark light">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link   href="./index.css"  rel="stylesheet" blocking="render">
+        <script  src="./index.js"  type="module"     blocking="render" async></script>
+    </head>
+    <body code-langs="js,bry">
+        <main>
+
+<h1 id="manipuler-un-composant-web">Manipuler un composant Web</h1>
+<h2 id="créer-une-instance-dun-composant-web">Créer une instance d&#39;un composant Web</h2>
+<h3 id="via-son-constructeur">Via son constructeur</h3>
+<p>Il est possible de construire une instance du composant Web (donc déjà mis à niveau) via son constructeur. Cependant, il convient de s&#39;assurer que :</p>
+<ul>
+<li>le constructeur puisse être appelé sans arguments ;</li>
+<li>le composant Web est bien défini.</li>
+</ul>
+<p>Pour cela, plusieurs fonctions sont utiles :</p>
+<script type="c-js">
+// LISS
+LISS.isDefined(<h>$TAGNAME_OR_KLASS</h>);
+LISS.whenDefined(<h>$TAGNAME_OR_KLASS</h>);
+
+// vanilla
+customElements.getName(<h>$KLASS</h>);       // si non-défini, retourne null.
+customElements.get(<h>$TAGNAME</h>);         // si non-défini, retourne undefined.
+
+customElements.whenDefined(<h>$TAGNAME</h>); // retourne une promesse. 
+</script>
+
+<h3 id="via-createelementtagname">Via <script type="c-js">createElement(<h>$TAGNAME</h>)</script></h3>
+<p>Les éléments HTML sont usuellement créés via <script type="c-js">document.createElement(<h>$TAGNAME</h>)</script>. Cependant, cela est source d&#39;erreurs pour les composants Web :</p>
+<ul>
+<li>l&#39;élément créé est potentiellement immédiatement mis à niveau, empêchant de lui ajouter des attributs ou des fils.</li>
+<li>une exception est lancée si le constructeur modifie les attributs, ou le contenu de l&#39;hôte.</li>
+</ul>
+<p>Il convient alors d&#39;utiliser <script type="c-js">LISS.createElement(<h>$TAGNAME</h>)</script> afin de créer un élément HTML sans le mettre à niveau immédiatement. Il est ainsi possible de lui ajouter des attributs et des fils avant sa mise à niveau.</p>
+<h3 id="via-une-chaîne-de-caractères">Via une chaîne de caractères</h3>
+<p>Il est aussi possible de créer des éléments HTML via une chaîne de caractères :</p>
+<script type="c-js">
+LISS.html`<h>$HTML</h>`;
+</script>
+
+<p>💡 Si le résulat a vocation a être cloné, il est possible d&#39;utiliser <script type="c-js">LISS.template`<h>$HTML</h>`</script> à la place.</p>
+<h2 id="interagir-avec-un-composant-web">Interagir avec un composant Web</h2>
+<p>Comme vu dans la partie conception, il est nécessaire d&#39;interragir avec les composant Web comme s&#39;ils n&#39;avaient pas encore été mis à niveau, i.e. comme un <script type="c-html">HTMLElement</script>. Cependant, il existe quelques astuces pour aller plus loin.</p>
+<h3 id="setter">Setter</h3>
+<p>Il est possible de fixer la valeur d&#39;une propriété avant la mise à niveau du composant Web. Il sera alors nécessaire, dans le constructeur, de récupérer cette valeur avant de la supprimer :</p>
+<script type="c-js">
+class Klass extends HTMLElement {
+    constructor() {
+        super();
+        
+        let v = LISS.getInitialValue(this, "prop");
+    }
+
+    set prop(value) {
+        /* ... */
+    }
+}
+</script>
+
+<h3 id="appels-de-méthodes">Appels de méthodes</h3>
+<h4 id="asynchrone">Asynchrone</h4>
+<p>Les appels de méthodes asynchrones sont les plus simples à gérer. Il suffit en effet d&#39;appeler une function asynchrone qui prend en entrée le composant Web, attende qu&#39;il se mette à niveau, puis appelle la méthode désirée :</p>
+<script type="c-js">
+async function call(instance, method, ...args) {
+    await ??;
+    return instance[method](...args);
+}
+</script>
+
+<p>⚠ Il est cependant recommandé d&#39;éviter cela autant que possible.</p>
+<h4 id="synchrone">Synchrone</h4>
+<p>Pour un appel de méthode synchrone, il convient de forcer la mise à niveau du composant Web. En cas d&#39;échec de la mise à niveau (e.g. pas encore défini), lancer une exception.</p>
+<p>⚠ L&#39;appel synchrone pouvant échoué, il est recommandé d&#39;éviter d&#39;utiliser cette méthode autant que possible.</p>
+<h4 id="getter">Getter</h4>
+<p>Comme un appel de méthode, ou...
+Pour un getter, la technique est un peu plus compliquée.</p>
+</main>
+    </body>
+</html>

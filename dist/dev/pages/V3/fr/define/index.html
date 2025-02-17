@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf8"/>
+        <title>LISS</title>
+        <meta name="color-scheme" content="dark light">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link   href="./index.css"  rel="stylesheet" blocking="render">
+        <script  src="./index.js"  type="module"     blocking="render" async></script>
+    </head>
+    <body code-langs="js,bry">
+        <main>
+
+<h1 id="créer-un-composant-web">Créer un composant Web</h1>
+<h2 id="le-dossier-de-composants">Le dossier de composants</h2>
+<p>Dans LISS, chaque composant Web <script type="c-text"><h>$TAGNAME</h></script> est défini par un ensemble de fichiers contenus dans le dossier <script type="c-text"><h>$CDIR</h>/<h>$TAGNAME</h>/</script>.
+Concrètement, votre projet pourra avoir l&#39;arborescence suivante (avec <script type="c-text"><h>$CDIR</h></script> = <script type="c-text">/components/</script>) :</p>
+<script type="c-bash">
+├── index.html # votre page web.
+├── LISS.js    # la bibliothèque LISS
+└── components # <h>$CDIR</h>, le répertoire contenant vos composants Web.
+    └── hello-world    # défini le composant Web "hello-world".
+        ├── index.html # le contenu  du composant Web "hello-world".
+        └── index.css  # l'affichage du composant Web "hello-world".
+</script>
+
+<p>💡 Par défaut, <script type="c-text"><h>$CDIR</h></script> est donné par l&#39;attribut <script type="c-html">liss-cdir</script> de la balise <script type="c-html"><script></script> important LISS :</p>
+<script type="c-html">
+    <!DOCTYPE html>
+    <html>
+        <head>
+            ...
+            <script type="module" src="<h>$LISS</h>" liss-cdir="<h>$CDIR</h>"><xscript>
+        </head>
+        <body>...<xbody>
+    </html>
+</script>
+
+<p>La page Web pourra alors afficher une instance du composant Web via la balise HTML <script type="c-text"><<h>$TAGNAME</h>></script> :</p>
+<liss-playground name="hello-world" show="page.html,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+<h2 id="les-fichiers-du-composant-web">Les fichiers du composant Web</h2>
+<h3 id="le-contenu-html">Le contenu (HTML)</h3>
+<p>Par défaut, le contenu d&#39;un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.html</script> :</p>
+<liss-playground name="hello-world" show="index.html,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+
+<h3 id="laffichage-css">L&#39;affichage (CSS)</h3>
+<p>Par défaut, l&#39;affichage d&#39;un composant Web <script type="c-text"><h>$NAME</h></script> est défini par le fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.css</script> :</p>
+<liss-playground name="hello-world" show="index.css,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../playground/?example=hello-world"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+<h3 id="le-comportement">Le comportement</h3>
+<p>Par défaut, le comportement d&#39;un composant Web <script type="c-text"><h>$NAME</h></script> est défini par un fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>js|ts|bry</h></script>.</p>
+<p>⚠ Le contenu et l&#39;affichage définis dans les fichiers <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>html|css</h></script> devront être explicitement chargés.</p>
+<h4 id="avec-liss">Avec LISS</h4>
+<liss-playground name="auto-liss" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../playground/?example=auto-liss"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+
+<h4 id="sans-liss">Sans LISS</h4>
+<liss-playground name="auto-vanilla" show="index.code,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../playground/?example=auto-vanilla"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+<h2 id="définir-le-composant-web">Définir le composant Web</h2>
+<h3 id="avec-le-mode-automatique">Avec le mode automatique</h3>
+<p>Le mode automatique de LISS permet d&#39;importer automatiquement les composants Web utilisés par la page Web.<br><em>⚠ Ce mode est principalement conçu pour être utilisé lors la phase de prototypage/conception d&#39;une page Web.</em></p>
+<p>Il s&#39;utilise en ajoutant une balise <script type="c-html"><script></script> à la page web :</p>
+<script type="c-html">
+    <!DOCTYPE html>
+    <html>
+        <head>
+            ...
+            <script type="module" src="<h>$LISS</h>"
+                liss-cdir="<h>$CDIR</h>"
+                liss-mode="auto-load"
+            ><xscript>
+        </head>
+        <body>...<xbody>
+    </html>
+</script>
+
+<p>💡 Avec le mode automatique, vous n&#39;avez pas besoin de spécifier le comportement du composant Web via un fichier <script type="c-text"><h>$CDIR</h>/<h>$NAME</h>/index.<h>js|ts|bry</h></script>.</p>
+<h4 id="contenu-en-fonction-des-attributs">Contenu en fonction des attributs</h4>
+<p>Ce mode permet d&#39;indiquer des placeholders dans le contenu, qui prendront la valeur des attributs de l&#39;hôte :
+<liss-playground name="auto-attrs" show="index.html,output">
+</liss-playground></p>
+<div style="text-align:right"><a href="../../playground/?example=auto-attrs"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+<p>Chaque <script type="c-text">${<h>$ATTR</h>}</script> est alors remplacé par la valeur de l&#39;attribut <script type="c-text"><h>$ATTR</h></script> de l&#39;hôte :</p>
+<liss-playground name="auto-attrs" show="page.html,output">
+</liss-playground>
+<div style="text-align:right"><a href="../../playground/?example=auto-attrs"><i>Tester l'exemple dans le bac à sable</i></a></div>
+
+<p>💡 Permis par : AutoContentGenerator (cf content gen) (TODO)</p>
+<p>⚠ Pour le moment, les valeurs ne sont pas mises à jour lors de la modification des attributs de l&#39;hôte.</p>
+<h4 id="fonctionnement-interne-pour-les-développeurs-todo">Fonctionnement interne (pour les développeurs) (TODO)</h4>
+<ol>
+<li>si script liss-mode=auto-load + liss-cdir</li>
+<li>detect all tags</li>
+<li>addTag if not defined (check if already defined)</li>
+<li>importComponentV3 (fetch files from cdir)<ol>
+<li>_fetchText() =&gt; override if playground.</li>
+</ol>
+</li>
+<li>defineWebComponentV3 (build class + define it)</li>
+</ol>
+<p>-&gt; fetch
+-&gt; donc requêtes/certaines inutile, pas perfs, proto/dev.</p>
+<p>Le mode automatique de LISS est principalement conçu pour la conception de prototypes. Il n&#39;est ainsi pas conçu pour être performant.</p>
+<p>Si vous souhaitez plus de performances, il vous faudra alors utiliser le mode non-automatique.</p>
+<h3 id="sans-le-mode-automatique">Sans le mode automatique</h3>
+<h4 id="en-chargeant-un-composant-web">En chargeant un composant Web</h4>
+<p>LISS.load(dst, {cdir, files}); //TODO</p>
+<h4 id="manuellement">Manuellement</h4>
+<p>LISS.define(tagname, klass)</p>
+<h4 id="en-javascript-vanilla">En Javascript Vanilla</h4>
+<p>customElements.define(tagname, klass);</p>
+<p>⚠ DOMContentLoaded / document =&gt; interactive
+    =&gt; ensure all children</p>
+<h2 id="todo">(TODO)</h2>
+<ul>
+<li>import JS<ul>
+<li>rewrite imports</li>
+<li>require() outside of playground</li>
+</ul>
+</li>
+<li>import Py</li>
+<li>import TS<ul>
+<li>convert...</li>
+</ul>
+</li>
+</ul>
+</main>
+    </body>
+</html>

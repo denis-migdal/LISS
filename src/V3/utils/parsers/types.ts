@@ -1,0 +1,1 @@
+export type Template<T> = [TemplateStringsArray, ...string[]]|[T];

@@ -1,5 +1,5 @@
 import { DEFAULT_CDIR, KnownTags } from "V2/helpers/LISSAuto";
-import define from "V3/utils/define";
+import define from "V3/define/define";
 import LISSv3 from "V3";
 import AutoContentGenerator from "V3/ContentGenerators/AutoContentGenerator";
 

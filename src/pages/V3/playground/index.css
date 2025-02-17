@@ -1,0 +1,10 @@
+@import "pages/V3/skeleton/";
+
+main {
+    display: flex;
+    flex-flow: column nowrap;
+
+    overflow-x: auto;
+    /* TODO width */
+    /* TODO height with scale+zoom... */
+}

@@ -25,9 +25,12 @@ export default class LISSBase extends HTMLElement {
 
         const klass = this.constructor as typeof LISSBase;
 
-        if( klass.CONTENT_GENERATOR !== null ) {
+        if( klass.CONTENT_GENERATOR !== null )
             this.content = klass.CONTENT_GENERATOR.initContent(this, klass.SHADOW_MODE);
-            console.warn(this.tagName);
-        }
     }
+
+
+    // define for auto-complete.
+    static observedAttributes: string[] = [];
+    attributeChangedCallback(name: string, oldval: string|null, newval: string|null){}
 }

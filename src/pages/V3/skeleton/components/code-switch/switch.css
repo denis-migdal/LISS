@@ -1,0 +1,22 @@
+
+.code-lang_switch {
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-size: 20px;
+    cursor: pointer;
+
+    body[code-lang="html"] &::after {
+        content: "HTML";
+        font-weight: bold;
+        color: light-dark( #FFC300 , gold);
+    }
+    body[code-lang="js"] &::after {
+        content: "JS";
+        font-weight: bold;
+        color: light-dark( #FFC300 , gold);
+    }
+    body[code-lang="bry"] &::after {
+        content: "🐍"
+    }
+}

@@ -1,15 +1,16 @@
-- fr/docs:🇫🇷
-    + V2:V2
++ V3:V3 (en développement)
+    + fr:🇫🇷
+        - ?:🚀 Prise en main (TODO)
+        - conception:🕮 Concevoir un composant Web
+        - define:🕮 Créer un composant Web
+        - manipulate:🕮 Manipuler un composant Web
+        - content:🕮 Mettre à jour un composant Web (TODO)
+        - signals:🕮 Les signaux (TODO)
+    + en:🇬🇧
+    - playground:🧪 Bac à sable (TODO)
++ V2:V2
+    + fr:🇫🇷
         - controler:Contrôleur API
         - life-cycle:Cycle de vie
-    + V3:V3 (en développement)
-        - ?:Qu'est-ce qu'un composant Web ? (Home ?)
-        - conception:Concevoir un composant Web
-        - declare:Déclarer un composant Web (TODO)
-        - auto-mode:Mode Automatique
-        - content:Manipuler le contenu d'un composant Web (TODO)
-        - manipulate:Manipuler un composant Web (TODO)
-        - signals:Signaux (TODO)
-        - advices:Conseils d'utilisation (TODO)
-- en/docs:🇬🇧
-- playground:Playground
+    - en:🇬🇧
+    - playground:🧪 Bac à sable

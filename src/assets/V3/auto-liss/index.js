@@ -1,4 +1,4 @@
-export default class extends LISS.v3({
+export default class extends LISS({
     html: require("./index.html"),
     css : require("./index.css" ),
 //  content_generator: LISS.generators.Auto
