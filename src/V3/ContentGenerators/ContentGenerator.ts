@@ -1,4 +1,4 @@
-import { isRessourceReady, Ressource, waitRessource } from "V3/utils/ressource";
+import { isRessourceReady, Ressource, waitRessource } from "V3/utils/network/ressource";
 import { ShadowCfg } from "V2/types";
 import { isDOMContentLoaded, whenDOMContentLoaded } from "V2/utils";
 import template, { HTML } from "V3/utils/parsers/template";

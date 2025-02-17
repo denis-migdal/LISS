@@ -3,8 +3,9 @@ import LISS from "./LISS";
 // HERE...
 
 import "./define";
-import "./utils/parsers";
-
 import "./define/autoload";
+
+import "./utils/parsers";
+import "./utils/network/require";
 
 export default LISS;

@@ -1,7 +1,7 @@
 import ContentGenerator from "V3/ContentGenerators/ContentGenerator";
 import { _whenDefinedPromises } from "./whenDefined";
 
-const WaitingDefine = new Set<string>();
+export const WaitingDefine = new Set<string>();
 
 export default async function define(tagname: string, Klass: new(...args:any[]) => HTMLElement) {
 
@@ -14,10 +14,10 @@ export default async function define(tagname: string, Klass: new(...args:any[]) 
         if( ! generator.isReady ) {
             WaitingDefine.add(tagname);
             await generator.whenReady;
-            WaitingDefine.delete(tagname);
         }
     }
 
+    WaitingDefine.delete(tagname);
     customElements.define(tagname, Klass);
 
     const p = _whenDefinedPromises.get(Klass);

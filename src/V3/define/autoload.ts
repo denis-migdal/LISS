@@ -1,9 +1,10 @@
-import { KnownTags } from "V2/helpers/LISSAuto";
-import define from "V3/define/define";
+import define, { WaitingDefine } from "V3/define/define";
 import LISS from "V3";
 import AutoContentGenerator from "V3/ContentGenerators/AutoContentGenerator";
 import isPageLoaded from "V3/utils/DOM/isPageLoaded";
 import whenPageLoaded from "V3/utils/DOM/whenPageLoaded";
+import fetchText from "V3/utils/network/fetchText";
+import execute from "V3/utils/execute";
 
 const script =  document.querySelector<HTMLElement>('script:is([liss-auto],[liss-cdir],[liss-sw])');
 
@@ -18,7 +19,6 @@ if(LISS_MODE === "auto-load" && DEFAULT_CDIR !== null) {
         await whenPageLoaded();
     autoload(DEFAULT_CDIR);
 }
-
 
 export function autoload(cdir: string) {
 
@@ -62,7 +62,7 @@ export function autoload(cdir: string) {
 
     }).observe( document, { childList:true, subtree:true });
 
-    for( let elem of document.querySelectorAll<HTMLElement>("*:not(:defined)") )
+    for( let elem of document.querySelectorAll<HTMLElement>(":not(:defined)") )
         addTag( elem );
 
     async function addTag(tag: HTMLElement) {
@@ -71,7 +71,8 @@ export function autoload(cdir: string) {
 
         const tagname = tag.tagName.toLowerCase();
 
-        if( ! tagname.includes('-') || KnownTags.has( tagname ) )
+        if(  WaitingDefine.has(tagname)
+         || customElements.get(tagname) !== undefined)
             return;
 
         loadComponent(tagname, {
@@ -83,7 +84,7 @@ export function autoload(cdir: string) {
 
 /*****/
 
-type importComponents_Opts = {
+type loadComponent_Opts = {
 	cdir   ?: string|null
 };
 
@@ -94,10 +95,10 @@ export async function loadComponent<T extends HTMLElement = HTMLElement>(
 	{
 		cdir    = DEFAULT_CDIR,
 		// brython = null
-	}: importComponents_Opts = {}
+	}: loadComponent_Opts = {}
 ): Promise<Cstr<T>> {
 
-	KnownTags.add(tagname);
+	WaitingDefine.add(tagname);
 
 	const compo_dir = `${cdir}${tagname}/`;
 
@@ -105,34 +106,18 @@ export async function loadComponent<T extends HTMLElement = HTMLElement>(
 
 	// strats : JS -> Bry -> HTML+CSS (cf script attr).
 
-    files["js"] = await _fetchText(`${compo_dir}index.js`, true);
+    files["js"] = await fetchText(`${compo_dir}index.js`, true);
 
     if( files["js"] === undefined) {
         // try/catch ?
         const promises = [
-            _fetchText(`${compo_dir}index.html`, true)!,
-            _fetchText(`${compo_dir}index.css` , true)!
+            fetchText(`${compo_dir}index.html`, true)!,
+            fetchText(`${compo_dir}index.css` , true)!
         ];
         [files["html"], files["css" ]] = await Promise.all(promises);
     }
 
 	return await defineWebComponent(tagname, files);
-}
-
-async function execute(code: string, type: "js") {
-
-    let result;
-
-    if( type === "js" ) {
-        const file = new Blob([code], { type: 'application/javascript' });
-        const url  = URL.createObjectURL(file);
-
-        result = (await import(/* webpackIgnore: true */ url));
-        
-        URL.revokeObjectURL(url);
-    }
-
-    return result;
 }
 
 //TODO: rename from files ?
@@ -141,9 +126,8 @@ async function defineWebComponent(tagname: string,
                                 ) {
     
     let klass;
-    if( "js" in files ) {
-        klass = (await execute(files["js"], "js")).default;
-    }
+    if( "js" in files )
+        klass = (await execute<any>(files["js"], "js")).default;
 
     if( klass === undefined )
         klass = LISS({
@@ -154,53 +138,4 @@ async function defineWebComponent(tagname: string,
     define(tagname, klass);
 
     return klass;
-}
-
-declare global {
-    var LISSContext: {
-        fetch?: {
-            cwd  : string,
-            files: Record<string, string>
-        }
-    }
-}
-
-// in auto-mode use ServiceWorker to hide 404 error messages.
-// if playground files, use them.
-export async function _fetchText(uri: string|URL, hide404: boolean = false) {
-
-    const fetchContext = globalThis.LISSContext.fetch;
-    if( fetchContext !== undefined ) {
-        const path = new URL(uri, fetchContext.cwd );
-        const value = fetchContext.files[path.toString()];
-        if( value === "" )
-            return undefined;
-        if( value !== undefined)
-            return value;
-    }
-
-    const options = hide404
-                        ? {headers:{"liss-auto": "true"}}
-                        : {};
-
-
-    const response = await fetch(uri, options);
-    if(response.status !== 200 )
-        return undefined;
-
-    if( hide404 && response.headers.get("status")! === "404" )
-        return undefined;
-
-    const answer = await response.text();
-
-    if(answer === "")
-        return undefined;
-
-    return answer
-}
-
-// @ts-ignore
-globalThis.require = async function(url: string) {
-    //TODO: non playground...
-    return await _fetchText(url);
 }

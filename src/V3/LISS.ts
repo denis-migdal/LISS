@@ -1,50 +1,3 @@
-// example : playground v3 (?)
-    // liss-version="v3"
-    // liss-v3="auto" (c'est la v3 qu'il faut utiliser)
-
-// TODO: in playground brython src only if brython
-// TODO: remove v2 (autodir) + v2 fcts
-
-// DOCS
-    // README.md
-
-// TODO: auto-mode (all with auto...)
-    // TODO: true auto-mode in tests (change Brython...)
-        // testv3
-            // default HTML in test if (null)...
-            // like playground (?) => different file for cleaner code ?
-    // files="js,ts,bry,html" - default (html+css+js) ?
-
-// docs (+ examples playground/tests // Bry/JS).
-    // non-auto first.
-        // extends (LISS Base)
-        // LISS({}) opts.
-        // define.
-        // API... for better suggestions.
-        // rules...
-
-// TODO: contentGenerator
-// TODO: docs (ofc)
-
-// TODO: utils + signals + DOMContentLoaded before... + upgrade children in cstr ?
-    // build
-    // remove events + qs ?
-    // TODO: state (internal state)
-    // TODO: bliss
-    // TODO: sharedCSS
-
-// TODO: upgrade
-    // TODO: get upgraded ?
-    // TODO: upgrade ++ > definition order if inside child and available.
-    // TODO: defined : visibility: hidden until defined ?
-        // TODO: loader customElement (replaceWith ?)
-
-
-// TODO: playground
-    // TODO: facultative HTML in editor/playground
-    // TODO: show error...
-    // TODO: debounce/throttle editor...
-
 import ContentGenerator from "V3/ContentGenerators/ContentGenerator";
 import LISSFull from "./LISS/LISSFull";
 
@@ -69,7 +22,7 @@ type LISSv3_Opts<T extends Cstr<ContentGenerator> > = {
 } & ConstructorParameters<T>[0];
 
 //  builder
-export function LISSv3<T extends Cstr<ContentGenerator> = Cstr<ContentGenerator>>(opts: Partial<LISSv3_Opts<T>> = {}) {
+export function LISS<T extends Cstr<ContentGenerator> = Cstr<ContentGenerator>>(opts: Partial<LISSv3_Opts<T>> = {}) {
     
     const content_generator = opts.content_generator ?? ContentGenerator;
     // @ts-ignore
@@ -87,4 +40,4 @@ export function LISSv3<T extends Cstr<ContentGenerator> = Cstr<ContentGenerator>
 
 // used for plugins.
 export class ILISS {}
-export default LISSv3 as typeof LISSv3 & ILISS;
+export default LISS as typeof LISS & ILISS;
