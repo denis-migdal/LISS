@@ -21,7 +21,6 @@
         "fork-ts-checker-notifier-webpack-plugin": "^9.0.0",
         "fork-ts-checker-webpack-plugin": "^9.0.2",
         "glob": "^11.0.0",
-        "highlight": "^0.2.4",
         "highlight.js": "^11.10.0",
         "html-loader": "^5.1.0",
         "markdown-loader": "^8.0.0",

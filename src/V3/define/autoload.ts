@@ -57,8 +57,10 @@ export function autoload(cdir: string) {
     new MutationObserver( (mutations) => {
         for(let mutation of mutations)
             for(let addition of mutation.addedNodes)
-                if(addition instanceof HTMLUnknownElement)
-                    addTag(addition)
+                if( addition.constructor.name === "HTMLElement" )
+                // cf https://github.com/WICG/webcomponents/issues/1097#issuecomment-2665092315
+                // if(addition instanceof HTMLUnknownElement)
+                    addTag(addition as HTMLElement)
 
     }).observe( document, { childList:true, subtree:true });
 
@@ -72,6 +74,7 @@ export function autoload(cdir: string) {
         const tagname = tag.tagName.toLowerCase();
 
         if(  WaitingDefine.has(tagname)
+            // could be defined, but not yet upgraded
          || customElements.get(tagname) !== undefined)
             return;
 

@@ -1,5 +1,5 @@
 {
-    "include": ["src", "others/helpers.ts", "others/shadow_root.ts"],
+    "include": ["src"],
     "compilerOptions": {
         "rootDir": ".",
         "outDir": "./dist/",

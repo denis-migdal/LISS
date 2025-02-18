@@ -1,7 +1,10 @@
--> unit tests v3
+-> unit tests
+    -> use https://github.com/denoland/deno/issues/27681 bdd testing ?
+        -> beforeAll / afterAll (to start/close the browser)
+    -> v3 + autoload
+        -> function to generate the page.
+        -> + sw.js
     -> default HTML tag if not given
-    -> autoload + explicit ?
-    -> not await (?)
 
 -> doc
 	-> simple tuto + do/don't
