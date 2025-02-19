@@ -58,6 +58,9 @@ class LISSPlayground extends PlaygroundArea {
             files[`${cwd}index.${ext}`] = codes[`index.${ext}`];
 
         return {
+            override_tags: {
+                [this.getAttribute('name')!.split(':')[0]]: this.getAttribute('name')
+            },
             fetch: {
                 cwd,
                 files
@@ -81,7 +84,7 @@ class LISSPlayground extends PlaygroundArea {
             cdir   : `${this.ASSETS_DIR}/`,
             js     : codes["page.js"  ],
             html   : codes["page.html"],
-            tagname: this.getAttribute("name")!,
+            tagname: this.getAttribute("name")!.split(':')[0],
         })
     }
 }
@@ -93,3 +96,13 @@ function escapeStr(data: undefined|string) {
 }
 
 LISS.define('liss-playground', LISSPlayground);
+
+declare global {
+
+    interface LISSContext {
+        override_tags?: Record<string, string>
+    }
+
+    var LISSContext: LISSContext;
+    
+}

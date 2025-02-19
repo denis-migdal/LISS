@@ -103,7 +103,9 @@ export async function loadComponent<T extends HTMLElement = HTMLElement>(
 
 	WaitingDefine.add(tagname);
 
-	const compo_dir = `${cdir}${tagname}/`;
+    let true_tagdir = LISSContext?.override_tags?.[tagname] ?? tagname;     
+
+	const compo_dir = `${cdir}${true_tagdir}/`;
 
 	const files: Record<string,string|undefined> = {};
 

@@ -16,10 +16,7 @@
 Qu'est-ce qu'un compo web ? why LISS ?
 + links
 
-=> signal / indirectSignal + fonctions...
-    => mergerKlass (?)
-
-HTMLUnknownElement (attr + content) = hôte => upgrade() => ShadowRoot.
+HTMLElement (attr + content) = hôte => upgrade() => ShadowRoot.
 
 </main>
     </body>
