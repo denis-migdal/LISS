@@ -56,7 +56,7 @@ Got: ${elem.shadowRoot.innerHTML}`);
         if( selector === "")
             sub_elems = [elem as HTMLElement];
         else
-            sub_elems = ((elem as any).content as ShadowRoot|HTMLElement).querySelectorAll<HTMLElement>(selector);
+            sub_elems = (((elem as any).content ?? elem.shadowRoot ?? elem) as ShadowRoot|HTMLElement).querySelectorAll<HTMLElement>(selector);
     
         if( sub_elems.length === 0)
             throw new Error(`Elements "${selector}" not found`);

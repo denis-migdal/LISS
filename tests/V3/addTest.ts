@@ -6,6 +6,7 @@ import {it} from "jsr:@std/testing/bdd";
 import buildTestPage from '../../src/V3/utils/tests/buildTestPage.ts';
 import buildBrowsers from './browsers.ts';
 import buildNewPage from "./buildNewPage.ts";
+import loadFile, { getComponentDir, getComponentName } from "./loadFile.ts";
 
 const browsers = buildBrowsers({
                                     sanitizeResources: false,
@@ -17,9 +18,21 @@ const browsers = buildBrowsers({
 
 const PAGE_URL = "http://localhost/dist/dev/";
 
-export default function addTest( test_name: string,
-                      page_html: string,
-                      callback: () => Promise<void>) {
+import { exists } from "https://deno.land/std/fs/mod.ts";
+
+export default async function addTest(  test_name: string|null,
+                                        page_html: string|null,
+                                        callback: (tagname: string) => Promise<void>) {
+
+    const tagname = getComponentName();
+
+    test_name ??= tagname;
+
+    const page_html_file = getComponentDir() + './page.html';
+
+    page_html ??= await exists(page_html_file)
+                        ? await Deno.readTextFile( page_html_file )
+                        : `<${tagname}></${tagname}>`;
 
     let browser: keyof typeof browsers;
     for( browser in browsers) {
@@ -46,7 +59,7 @@ export default function addTest( test_name: string,
                     );
         
                 // https://pptr.dev/api/puppeteer.page.evaluate
-                await page.evaluate( callback );
+                await page.evaluate( callback, tagname );
 
                 //await page.screenshot({ path: "/tmp/example.png" });
             });
