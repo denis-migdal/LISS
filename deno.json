@@ -3,8 +3,8 @@
         "test": "deno test --allow-all --unstable-sloppy-imports --unstable-node-globals ./src/assets/V3/"
     },
     "imports": {
-        "LISS": "./src/index.ts",
-        "TEST_HELPER": "./tests/V3/test_helpers.ts"
+        "LISS" : "./src/index.ts",
+        "TESTS": "./tests/V3/addTest.ts"
     },
     "compilerOptions": {
         "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]

@@ -1,14 +1,11 @@
--> unit tests
-
-    -> fetchText issue...
-
-    -> split remaining into files...
-        => buildPage (on bidule)
-        => browsers...
-    -> + sw.js [tests + playground...]
-
 -> doc
 	-> simple tuto + do/don't
+    
+-> unit tests
+    -> split remaining into files...
+        => buildPage (on bidule)
+    -> page_html / page_js => load from assets/V3 if null ?
+    -> + sw.js [tests + playground...]
 
 -> dev+doc
     -> LISS Update/Signal/Properties

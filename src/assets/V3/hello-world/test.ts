@@ -1,7 +1,7 @@
 // @ts-ignore
-import {test} from "TEST_HELPER";
+import addTest from "TESTS";
 
-await test("hello-world",
+await addTest("hello-world",
     `<hello-world></hello-world>`,
     async () => {
 
