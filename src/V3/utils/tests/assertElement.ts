@@ -1,5 +1,16 @@
-export default function assertElement(tagname: string, shadow_html: string|null = null, css: Record<string, any> = {}) {
+type Options = {
+    shadow_html?: string,
+    css        ?: Record<string, string>
+}
+
+export default async function assertElement(tagname: string, opts: Options = {}) {
     
+    const shadow_html = opts.shadow_html ?? null;
+    const css         = opts.css         ?? {};
+
+
+    await whenDefined(tagname);
+
     const elem = document.querySelector(tagname);
 
     if( elem === null )
@@ -13,6 +24,9 @@ export default function assertElement(tagname: string, shadow_html: string|null 
 `Wrong tagname.
 Expected: ${tagname}
 Got: ${elem.tagName.toLowerCase()}`);
+
+    if( elem.constructor.name === "HTMLElement")
+        throw new Error(`Element not upgraded!`);
 
     if( shadow_html !== elem.shadowRoot ) {
         if( shadow_html === null || elem.shadowRoot === null )
@@ -39,6 +53,7 @@ Got: ${css}`);
     }
 }
 
+import { whenDefined } from "V2/LifeCycle/DEFINED";
 import LISS from "V3/LISS";
 
 declare module "V3/LISS" {

@@ -117,6 +117,7 @@ export async function loadComponent<T extends HTMLElement = HTMLElement>(
             fetchText(`${compo_dir}index.html`, true)!,
             fetchText(`${compo_dir}index.css` , true)!
         ];
+
         [files["html"], files["css" ]] = await Promise.all(promises);
     }
 

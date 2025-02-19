@@ -3,11 +3,9 @@
     -> fetchText issue...
 
     -> split remaining into files...
+        => buildPage (on bidule)
+        => browsers...
     -> + sw.js [tests + playground...]
-
-    -> default HTML tag if not given (build test page tests/)
-        -> /!\ download files (also handle...)
-            => on bidule (re-coder fcts...)
 
 -> doc
 	-> simple tuto + do/don't

@@ -2,7 +2,7 @@
 // if playground files, use them.
 export default async function fetchText(uri: string|URL, hide404: boolean = false) {
 
-    const fetchContext = globalThis.LISSContext.fetch;
+    const fetchContext = globalThis.LISSContext?.fetch;
     if( fetchContext !== undefined ) {
         const path = new URL(uri, fetchContext.cwd );
         const value = fetchContext.files[path.toString()];

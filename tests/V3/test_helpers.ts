@@ -6,6 +6,12 @@ import puppeteer, {Browser} from 'npm:puppeteer@23.10.4';
 import { describe, it } from "jsr:@std/testing/bdd";
 import buildTestPage from '../../src/V3/utils/tests/buildTestPage.ts';
 
+const opts = {
+    sanitizeResources: false,
+    sanitizeOps: false
+};
+
+
 // TODO: builder + move file...
 const tests = {
     /**
@@ -34,6 +40,7 @@ const tests = {
     }),/**/
     chromium: describe({
         name: "Chromium",
+        ...opts,
         beforeAll: async function(this: any) {
             this.browser = await puppeteer.launch({
                 //product: "chrome" as const,
@@ -78,10 +85,7 @@ export function test( test_name: string,
         for(const use_brython of /*["true", */["false"]) {
             const lang = use_brython === "true" ? "bry" : "js";
 
-            it(tests[browser as keyof typeof tests], `${test_name} (${browser}-${lang})`, {
-                sanitizeResources: false,
-                sanitizeOps: false
-            }, async function (this: any) {
+            it(tests[browser as keyof typeof tests], `${test_name} (${browser}-${lang})`, async function (this: any) {
 
                 const page = await (this.browser as Browser).newPage();
 
@@ -144,8 +148,8 @@ export function test( test_name: string,
 
                 await page.goto("http://localhost/dist/dev/", {waitUntil: "load"});
                 
-                await page.evaluate( callback );
                 // https://pptr.dev/api/puppeteer.page.evaluate
+                await page.evaluate( callback );
 
                 //await page.screenshot({ path: "/tmp/example.png" });
             });
