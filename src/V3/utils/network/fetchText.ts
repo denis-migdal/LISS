@@ -3,7 +3,7 @@
 export default async function fetchText(uri: string|URL, hide404: boolean = false) {
 
     const fetchContext = globalThis.LISSContext?.fetch;
-    if( fetchContext !== undefined ) {
+    if( fetchContext !== undefined ) { // for the playground
         const path = new URL(uri, fetchContext.cwd );
         const value = fetchContext.files[path.toString()];
         if( value === "" )
@@ -35,10 +35,13 @@ export default async function fetchText(uri: string|URL, hide404: boolean = fals
 
 
 declare global {
-    var LISSContext: {
+
+    interface LISSContext {
         fetch?: {
             cwd  : string,
             files: Record<string, string>
         }
     }
+
+    var LISSContext: LISSContext;
 }

@@ -121,17 +121,18 @@ export async function loadComponent<T extends HTMLElement = HTMLElement>(
         [files["html"], files["css" ]] = await Promise.all(promises);
     }
 
-	return await defineWebComponent(tagname, files);
+	return await defineWebComponent(tagname, files, compo_dir);
 }
 
 //TODO: rename from files ?
 async function defineWebComponent(tagname: string,
-                                  files: Record<string, any>
+                                  files: Record<string, any>,
+                                  origin : string,
                                 ) {
     
     let klass;
     if( "js" in files )
-        klass = (await execute<any>(files["js"], "js")).default;
+        klass = (await execute<any>(files["js"], "js", origin)).default;
 
     if( klass === undefined )
         klass = LISS({
