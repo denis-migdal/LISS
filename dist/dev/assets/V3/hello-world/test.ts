@@ -5,7 +5,7 @@ await test("hello-world",
     `<hello-world></hello-world>`,
     async () => {
         // @ts-ignore
-        await assertElemEquals('hello-world', {
+        await LISS.assertElement('hello-world', {
             shadow_html: "Hello World",
             css: {
                 ":scope": ""

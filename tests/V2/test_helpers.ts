@@ -1,10 +1,9 @@
 // https://x.com/deno_land/status/1684616962553634816
 // import puppeteer from 'https://deno.land/x/puppeteer_plus/mod.ts';
 // import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
-// @ts-ignore
+
 import puppeteer, {Browser} from 'npm:puppeteer@23.10.4';
-// @ts-ignore
-import { describe, it, DescribeDefinition } from "jsr:@std/testing/bdd";
+import { describe, it } from "jsr:@std/testing/bdd";
 
 // TODO: builder + move file...
 const tests = {
@@ -49,7 +48,7 @@ const tests = {
 
 //TODO: files/move functions/etc.
 
-let files: Record<string, {body: string, contentType: string}> = {};
+const files: Record<string, {body: string, contentType: string}> = {};
 
 files["http://localhost/dist/dev/index.js"] = {
     body       : await Deno.readTextFile("./dist/dev/index.js"),
@@ -112,14 +111,13 @@ function generateHTMLPage(page_html: string, brython: string) {
     }
 }
 
-export async function test( test_name: string,
-                            page_html: string,
-                            callback: () => Promise<void>) {
+export function test( test_name: string,
+                      page_html: string,
+                      callback: () => Promise<void>) {
 
-    for(let browser in tests) {
-        // @ts-ignore
+    for(const browser in tests) {
 
-        for(let use_brython of ["true", "false"]) {
+        for(const use_brython of ["true", "false"]) {
             const lang = use_brython === "true" ? "bry" : "js";
 
             it(tests[browser as keyof typeof tests], `${test_name} (${browser}-${lang})`, {

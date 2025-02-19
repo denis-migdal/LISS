@@ -1,4 +1,5 @@
 import LISS from "V3";
+import buildTestPage from "V3/utils/tests/buildTestPage";
 import PlaygroundArea, { rootdir } from "pages/V3/skeleton/components/playground-area/PlaygroundArea";
 
 const VERSION = "V3";
@@ -68,38 +69,19 @@ class LISSPlayground extends PlaygroundArea {
 
         const codes = this.getAllCodes();
 
-        //TODO:
+        /*
         const brython = this.host.hasAttribute("brython");
-        let file = brython ? "index.bry" : "index.js";
-        let code = brython ? escapeStr(codes["index.bry" ])
-                           : escapeStr(codes["index.js"  ]);
-
-        //TODO
         let p_js    = codes["page.js"   ];
         if( brython )
             p_js = `globalThis.__BRYTHON__.runPythonSource(\`${codes["page.bry"]}\`, "_");`;
+        */
 
-        return `<!DOCTYPE html>
-    <head>
-        <style>
-            body {
-                margin: 0;
-                background-color: white;
-            }
-        </style>
-        <script type="module" src='${rootdir}/dist/dev/index.js'
-                liss-mode="auto-load"
-                liss-cdir="${this.ASSETS_DIR}/"
-        ></script>
-        <script type="module">
-            ${p_js}
-        </script>
-    </head>
-    <body>
-        ${codes["page.html"]}
-    </body>
-</html>
-`;
+        return buildTestPage({
+            liss: `${rootdir}/dist/dev/index.js`,
+            cdir: `${this.ASSETS_DIR}/`,
+            js  : codes["page.js"  ],
+            html: codes["page.html"]
+        })
     }
 }
 

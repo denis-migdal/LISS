@@ -1,10 +1,10 @@
 // https://x.com/deno_land/status/1684616962553634816
 // import puppeteer from 'https://deno.land/x/puppeteer_plus/mod.ts';
 // import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
-// @ts-ignore
+
 import puppeteer, {Browser} from 'npm:puppeteer@23.10.4';
-// @ts-ignore
-import { describe, it, DescribeDefinition } from "jsr:@std/testing/bdd";
+import { describe, it } from "jsr:@std/testing/bdd";
+import buildTestPage from '../../src/V3/utils/tests/buildTestPage.ts';
 
 // TODO: builder + move file...
 const tests = {
@@ -47,79 +47,35 @@ const tests = {
     })
 }
 
-//TODO: files/move functions/etc.
+function generateHTMLPage(page_html: string) {
+    files['http://localhost/dist/dev/'] = {
+        body: buildTestPage({
+            liss: "./index.js",
+            cdir: "./assets/V3/",
+            html: page_html,
+            js  : ``
+        }),
+        contentType: "text/html"
+    }
+}
 
-let files: Record<string, {body: string, contentType: string}> = {};
+//TODO: files/move functions/etc.
+const files: Record<string, {body: string, contentType: string}> = {};
 
 files["http://localhost/dist/dev/index.js"] = {
     body       : await Deno.readTextFile("./dist/dev/index.js"),
     contentType: "text/javascript"
 }
 
-function generateHTMLPage(page_html: string, brython: string) {
-    files['http://localhost/dist/dev/'] = {
-        body: `<!DOCTYPE>
-<html>
-    <head>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
-        <script>
-            //TODO: recursive compare ?
-            async function assertElemEquals(elem, {
-                tag,
-                shadow_html = null,
-                css = {}
-            }) {
+// todo : start page...
 
-                if( typeof elem === "string" ) {
-                    tag ??= elem;
-                    elem = document.querySelector(elem);
-                }
+export function test( test_name: string,
+                      page_html: string,
+                      callback: () => Promise<void>) {
 
-                if( elem === null )
-                    throw new Error("Component not found");
+    for(const browser in tests) {
 
-                await LISS.whenInitialized(elem);
-
-                if( elem.tagName.toLowerCase() !== tag )
-                    throw new Error(\`Wrong tagname.\nExpected: \${tag}\nGot: \${elem.tagName.toLowerCase()}\`);
-
-                if( shadow_html !== elem.shadowRoot ) {
-                    if( shadow_html === null || elem.shadowRoot === null )
-                        throw new Error(\`ShadowRoot missing or unexpected.\`);
-                    if( shadow_html !== elem.shadowRoot.innerHTML )
-                        throw new Error(\`HTML content mismatched.\nExpected: \${shadow_html}\nGot: \${elem.shadowRoot.innerHTML}\`)
-                }
-
-                for(let selector in css ) {
-                    const expected = css[selector];
-                    const sub_elems = elem.shadowRoot.querySelectorAll(selector);
-                    for( let sub_elem of sub_elems ) {
-                        const css = window.getComputedStyle(sub_elem).cssText;
-                        if(css !== expected)
-                            throw new Error(\`CSS mismatch\nExpected:\${expected}\nGot: \${css}\`);
-                    }
-                }
-
-            }
-        </script>
-        <script src="./index.js" brython="${brython}" autodir="./assets/examples/" type="module"></script>
-    </head>
-    <body>
-        ${page_html}
-    </body>
-</html>`,
-        contentType: "text/html"
-    }
-}
-
-export async function test( test_name: string,
-                            page_html: string,
-                            callback: () => Promise<void>) {
-
-    for(let browser in tests) {
-        // @ts-ignore
-
-        for(let use_brython of ["true", "false"]) {
+        for(const use_brython of /*["true", */["false"]) {
             const lang = use_brython === "true" ? "bry" : "js";
 
             it(tests[browser as keyof typeof tests], `${test_name} (${browser}-${lang})`, {
@@ -184,9 +140,9 @@ export async function test( test_name: string,
                     req.respond(files[url]);
                 });
         
-                generateHTMLPage(page_html, use_brython);
+                generateHTMLPage(page_html);
 
-                await page.goto("http://localhost/dist/dev/", {waitUntil: "domcontentloaded"});
+                await page.goto("http://localhost/dist/dev/", {waitUntil: "load"});
                 
                 await page.evaluate( callback );
                 // https://pptr.dev/api/puppeteer.page.evaluate

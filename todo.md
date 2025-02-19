@@ -1,10 +1,13 @@
 -> unit tests
-    -> use https://github.com/denoland/deno/issues/27681 bdd testing ?
-        -> beforeAll / afterAll (to start/close the browser)
-    -> v3 + autoload
-        -> function to generate the page.
-        -> + sw.js
-    -> default HTML tag if not given
+
+    -> fetchText issue...
+
+    -> split remaining into files...
+    -> + sw.js [tests + playground...]
+
+    -> default HTML tag if not given (build test page tests/)
+        -> /!\ download files (also handle...)
+            => on bidule (re-coder fcts...)
 
 -> doc
 	-> simple tuto + do/don't
