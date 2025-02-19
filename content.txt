@@ -1,5 +1,5 @@
 + V3:V3
-    + fr:🇫🇷
+    - fr:🇫🇷
         - getting-started:🚀 Prise en main
         - conception:🕮 Concevoir un composant Web
         - define:🕮 Créer un composant Web

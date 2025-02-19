@@ -122,6 +122,8 @@ function buildPageMenu(parent: PageMenuNode|null = null) {
             parent: curpos
         };
 
+        console.warn(level, curpos.children.length, getTitlePrefix(level, curpos.children.length));
+
         curpos.children.push(elem);
         curpos = elem;
     }
@@ -156,9 +158,9 @@ function searchCurPagesHeader(htree: PagesMenuNode): PagesMenuNode {
 
 const hid = [
     [],
-    ["I", "II", "III", "IV"],
-    ["1", "2","3","5","6","7","8","9"],
-    ["a", "b","c","d","e","f","g","h"],
+    ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X" ],
+    ["1", "2" , "3"  , "4" , "5", "6" , "7"  , "8"   , "9" , "10"],
+    ["a", "b" , "c"  , "d" , "e", "f" , "g"  , "h"   , "i" , "j" ],
 ]
 
 function getTitlePrefix(level: number, idx: number) {

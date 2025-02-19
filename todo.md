@@ -1,7 +1,13 @@
--> TODO: bug menu h2 (WTF?)
-
 -> doc
     -> home
+        -> intro
+        -> liens/features
+            -> connected
+            -> attributeObs
+            -> parts
+            -> slots
+            -> composedEvent
+        -> lister les pièges
 	-> getting started
         -> DO/DON'T
         -> list features
@@ -12,11 +18,6 @@
     => mergerKlass (?)
     -> add shared css
 -> doc vanilla DOM ?
-    -> connected
-    -> attributeObs
-    -> parts
-    -> slots
-    -> composedEvent
 
 -> dev
     -> python + TS code
