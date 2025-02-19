@@ -1,6 +1,9 @@
 // <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
 
-export default function buildTestPage(args: {liss: string, cdir: string, js: string, html: string}) {
+export default function buildTestPage(args: {liss: string, cdir: string, js: string, html: string, tagname: string}) {
+
+    if( args.js === "" && args.html == "")
+        args.html = `<${args.tagname}></${args.tagname}>`;
 
     return `<!DOCTYPE html>
         <head>

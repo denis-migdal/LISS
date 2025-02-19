@@ -13,7 +13,6 @@
 	-> simple tuto + do/don't
 
 -> dev+doc
-    -> playground : if no pages => default tag
     -> LISS Update/Signal/Properties
     -> add shared css
 

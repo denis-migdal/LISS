@@ -77,10 +77,11 @@ class LISSPlayground extends PlaygroundArea {
         */
 
         return buildTestPage({
-            liss: `${rootdir}/dist/dev/index.js`,
-            cdir: `${this.ASSETS_DIR}/`,
-            js  : codes["page.js"  ],
-            html: codes["page.html"]
+            liss   : `${rootdir}/dist/dev/index.js`,
+            cdir   : `${this.ASSETS_DIR}/`,
+            js     : codes["page.js"  ],
+            html   : codes["page.html"],
+            tagname: this.getAttribute("name")!,
         })
     }
 }
