@@ -2,10 +2,9 @@
 	-> simple tuto + do/don't
     
 -> unit tests
-    -> split remaining into files...
-        => buildPage (on bidule)
+    -> write other tests...
     -> page_html / page_js => load from assets/V3 if null ?
-    -> + sw.js [tests + playground...]
+    -> + sw.js [tests (simulate?) + playground...]
 
 -> dev+doc
     -> LISS Update/Signal/Properties

@@ -9,7 +9,9 @@ await addTest("hello-world",
         await LISS.assertElement('hello-world', {
             shadow_html: "Hello <em>World</em>",
             css: {
-                ":scope": ""
+                ":host em": {
+                    "background-color": "rgb(255, 255, 0)"
+                }
             }
         });
     }

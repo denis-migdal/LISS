@@ -3,6 +3,7 @@ import { describe } from "jsr:@std/testing/bdd";
 
 const browserOptions = {
     "chrome" : {
+        //headless: false,
         executablePath: "/snap/bin/chromium"
     },
     "firefox": {
