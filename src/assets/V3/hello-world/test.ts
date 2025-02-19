@@ -1,9 +1,9 @@
 // @ts-ignore
 import addTest from "TESTS";
 
-await addTest(null,
-    `<hello-world></hello-world>`,
-    async (tagname: string) => {
+await addTest({
+    page_html: null,
+    test: async (tagname: string) => {
 
         // @ts-ignore
         await LISS.assertElement(tagname, {
@@ -15,4 +15,4 @@ await addTest(null,
             }
         });
     }
-)
+})

@@ -4,7 +4,7 @@
 -> unit tests
     -> write other tests...
     -> + sw.js [tests (simulate?) + playground...]
-    -> page_html / page_js => load from assets/V3 if null ?
+    -> page_js tests
 
 -> dev+doc
     -> LISS Update/Signal/Properties

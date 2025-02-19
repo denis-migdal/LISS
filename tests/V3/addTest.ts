@@ -6,7 +6,7 @@ import {it} from "jsr:@std/testing/bdd";
 import buildTestPage from '../../src/V3/utils/tests/buildTestPage.ts';
 import buildBrowsers from './browsers.ts';
 import buildNewPage from "./buildNewPage.ts";
-import loadFile, { getComponentDir, getComponentName } from "./loadFile.ts";
+import { getComponentDir, getComponentName } from "./loadFile.ts";
 
 const browsers = buildBrowsers({
                                     sanitizeResources: false,
@@ -20,19 +20,31 @@ const PAGE_URL = "http://localhost/dist/dev/";
 
 import { exists } from "https://deno.land/std/fs/mod.ts";
 
-export default async function addTest(  test_name: string|null,
-                                        page_html: string|null,
-                                        callback: (tagname: string) => Promise<void>) {
+type addTest_Opts = {
+    test_suffix?: string,
+    page_html  ?: string|null,
+    test        : (tagname: string) => Promise<void>
+}
 
-    const tagname = getComponentName();
+export default async function addTest( {
+                                            page_html,
+                                            test_suffix = "",
+                                            test
+                                        }: addTest_Opts ) {
 
-    test_name ??= tagname;
+    const tagname   = getComponentName();
+    const test_name = tagname + test_suffix;
+    const callback  = test;
 
-    const page_html_file = getComponentDir() + './page.html';
+    if( page_html === undefined ) {
 
-    page_html ??= await exists(page_html_file)
-                        ? await Deno.readTextFile( page_html_file )
-                        : `<${tagname}></${tagname}>`;
+        page_html = null;
+        const page_html_file = getComponentDir() + './page.html';
+        if( await exists(page_html_file) )
+            page_html = await Deno.readTextFile( page_html_file )
+    }
+    if( page_html === null )
+        page_html = `<${tagname}></${tagname}>`;
 
     let browser: keyof typeof browsers;
     for( browser in browsers) {
