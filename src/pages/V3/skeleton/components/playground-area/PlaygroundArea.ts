@@ -2,23 +2,25 @@ import LISS from "V3";
 import CodeBlock from "../code-block/CodeBlock";
 
 type Resource = {
-    lang : string,
-    file : string,
+    lang : string, //TODO: delete
     title: string,
+    file : string,
 }
-
 
 export const rootdir = location.host === "denis-migdal.github.io" ? `/${location.pathname.split("/")[1]}` : "";
 
+const VERSION = "V3";
+
 // @ts-ignore
 import css  from "!!raw-loader!./PlaygroundArea.css";
+import html from "V3/utils/parsers/html";
 
 export default class PlaygroundArea extends LISS({
     css
 }) {
-    get ASSETS_DIR() {
-        return `${rootdir}/dist/dev/assets/examples`;
-    }; 
+
+    protected resources2: Record<string, HTMLElement> = {};
+    protected codes     : Record<string, CodeBlock>   = {};
 
     protected resources: Record<string, {
         html  : HTMLElement,
@@ -27,6 +29,45 @@ export default class PlaygroundArea extends LISS({
 
     constructor(resources: readonly Resource[] = []) {
         super();
+
+        /****/
+
+        const card2 =
+html`<div class="card"><div class="header"><strong>Result</strong></div></div>`;
+
+        this.#iframe = document.createElement('iframe');
+        card2.append(this.#iframe);
+
+        this.resources2['output'] = card2;
+
+        for(let res of this.klass.RESSOURCES) {
+
+            let codeLang = res.file.slice(res.file.indexOf('.') + 1);
+            if( codeLang === "bry")
+                codeLang = "py";
+
+            const code = this.codes[res.file] = new CodeBlock({codeLang})
+
+            const card =
+html`<div class="card"><div class="header"><strong>${res.title}</strong></div></div>`;
+
+            card.append( code );
+
+            this.resources2[res.file] =  card;
+
+            /*
+            code_api.host.addEventListener('change', () => {
+                if( ! this._inUpdate )
+                    this.updateResult();
+            });*/
+        }
+
+        // TODO: first content load...
+        for( let code in this.codes )
+            this.codes[code].addEventListener('change', () => this.requestUpdate() );
+        
+
+        /*****/
 
         //TODO...
         document.body.addEventListener('code-lang_changed', () => {
@@ -155,6 +196,9 @@ export default class PlaygroundArea extends LISS({
 
         const example = this.host.getAttribute('name')!;
 
+        // test
+        this.onExampleChange(example);
+
         let promises: Promise<unknown>[] = [];
 
         let names = new Array<string>();
@@ -276,6 +320,129 @@ export default class PlaygroundArea extends LISS({
     }
 
     static override observedAttributes = ["show", "name"];
+    
+    get ASSETS_DIR() {
+        return `${rootdir}/dist/dev/assets/examples`;
+    };
+
+    /*************/
+
+    protected static ASSETS_DIR = `${rootdir}/dist/dev/assets/${VERSION}/`;
+    protected static RESSOURCES = new Array<Resource>();
+    
+    protected name: string|null = null;
+    protected files: Record<string, string> = {};
+
+    protected override onUpdate(): void {
+        console.warn("update asked");
+    }
+
+    //TODO...
+    protected get codeLang() {
+        return this.getAttribute("code-lang") ?? document.body.getAttribute('code-lang');
+    }
+
+    //TODO...
+    protected get blocks() {
+        return this.getAttribute('show')?.split(',');
+    }
+
+    protected get klass() {
+        return this.constructor as typeof PlaygroundArea;
+    }
+
+    protected async onExampleChange(name: string) {
+
+        this.name = name;
+        
+        this.files = await this.klass.loadComponentFiles(name);
+
+        this.updateLayout2();
+
+        this.fillBlocks();
+    }
+
+    protected fillBlocks() {
+
+        for(let name in this.codes)
+            this.codes[name].setCode( this.files[name] );
+    }
+
+    protected updateLayout2() {
+
+        const blocks = this.getBlocks();
+        this.updateGridLayout(blocks);
+
+        this.content.replaceChildren(... blocks.map( b => this.resources2[b] ) );
+
+        console.warn("=== replaced ===", [...this.content.childNodes]);
+    }
+
+    updateGridLayout(blocks: readonly string[]) {
+
+        if( blocks.length == 1 )
+            this.host.style.setProperty('grid', '1fr / 1fr');
+        if( blocks.length >= 2  && blocks.length <= 4)
+            this.host.style.setProperty('grid', 'auto / 1fr 1fr');
+        if( blocks.length > 4 )
+            this.host.style.setProperty('grid', 'auto / 1fr 1fr 1fr');
+    }
+
+    protected getBlocks() {
+
+        const lang  = this.codeLang;
+        const langs = this.klass.CodeLangs;
+
+        let blocks = this.blocks;
+        if( blocks === undefined ) {
+            blocks = Object.keys(this.files).filter( e => {
+                const ext = e.slice(e.indexOf(".")+1);
+
+                return this.files[e] !== "" && (ext === lang || ! langs.includes(ext));
+                
+            });
+
+            blocks.push('output')
+        } else
+            blocks = blocks.map( e => e.endsWith('.code') ? e.slice(0, -4) + lang : e);
+        
+        return blocks;
+    }
+
+    private static loadedComponentsFiles: Record<string, Record<string,string> > = {};
+
+    private static get CodeLangs() {
+        return document.body.getAttribute("code-langs")?.split(",") ?? [];
+    }
+
+    //TODO call cstr + attr changed + property changed (?)
+    private static async loadComponentFiles(name: string) {
+
+        let compos = this.loadedComponentsFiles[name];
+        if( compos !== undefined)
+            return compos;
+
+        const compo_dir = this.ASSETS_DIR + name;
+
+        let files: Record<string, string> = {};
+
+        await Promise.all(this.RESSOURCES.map( async (ressource) => {
+
+            //TODO: remove 404 (sw.js)
+            const resp = await fetch(`${compo_dir}/${ressource.file}`);
+
+            let text = "";
+            if( resp.ok )
+                text = await resp.text();
+
+            files[ressource.file] = text;
+
+        }));
+
+        return this.loadedComponentsFiles[name] = files;
+    }
+
+    /*************/
 }
 
 LISS.define('playground-area', PlaygroundArea);

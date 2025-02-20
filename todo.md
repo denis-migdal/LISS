@@ -1,4 +1,9 @@
 -> dev+doc
+    -> Playground v2
+        -> on layout change
+        -> on lang change (+ listen)
+        -> on code change
+
     -> LISS Signal/Properties
         -> Signal<T>
             (string as src)

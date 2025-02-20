@@ -2,36 +2,34 @@ import LISS from "V3";
 import buildTestPage from "V3/utils/tests/buildTestPage";
 import PlaygroundArea, { rootdir } from "pages/V3/skeleton/components/playground-area/PlaygroundArea";
 
-const VERSION = "V3";
-
 const resources = [{
+        title: 'WebComponent HTML',
         file : 'index.html',
         lang : 'html',
-        title: 'WebComponent HTML'
     },{
         file : 'index.js',
         lang : 'js',
         title: 'WebComponent JS'
     },{
+        title: 'WebComponent Brython',
         file : 'index.bry',
         lang : 'python',
-        title: 'WebComponent Brython'
     },{
+        title: 'WebComponent CSS',
         file : 'index.css',
         lang : 'css',
-        title: 'WebComponent CSS'
     },{
+        title: 'WebPage HTML',
         file : 'page.html',
         lang : 'html',
-        title: 'WebPage HTML'
     },{
+        title: 'WebPage JS',
         file : 'page.js',
         lang : 'js',
-        title: 'WebPage JS'
     },{
+        title: 'WebPage Brython',
         file : 'page.bry',
         lang : 'python',
-        title: 'WebPage Brython'
     },
 ]
 
@@ -41,8 +39,9 @@ class LISSPlayground extends PlaygroundArea {
         super(resources);
     }
 
+    //TODO: delete
     override get ASSETS_DIR() {
-        return `${rootdir}/dist/dev/assets/${VERSION}`;
+        return `${rootdir}/dist/dev/assets/V3`;
     };
 
     override generateIFrameContext() {
@@ -87,13 +86,43 @@ class LISSPlayground extends PlaygroundArea {
             tagname: this.getAttribute("name")!.split(':')[0],
         })
     }
+
+    protected static override RESSOURCES = [
+        {
+            file : 'index.html',
+            lang : 'html',
+            title: 'WebComponent HTML'
+        },{
+            file : 'index.js',
+            lang : 'js',
+            title: 'WebComponent JS'
+        },{
+            file : 'index.bry',
+            lang : 'python',
+            title: 'WebComponent Brython'
+        },{
+            file : 'index.css',
+            lang : 'css',
+            title: 'WebComponent CSS'
+        },{
+            file : 'page.html',
+            lang : 'html',
+            title: 'WebPage HTML'
+        },{
+            file : 'page.js',
+            lang : 'js',
+            title: 'WebPage JS'
+        },{
+            file : 'page.bry',
+            lang : 'python',
+            title: 'WebPage Brython'
+        },
+    ];
+
 }
 
-function escapeStr(data: undefined|string) {
-    if(data === undefined || data === "")
-        return undefined;
-    return '"' + data.replaceAll('\n', '\\n').replaceAll('"', '\\"') + '"';
-}
+
+
 
 LISS.define('liss-playground', LISSPlayground);
 
