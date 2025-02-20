@@ -8,8 +8,7 @@ type STYLE = CSS | readonly CSS[];
 
 export type ContentGenerator_Opts = {
     html   ?: Ressource<HTML>,
-    css    ?: Ressource<STYLE>,
-    shadow ?: ShadowCfg|null
+    css    ?: Ressource<STYLE>
 }
 
 const sharedCSS = new CSSStyleSheet();
@@ -19,15 +18,10 @@ export default class ContentGenerator {
 
     protected data: any;
 
-    #shadow     : ShadowCfg|null;
-
     constructor({
         html,
         css    = [],
-        shadow = null,
     }: ContentGenerator_Opts = {}) {
-
-        this.#shadow   = shadow;
 
         const isReady = isRessourceReady<HTML> (html)
                      && isRessourceReady<STYLE>(css)
