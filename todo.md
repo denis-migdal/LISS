@@ -1,3 +1,37 @@
+-> dev+doc
+    -> LISS Update/Signal/Properties
+        -> setInterval (after a setAFR) + count / throttled update strat (count)
+            -> force await finished.
+            -> throttle signal or function call ?
+                -> do not send event if not read yet...
+                -> throttler-debouncer / enabler...
+                (rester simple...)
+        -> Signal<T>
+            -> Signal extends IndirectSignal (?)
+        -> Props
+            -> .value dupl. {} to avoid sync issues (???)
+            -> + attr parser... + getInitialValues + cstr + signals...
+                -> decl getter/setter ??? (un peu enquiquinant....)
+                -> setter throw except (unsupported value)
+        -> test on chartsHTML
+
+-> features
+    -> shared css
+    -> closest fct ?
+    -> globalDelegated event listener (??? -> composedEvent? => matches ?)
+    -> inherit (content_generator override...)
+
+-> dev
+    -> python + TS code
+        -> files="js,bry,html" - default (html+css+js) ?
+        -> JS: replace imports or true import() when possible (?)
+        -> TS code fill JS code (only accepted in playground)
+        -> BRY brython script in playground only if brython
+            -> emulate string prefix
+                https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
+
+-> README.md update
+
 -> doc
     -> home
         -> intro
@@ -11,38 +45,14 @@
 	-> getting started
         -> DO/DON'T
         -> list features
-    
--> dev+doc
-    -> LISS Update/Signal/Properties
-        => signal / indirectSignal + fonctions...
-    => mergerKlass (?)
-    -> add shared css
--> doc vanilla DOM ?
-
--> dev
-    -> python + TS code
-        -> files="js,bry,html" - default (html+css+js) ?
-        -> JS: replace imports or true import() when possible (?)
-        -> TS code fill JS code (only accepted in playground)
-        -> BRY brython script in playground only if brython
-            -> emulate string prefix
-                https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
-
--> closest fct ?
--> globalDelegated event listener (??? -> composedEvent? => matches ?)
-
--> README.md update
 
 =====================================
 
--> refactor
-	-> SW in playground (+doc?)
-	-> update VSHS + ChartsHTML (doc + LISS)
+-> update VSHS + ChartsHTML (doc + LISS)
 
--> unit tests
-    -> + sw.js [tests (simulate?) + playground...]
-    -> page_js tests
+-> auto-load/playground/unit test
+    -> hide failed fetch
 
-// TODO: playground
-    // TODO: show error...
-    // TODO: debounce/throttle editor...
+-> playground
+    -> show error...
+    -> debounce/throttle editor (?)

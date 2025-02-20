@@ -122,8 +122,6 @@ function buildPageMenu(parent: PageMenuNode|null = null) {
             parent: curpos
         };
 
-        console.warn(level, curpos.children.length, getTitlePrefix(level, curpos.children.length));
-
         curpos.children.push(elem);
         curpos = elem;
     }
