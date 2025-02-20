@@ -1,21 +1,6 @@
 import ContentGenerator from "V3/ContentGenerators/ContentGenerator";
 import LISSFull from "./LISS/LISSFull";
 
-export function getInitialValue<E extends HTMLElement, N extends keyof E>
-                            (e: E, name: N): undefined|E[N]
-export function getInitialValue<E extends HTMLElement, N extends keyof E, D>
-                            (e: E, name: N, defaultValue: D) : D|E[N]
-export function getInitialValue<E extends HTMLElement, N extends keyof E, D>
-                            (e: E, name: N, defaultValue?: D): undefined|D|E[N] {
-
-    if( ! Object.hasOwn(e, name) )
-        return defaultValue;
-
-    const  _ = e[name];
-    delete     e[name];
-    return _;
-}
-
 type Cstr<T> = new(...args:any[]) => T
 type LISSv3_Opts<T extends Cstr<ContentGenerator> > = {
     content_generator: T,
@@ -28,7 +13,7 @@ export function LISS<T extends Cstr<ContentGenerator> = Cstr<ContentGenerator>>(
     // @ts-ignore
     const generator: ContentGenerator = new content_generator(opts);
     
-    return class _LISS extends LISSFull {
+    return class _LISS<T = void> extends LISSFull<T> {
 
         // TODO: no content if... ???
         // override attachShadow  ???

@@ -11,7 +11,7 @@ import createElement from "V3/utils/DOM/createElement";
 
 export class Scripts extends LISS({
     css: [css, theme]
-}) {
+})<string> {
 
     constructor() {
         super();

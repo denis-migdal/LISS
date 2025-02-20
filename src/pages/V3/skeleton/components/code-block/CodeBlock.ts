@@ -18,7 +18,7 @@ type HistoryState = {
 export default class CodeBlock extends LISS({
     html,
     css: [css, theme]
-}) {
+})<string> {
 
     readonly #output = this.content.firstElementChild! as HTMLElement;
 

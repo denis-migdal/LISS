@@ -1,13 +1,10 @@
 -> dev+doc
-    -> LISS Update/Signal/Properties
-        -> setInterval (after a setAFR) + count / throttled update strat (count)
-            -> force await finished.
-            -> throttle signal or function call ?
-                -> do not send event if not read yet...
-                -> throttler-debouncer / enabler...
-                (rester simple...)
+    -> LISS Signal/Properties
         -> Signal<T>
-            -> Signal extends IndirectSignal (?)
+            (string as src)
+                -> CodeBlock
+                    -> changes => set value internally...
+                -> Scripts   (only print)
         -> Props
             -> .value dupl. {} to avoid sync issues (???)
             -> + attr parser... + getInitialValues + cstr + signals...
