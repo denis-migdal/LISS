@@ -3,9 +3,9 @@ const menu_area  = document.createElement('div')!;
 const menu_pages = document.createElement('div')!;
 const menu_page  = document.createElement('div')!;
 
-menu_page.classList.add('menu_page');
+menu_page .classList.add('menu_page');
 menu_pages.classList.add('menu_pages');
-menu_area.classList.add('menu_area');
+menu_area .classList.add('menu_area');
 
 
 // Build page menu
@@ -28,7 +28,7 @@ type PageMenuNode  = MenuNode<{html: HTMLElement}>;
 type PagesMenuNode = MenuNode<{dir: string}>;
 
 // @ts-ignore
-import content  from "!!raw-loader!/content.txt";
+import content  from "!!raw-loader!/V3/pages/content.txt";
 
 function buildPagesMenu(content: string) {
 
