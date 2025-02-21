@@ -1,6 +1,6 @@
 -> deno serve --parallel (/!\ multiples instances !!)
     -> 
-    
+
 -> fix prod links...
 -> share JS/CSS ressources...
     -> link issue... (github pages grrrr)
@@ -9,7 +9,7 @@
         -> liss-dev    (remove /dist/dev/ in URLs)
         -> liss-prod
 
--> dev+doc
+-> dev
     -> CodeBlock (cf .dia)
         -> changes => set value internally...
     -> Scripts   (only print)
@@ -66,8 +66,9 @@
     -> debounce/throttle editor (?)
 
 [INFO]
--> https://highlightjs.org/download
--> bash css javascript python shell typescript xml
+
+Highlight.js : https://highlightjs.org/download
+    -> bash css javascript python shell typescript xml
 
 (dev => prod)
 - index.js (51kb => 11kB)
