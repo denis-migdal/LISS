@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf8"/>
+        <title>LISS</title>
+        <meta name="color-scheme" content="dark light">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link   href="./index.css"  rel="stylesheet" blocking="render">
+        <script  src="./index.js"  type="module"     blocking="render" async></script>
+    </head>
+    <body code-langs="js,bry">
+        <main>
+
+<h1 id="signaux--update--sync--events">Signaux / update / Sync / Events</h1>
+<pre><code>=&gt; properties : block/unblock...
+    =&gt; lazy props ? (generate quand même when access ?)
+</code></pre>
+<p>requestUpdate
+    - validate/require all valid (si each signals)
+        -&gt; onUpdate() [par defaut, rien]
+        -&gt; clear()    [par defaut, recreer le HTML de 0].
+    - peut être throttle pour opti.</p>
+<p>Constant instance ou special update (updateAll)
+    =&gt; recréer ou set (pas garanti)
+        =&gt; recréer : évite mises à jour struct non notifiées.
+        =&gt; merger
+            =&gt; key/value
+            =&gt; another merger
+            =&gt; lazy .get =&gt; si changements problèmes.
+                =&gt; trigger event...
+                =&gt; valeur peut-être changée, mais ok.
+                    =&gt; merge ROSignal &amp; indirect ?
+                    =&gt; props is a signal.</p>
+</main>
+    </body>
+</html>
