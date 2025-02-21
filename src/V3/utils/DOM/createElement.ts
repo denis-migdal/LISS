@@ -1,5 +1,3 @@
-import html from "../parsers/html";
-
 const doc = document.implementation.createDocument(
     "http://www.w3.org/1999/xhtml",
     "html",

@@ -1,6 +1,6 @@
 import "pages/V3/skeleton";
 import "pages/V3/skeleton/components/liss-playground/LISSPlayground";
-import PlaygroundArea from "../skeleton/components/playground-area/PlaygroundArea";
+import PlaygroundArea from "pages/V3/skeleton/components/playground-area/PlaygroundArea";
 
 const examples = [
     "hello-world",

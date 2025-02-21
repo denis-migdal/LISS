@@ -1,6 +1,0 @@
-export enum States {
-    LISS_DEFINED     = "LISS_DEFINED",
-    LISS_UPGRADED    = "LISS_UPGRADED",
-    LISS_READY       = "LISS_READY",
-    LISS_INITIALIZED = "LISS_INITIALIZED"
-}

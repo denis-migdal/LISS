@@ -8,9 +8,3 @@
         - signals:🕮 Les signaux (TODO)
     + en:🇬🇧
     - playground:🧪 Playground
-+ V2:V2
-    + fr:🇫🇷
-        - controler:Contrôleur API
-        - life-cycle:Cycle de vie
-    - en:🇬🇧
-    - playground:🧪 Playground

@@ -1,245 +1,5 @@
 /******/ var __webpack_modules__ = ({
 
-/***/ "./src/V2/LifeCycle/DEFINED.ts":
-/*!*************************************!*\
-  !*** ./src/V2/LifeCycle/DEFINED.ts ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   define: () => (/* binding */ define),
-/* harmony export */   getHostCstr: () => (/* binding */ getHostCstr),
-/* harmony export */   getHostCstrSync: () => (/* binding */ getHostCstrSync),
-/* harmony export */   getName: () => (/* binding */ getName),
-/* harmony export */   isDefined: () => (/* binding */ isDefined),
-/* harmony export */   whenDefined: () => (/* binding */ whenDefined)
-/* harmony export */ });
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils */ "./src/V2/utils.ts");
-
-// TODO...
-function define(tagname, ComponentClass) {
-    let Host = ComponentClass;
-    // Brython class
-    let bry_class = null;
-    if ("$is_class" in ComponentClass) {
-        bry_class = ComponentClass;
-        ComponentClass = bry_class.__bases__.filter((e)=>e.__name__ === "Wrapper")[0]._js_klass.$js_func;
-        ComponentClass.Host.Controler = class {
-            #bry;
-            constructor(...args){
-                // @ts-ignore
-                this.#bry = __BRYTHON__.$call(bry_class, [
-                    0,
-                    0,
-                    0
-                ])(...args);
-            }
-            #call(name, args) {
-                // @ts-ignore
-                return __BRYTHON__.$call(__BRYTHON__.$getattr_pep657(this.#bry, name, [
-                    0,
-                    0,
-                    0
-                ]), [
-                    0,
-                    0,
-                    0
-                ])(...args);
-            }
-            get host() {
-                // @ts-ignore
-                return __BRYTHON__.$getattr_pep657(this.#bry, "host", [
-                    0,
-                    0,
-                    0
-                ]);
-            }
-            static observedAttributes = bry_class["observedAttributes"];
-            attributeChangedCallback(...args) {
-                return this.#call("attributeChangedCallback", args);
-            }
-            connectedCallback(...args) {
-                return this.#call("connectedCallback", args);
-            }
-            disconnectedCallback(...args) {
-                return this.#call("disconnectedCallback", args);
-            }
-        };
-    }
-    if ("Host" in ComponentClass) Host = ComponentClass.Host;
-    let htmltag = undefined;
-    if ("Cfg" in Host) {
-        const Class = Host.Cfg.host;
-        htmltag = (0,_utils__WEBPACK_IMPORTED_MODULE_0__._element2tagname)(Class) ?? undefined;
-    }
-    const opts = htmltag === undefined ? {} : {
-        extends: htmltag
-    };
-    customElements.define(tagname, Host, opts);
-}
-function getName(element) {
-    // instance
-    if ("host" in element) element = element.host;
-    if (element instanceof Element) {
-        const name = element.getAttribute('is') ?? element.tagName.toLowerCase();
-        if (!name.includes('-')) throw new Error(`${name} is not a WebComponent`);
-        return name;
-    }
-    // cstr
-    if ("Host" in element) element = element.Host;
-    const name = customElements.getName(element);
-    if (name === null) throw new Error("Element is not defined!");
-    return name;
-}
-function isDefined(elem) {
-    if (elem instanceof HTMLElement) elem = getName(elem);
-    if (typeof elem === "string") return customElements.get(elem) !== undefined;
-    if ("Host" in elem) elem = elem.Host;
-    return customElements.getName(elem) !== null;
-}
-async function whenDefined(elem) {
-    if (elem instanceof HTMLElement) elem = getName(elem);
-    if (typeof elem === "string") {
-        await customElements.whenDefined(elem);
-        return customElements.get(elem);
-    }
-    // TODO: listen define...
-    throw new Error("Not implemented yet");
-}
-/*
-// TODO: implement
-export async function whenAllDefined(tagnames: readonly string[]) : Promise<void> {
-	await Promise.all( tagnames.map( t => customElements.whenDefined(t) ) )
-}
-*/ function getHostCstr(elem) {
-    // we can't force a define.
-    return whenDefined(elem);
-}
-function getHostCstrSync(elem) {
-    if (elem instanceof HTMLElement) elem = getName(elem);
-    if (typeof elem === "string") {
-        let host = customElements.get(elem);
-        if (host === undefined) throw new Error(`${elem} not defined yet!`);
-        return host;
-    }
-    if ("Host" in elem) elem = elem.Host;
-    if (customElements.getName(elem) === null) throw new Error(`${elem} not defined yet!`);
-    return elem;
-}
-
-
-/***/ }),
-
-/***/ "./src/V2/utils.ts":
-/*!*************************!*\
-  !*** ./src/V2/utils.ts ***!
-  \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   _element2tagname: () => (/* binding */ _element2tagname),
-/* harmony export */   html: () => (/* binding */ html),
-/* harmony export */   isDOMContentLoaded: () => (/* binding */ isDOMContentLoaded),
-/* harmony export */   isShadowSupported: () => (/* binding */ isShadowSupported),
-/* harmony export */   whenDOMContentLoaded: () => (/* binding */ whenDOMContentLoaded)
-/* harmony export */ });
-// functions required by LISS.
-// fix Array.isArray
-// cf https://github.com/microsoft/TypeScript/issues/17002#issuecomment-2366749050
-// from https://stackoverflow.com/questions/51000461/html-element-tag-name-from-constructor
-const elementNameLookupTable = {
-    'UList': 'ul',
-    'TableCaption': 'caption',
-    'TableCell': 'td',
-    'TableCol': 'col',
-    'TableRow': 'tr',
-    'TableSection': 'tbody',
-    'Quote': 'q',
-    'Paragraph': 'p',
-    'OList': 'ol',
-    'Mod': 'ins',
-    'Media': 'video',
-    'Image': 'img',
-    'Heading': 'h1',
-    'Directory': 'dir',
-    'DList': 'dl',
-    'Anchor': 'a'
-};
-function _element2tagname(Class) {
-    if (Class instanceof HTMLElement) Class = Class.constructor;
-    if (Class === HTMLElement) return null;
-    let cursor = Class;
-    // @ts-ignore
-    while(cursor.__proto__ !== HTMLElement)// @ts-ignore
-    cursor = cursor.__proto__;
-    // directly inherit HTMLElement
-    if (!cursor.name.startsWith('HTML') && !cursor.name.endsWith('Element')) return null;
-    const htmltag = cursor.name.slice(4, -7);
-    return elementNameLookupTable[htmltag] ?? htmltag.toLowerCase();
-}
-// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
-const CAN_HAVE_SHADOW = [
-    null,
-    'article',
-    'aside',
-    'blockquote',
-    'body',
-    'div',
-    'footer',
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'header',
-    'main',
-    'nav',
-    'p',
-    'section',
-    'span'
-];
-function isShadowSupported(tag) {
-    return CAN_HAVE_SHADOW.includes(_element2tagname(tag));
-}
-function isDOMContentLoaded() {
-    return document.readyState === "interactive" || document.readyState === "complete";
-}
-async function whenDOMContentLoaded() {
-    if (isDOMContentLoaded()) return;
-    const { promise, resolve } = Promise.withResolvers();
-    document.addEventListener('DOMContentLoaded', ()=>{
-        resolve();
-    }, true);
-    await promise;
-}
-// for mixins.
-/*
-export type ComposeConstructor<T, U> = 
-    [T, U] extends [new (a: infer O1) => infer R1,new (a: infer O2) => infer R2] ? {
-        new (o: O1 & O2): R1 & R2
-    } & Pick<T, keyof T> & Pick<U, keyof U> : never
-*/ // moved here instead of build to prevent circular deps.
-function html(str, ...args) {
-    let string = str[0];
-    for(let i = 0; i < args.length; ++i){
-        string += `${args[i]}`;
-        string += `${str[i + 1]}`;
-    //TODO: more pre-processes
-    }
-    // using template prevents CustomElements upgrade...
-    let template = document.createElement('template');
-    // Never return a text node of whitespace as the result
-    template.innerHTML = string.trim();
-    if (template.content.childNodes.length === 1 && template.content.firstChild.nodeType !== Node.TEXT_NODE) return template.content.firstChild;
-    return template.content;
-}
-
-
-/***/ }),
-
 /***/ "./src/V3/ContentGenerators/AutoContentGenerator.ts":
 /*!**********************************************************!*\
   !*** ./src/V3/ContentGenerators/AutoContentGenerator.ts ***!
@@ -304,9 +64,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ ContentGenerator)
 /* harmony export */ });
 /* harmony import */ var V3_utils_network_ressource__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! V3/utils/network/ressource */ "./src/V3/utils/network/ressource.ts");
-/* harmony import */ var V2_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! V2/utils */ "./src/V2/utils.ts");
-/* harmony import */ var V3_utils_parsers_template__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! V3/utils/parsers/template */ "./src/V3/utils/parsers/template.ts");
-/* harmony import */ var V3_utils_parsers_style__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! V3/utils/parsers/style */ "./src/V3/utils/parsers/style.ts");
+/* harmony import */ var V3_utils_parsers_template__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! V3/utils/parsers/template */ "./src/V3/utils/parsers/template.ts");
+/* harmony import */ var V3_utils_parsers_style__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! V3/utils/parsers/style */ "./src/V3/utils/parsers/style.ts");
+/* harmony import */ var V3_utils_DOM_isDOMContentLoaded__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! V3/utils/DOM/isDOMContentLoaded */ "./src/V3/utils/DOM/isDOMContentLoaded.ts");
+/* harmony import */ var V3_utils_DOM_whenDOMContentLoaded__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! V3/utils/DOM/whenDOMContentLoaded */ "./src/V3/utils/DOM/whenDOMContentLoaded.ts");
+
 
 
 
@@ -316,12 +78,12 @@ const sharedCSS = new CSSStyleSheet();
 class ContentGenerator {
     data;
     constructor({ html, css = [] } = {}){
-        const isReady = (0,V3_utils_network_ressource__WEBPACK_IMPORTED_MODULE_0__.isRessourceReady)(html) && (0,V3_utils_network_ressource__WEBPACK_IMPORTED_MODULE_0__.isRessourceReady)(css) && (0,V2_utils__WEBPACK_IMPORTED_MODULE_1__.isDOMContentLoaded)();
+        const isReady = (0,V3_utils_network_ressource__WEBPACK_IMPORTED_MODULE_0__.isRessourceReady)(html) && (0,V3_utils_network_ressource__WEBPACK_IMPORTED_MODULE_0__.isRessourceReady)(css) && (0,V3_utils_DOM_isDOMContentLoaded__WEBPACK_IMPORTED_MODULE_3__["default"])();
         if (isReady) this.prepare(html, css);
         const whenReady = Promise.all([
             (0,V3_utils_network_ressource__WEBPACK_IMPORTED_MODULE_0__.waitRessource)(html),
             (0,V3_utils_network_ressource__WEBPACK_IMPORTED_MODULE_0__.waitRessource)(css),
-            (0,V2_utils__WEBPACK_IMPORTED_MODULE_1__.whenDOMContentLoaded)()
+            (0,V3_utils_DOM_whenDOMContentLoaded__WEBPACK_IMPORTED_MODULE_4__["default"])()
         ]);
         whenReady.then((args)=>this.prepare(args[0], args[1]));
         this.isReady = isReady;
@@ -336,13 +98,13 @@ class ContentGenerator {
         if (css !== undefined) this.prepareStyle(css);
     }
     prepareTemplate(html) {
-        this.template = (0,V3_utils_parsers_template__WEBPACK_IMPORTED_MODULE_2__["default"])(html);
+        this.template = (0,V3_utils_parsers_template__WEBPACK_IMPORTED_MODULE_1__["default"])(html);
     }
     prepareStyle(css) {
         if (!Array.isArray(css)) css = [
             css
         ];
-        this.stylesheets = css.map((e)=>(0,V3_utils_parsers_style__WEBPACK_IMPORTED_MODULE_3__["default"])(e));
+        this.stylesheets = css.map((e)=>(0,V3_utils_parsers_style__WEBPACK_IMPORTED_MODULE_2__["default"])(e));
     }
     /*** Generate contents ***/ initContent(target, mode) {
         let content = target;
@@ -416,14 +178,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ LISSBase)
 /* harmony export */ });
 class LISSBase extends HTMLElement {
-    /*protected getInitialValue<N extends keyof this>
-                            (name: N): undefined|this[N]
-    protected getInitialValue<N extends keyof this, D>
-                            (name: N, defaultValue: D) : D|this[N]
-    protected getInitialValue<N extends keyof this, D>
-                            (name: N, defaultValue?: D): undefined|D|this[N] {
-        return getInitialValue(this, name, defaultValue);
-    }*/ static SHADOW_MODE = null;
+    static SHADOW_MODE = null;
     // TODO: static cache getter + use static HTML/CSS.
     static CONTENT_GENERATOR = null;
     content = this;
@@ -973,6 +728,23 @@ function getPropertyInitialValue(e, name, defaultValue) {
 
 /***/ }),
 
+/***/ "./src/V3/utils/DOM/isDOMContentLoaded.ts":
+/*!************************************************!*\
+  !*** ./src/V3/utils/DOM/isDOMContentLoaded.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isDOMContentLoaded)
+/* harmony export */ });
+function isDOMContentLoaded() {
+    return document.readyState === "interactive" || document.readyState === "complete";
+}
+
+
+/***/ }),
+
 /***/ "./src/V3/utils/DOM/isPageLoaded.ts":
 /*!******************************************!*\
   !*** ./src/V3/utils/DOM/isPageLoaded.ts ***!
@@ -985,10 +757,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 function isPageLoaded() {
     return document.readyState === "complete";
-} /*
-export function isDOMContentLoaded() {
-    return document.readyState === "interactive" || document.readyState === "complete";
-}*/ 
+}
+
+
+/***/ }),
+
+/***/ "./src/V3/utils/DOM/whenDOMContentLoaded.ts":
+/*!**************************************************!*\
+  !*** ./src/V3/utils/DOM/whenDOMContentLoaded.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ whenDOMContentLoaded)
+/* harmony export */ });
+/* harmony import */ var _isDOMContentLoaded__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isDOMContentLoaded */ "./src/V3/utils/DOM/isDOMContentLoaded.ts");
+
+async function whenDOMContentLoaded() {
+    if ((0,_isDOMContentLoaded__WEBPACK_IMPORTED_MODULE_0__["default"])()) return;
+    const { promise, resolve } = Promise.withResolvers();
+    document.addEventListener('DOMContentLoaded', ()=>{
+        resolve();
+    }, true);
+    await promise;
+}
 
 
 /***/ }),
@@ -1010,19 +803,7 @@ async function whenDOMContentLoaded() {
     const { promise, resolve } = Promise.withResolvers();
     document.addEventListener('load', resolve, true);
     await promise;
-} /*
-export async function whenDOMContentLoaded() {
-    if( isDOMContentLoaded() )
-        return;
-
-    const {promise, resolve} = Promise.withResolvers<void>()
-
-	document.addEventListener('DOMContentLoaded', () => {
-		resolve();
-	}, true);
-
-    await promise;
-}*/ 
+}
 
 
 /***/ }),
@@ -1200,11 +981,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ html)
 /* harmony export */ });
+/* harmony import */ var _isTemplateString__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isTemplateString */ "./src/V3/utils/parsers/isTemplateString.ts");
+
 const template = document.createElement("template");
 const df = template.content;
 function html(...raw) {
     let elem = raw[0];
-    if (Array.isArray(elem)) {
+    if ((0,_isTemplateString__WEBPACK_IMPORTED_MODULE_0__["default"])(raw)) {
         const str = raw[0];
         let string = str[0];
         for(let i = 1; i < raw.length; ++i){
@@ -1245,6 +1028,23 @@ V3_LISS__WEBPACK_IMPORTED_MODULE_0__["default"].style = _style__WEBPACK_IMPORTED
 V3_LISS__WEBPACK_IMPORTED_MODULE_0__["default"].template = _template__WEBPACK_IMPORTED_MODULE_2__["default"];
 V3_LISS__WEBPACK_IMPORTED_MODULE_0__["default"].html = _html__WEBPACK_IMPORTED_MODULE_1__["default"];
 
+
+
+/***/ }),
+
+/***/ "./src/V3/utils/parsers/isTemplateString.ts":
+/*!**************************************************!*\
+  !*** ./src/V3/utils/parsers/isTemplateString.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isTemplateString)
+/* harmony export */ });
+function isTemplateString(raw) {
+    return Array.isArray(raw[0]);
+}
 
 
 /***/ }),
@@ -1295,9 +1095,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ template)
 /* harmony export */ });
+/* harmony import */ var _isTemplateString__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isTemplateString */ "./src/V3/utils/parsers/isTemplateString.ts");
+
 function template(...raw) {
     let elem = raw[0];
-    if (Array.isArray(elem)) {
+    if ((0,_isTemplateString__WEBPACK_IMPORTED_MODULE_0__["default"])(raw)) {
         const str = raw[0];
         let string = str[0];
         for(let i = 1; i < raw.length; ++i){
@@ -1333,8 +1135,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ assertElement)
 /* harmony export */ });
-/* harmony import */ var V2_LifeCycle_DEFINED__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! V2/LifeCycle/DEFINED */ "./src/V2/LifeCycle/DEFINED.ts");
+/* harmony import */ var V3_define_whenDefined__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! V3/define/whenDefined */ "./src/V3/define/whenDefined.ts");
 /* harmony import */ var V3_LISS__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! V3/LISS */ "./src/V3/LISS.ts");
+
 function waitFrame() {
     const { promise, resolve } = Promise.withResolvers();
     requestAnimationFrame(()=>resolve());
@@ -1343,13 +1146,12 @@ function waitFrame() {
 async function assertElement(tagname, opts = {}) {
     const shadow_html = opts.shadow_html ?? null;
     const css = opts.css ?? {};
-    await (0,V2_LifeCycle_DEFINED__WEBPACK_IMPORTED_MODULE_0__.whenDefined)(tagname);
+    await (0,V3_define_whenDefined__WEBPACK_IMPORTED_MODULE_0__["default"])(tagname);
     //for(let i = 0; i < 1; ++i)
     //    await waitFrame();
     const elem = document.querySelector(tagname);
     if (elem === null) throw new Error("Component not found");
-    //TODO: ...
-    //await LISS.whenInitialized(elem);
+    //TODO: await LISS.whenInitialized(elem); ?
     if (elem.tagName.toLowerCase() !== tagname) throw new Error(`Wrong tagname.
 Expected: ${tagname}
 Got: ${elem.tagName.toLowerCase()}`);
@@ -1384,7 +1186,6 @@ Got: ${elem.shadowRoot.innerHTML}`);
         }
     }
 }
-
 
 V3_LISS__WEBPACK_IMPORTED_MODULE_1__["default"].assertElement = assertElement;
 

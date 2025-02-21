@@ -5,7 +5,7 @@ import {hl} from "pages/V3/skeleton/components/hl";
 import css  from "!!raw-loader!./scripts.css";
 // @ts-ignore
 import theme from "!!raw-loader!pages/V3/skeleton/components/theme/Tomorrow.css";
-import { whenDOMContentLoaded } from "V2/utils";
+import whenDOMContentLoaded from "V3/utils/DOM/whenDOMContentLoaded";
 import createElement from "V3/utils/DOM/createElement";
 
 
@@ -22,7 +22,6 @@ export class Scripts extends LISS({
         if(code[0] === '\n') {
 
             this.host.classList.toggle("block", true);
-
 
             const offset = code.search(/[\S]/) - 1;
             const indent = code.slice(1, offset);
@@ -64,18 +63,15 @@ export class Scripts extends LISS({
 
 LISS.define("code-script", Scripts);
 
-await whenDOMContentLoaded;
+whenDOMContentLoaded().then( () => {
 
-for(let script of document.querySelectorAll('script[type^="c-"]') ) {
+    for(let script of document.querySelectorAll('script[type^="c-"]') ) {
 
-    const code = createElement("code-script");
+        const code = createElement("code-script");
 
-    code.setAttribute("code-lang", script.getAttribute("type")!.slice(2));
-    code.textContent = script.textContent;
+        code.setAttribute("code-lang", script.getAttribute("type")!.slice(2));
+        code.textContent = script.textContent;
 
-    document.adoptNode(code);
-    customElements.upgrade(code);
-
-    script.replaceWith(code);
-
-}
+        script.replaceWith(code);
+    }
+});

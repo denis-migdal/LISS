@@ -1,14 +1,15 @@
+import isTemplateString from "./isTemplateString";
 import { Template } from "./types";
 
 export type HTML  = DocumentFragment|HTMLElement|string;
 
 export default function template( ...raw:Template<HTML>): DocumentFragment {
 
-    let elem = raw[0];
+    let elem: HTML = raw[0] as any;
 
-    if( Array.isArray(elem) ) {
+    if( isTemplateString(raw) ) {
         
-        const str = raw[0] as TemplateStringsArray;
+        const str = raw[0];
 
         let string = str[0];
         for(let i = 1; i < raw.length; ++i) {

@@ -7,7 +7,6 @@
 ## Documentation :
 
 - V3: https://denis-migdal.github.io/LISS/dist/dev/pages/V3/fr/
-- V2: https://denis-migdal.github.io/LISS/dist/dev/pages/V2/fr/
 
 ## Build
 

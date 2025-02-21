@@ -1,4 +1,3 @@
-import { LISS } from "V2/LISSControler";
 import fetchText from "./fetchText";
 
 // @ts-ignore

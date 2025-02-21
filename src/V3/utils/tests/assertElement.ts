@@ -1,3 +1,5 @@
+import whenDefined from "V3/define/whenDefined";
+
 type Options = {
     shadow_html?: string,
     css        ?: Record<string, Record<string, string>>
@@ -27,8 +29,7 @@ export default async function assertElement(tagname: string, opts: Options = {})
     if( elem === null )
         throw new Error("Component not found");
 
-    //TODO: ...
-    //await LISS.whenInitialized(elem);
+    //TODO: await LISS.whenInitialized(elem); ?
 
     if( elem.tagName.toLowerCase() !== tagname )
         throw new Error(
@@ -81,7 +82,6 @@ Got: ${elem.shadowRoot.innerHTML}`);
     }
 }
 
-import { whenDefined } from "V2/LifeCycle/DEFINED";
 import LISS from "V3/LISS";
 
 declare module "V3/LISS" {

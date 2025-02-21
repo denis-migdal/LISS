@@ -1,9 +1,0 @@
-import "./colors";
-import "./page";
-import "./code/switch/switch";
-
-// may be async ?
-import "./menu";
-import "./code/scripts/scripts";
-import "./code/html-output/HTMLOutput";
-//import "./code/code-block/CodeBlock";

@@ -1,10 +1,10 @@
 import { isRessourceReady, Ressource, waitRessource } from "V3/utils/network/ressource";
-import { ShadowCfg } from "V2/types";
-import { isDOMContentLoaded, whenDOMContentLoaded } from "V2/utils";
 import template, { HTML } from "V3/utils/parsers/template";
 import style   , {CSS}    from "V3/utils/parsers/style";
+import isDOMContentLoaded from "V3/utils/DOM/isDOMContentLoaded";
+import whenDOMContentLoaded from "V3/utils/DOM/whenDOMContentLoaded";
 
-type STYLE = CSS | readonly CSS[];
+type STYLE = CSS | CSS[];
 
 export type ContentGenerator_Opts = {
     html   ?: Ressource<HTML>,

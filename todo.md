@@ -1,15 +1,24 @@
+-> compare size of github
+-> prod build...
+-> share JS/CSS ressources...
+    -> link issue... (github pages grrrr)
+
 -> dev+doc
-    -> Playground v2
-        -> on layout change
-        -> on lang change (+ listen)
-        -> on code change
+    -> CodeBlock (cf .dia)
+        -> changes => set value internally...
+    -> Scripts   (only print)
+
+-> dev
+    -> python + TS code
+        -> files="js,bry,html" - default (html+css+js) ?
+        -> JS: replace imports or true import() when possible (?)
+        -> TS code fill JS code (only accepted in playground)
+        -> BRY brython script in playground only if brython
+            -> .host (HTML) / .content (shadowRoot)
+            -> emulate string prefix
+                https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
 
     -> LISS Signal/Properties
-        -> Signal<T>
-            (string as src)
-                -> CodeBlock
-                    -> changes => set value internally...
-                -> Scripts   (only print)
         -> Props
             -> .value dupl. {} to avoid sync issues (???)
             -> + attr parser... + getInitialValues + cstr + signals...
@@ -22,15 +31,6 @@
     -> closest fct ?
     -> globalDelegated event listener (??? -> composedEvent? => matches ?)
     -> inherit (content_generator override...)
-
--> dev
-    -> python + TS code
-        -> files="js,bry,html" - default (html+css+js) ?
-        -> JS: replace imports or true import() when possible (?)
-        -> TS code fill JS code (only accepted in playground)
-        -> BRY brython script in playground only if brython
-            -> emulate string prefix
-                https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
 
 -> README.md update
 
@@ -58,3 +58,12 @@
 -> playground
     -> show error...
     -> debounce/throttle editor (?)
+
+[INFO]
+-> https://highlightjs.org/download
+-> bash css javascript python shell typescript xml
+
+index.js
+- 170kB => 37kB
+- prod mode
+- avoid repeating shared JS bib...
