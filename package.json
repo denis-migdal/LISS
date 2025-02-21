@@ -8,6 +8,7 @@
     },
     "scripts": {
         "build": "clear ; webpack --no-watch --mode=development",
+        "build-prod": "clear ; webpack --no-watch --mode=production",
         "watch": "clear ; webpack --watch    --mode=development",
         "tests": "clear ; cd tests; deno task test ; cd -"
     },

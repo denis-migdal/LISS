@@ -1,7 +1,13 @@
--> compare size of github
 -> prod build...
+    -> fix output...
+    -> ignore assets...
+    
 -> share JS/CSS ressources...
     -> link issue... (github pages grrrr)
+    -> declare migdal.ovh subdomains ? (resolve subdirs issues in links...)
+        -> liss-root
+        -> liss-dev    (remove /dist/dev/ in URLs)
+        -> liss-prod
 
 -> dev+doc
     -> CodeBlock (cf .dia)
@@ -63,7 +69,9 @@
 -> https://highlightjs.org/download
 -> bash css javascript python shell typescript xml
 
-index.js
-- 170kB => 37kB
-- prod mode
+(dev => prod)
+- index.js (51kb => 11kB)
+- define/index.js 170kB => 86kB (37kB => 25kB)
+
+V2 => V3: 6MB => 1Mo (24Mo => 5Mo)
 - avoid repeating shared JS bib...
