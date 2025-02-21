@@ -1,6 +1,7 @@
--> prod build...
-    -> fix output dir...
-
+-> deno serve --parallel (/!\ multiples instances !!)
+    -> 
+    
+-> fix prod links...
 -> share JS/CSS ressources...
     -> link issue... (github pages grrrr)
     -> declare migdal.ovh subdomains ? (resolve subdirs issues in links...)
@@ -74,3 +75,5 @@
 
 V2 => V3: 6MB => 1Mo (24Mo => 5Mo)
 - avoid repeating shared JS bib...
+
+dev - prod 3.6Mo / 3.1Mo
