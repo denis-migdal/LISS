@@ -1,11 +1,12 @@
 {
-    "include": ["src"],
+    "include": ["V3"],
+    "exclude": ["V3/tests"],
     "compilerOptions": {
         "rootDir": ".",
         "outDir": "./build/TS",
         "baseUrl": "./",
         "paths": {
-        "*": ["src/*", "libs/*"]
+        "*": ["V3/*", "libs/*"]
         },
         "sourceMap": true,
         "alwaysStrict": true,

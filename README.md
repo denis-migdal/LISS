@@ -6,7 +6,7 @@
 
 ## Documentation :
 
-- V3: https://denis-migdal.github.io/LISS/dist/dev/pages/V3/fr/
+https://liss.migdal.ovh
 
 ## Build
 

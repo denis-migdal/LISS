@@ -1,7 +1,9 @@
--> deno serve --parallel (/!\ multiples instances !!)
-    -> 
-
+-> add localhost domains
 -> fix prod links...
+-> gitignore dev.
+-> CI/CD (build prod) => gitignore prod
+    -> https://stackoverflow.com/questions/74727745/github-workflow-where-does-npm-ci-store-the-node-modules-folder
+
 -> share JS/CSS ressources...
     -> link issue... (github pages grrrr)
     -> declare migdal.ovh subdomains ? (resolve subdirs issues in links...)
@@ -75,6 +77,7 @@ Highlight.js : https://highlightjs.org/download
 - define/index.js 170kB => 86kB (37kB => 25kB)
 
 V2 => V3: 6MB => 1Mo (24Mo => 5Mo)
+    173kB => 51kB => 11kB
 - avoid repeating shared JS bib...
 
-dev - prod 3.6Mo / 3.1Mo
+dev - prod 3.6Mo / 3.1Mo (decompress)
