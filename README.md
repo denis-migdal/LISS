@@ -8,6 +8,8 @@
 
 https://liss.migdal.ovh
 
+http://liss.migdal.ovh/V3/fr/
+
 ## Build
 
 - `npm run build`
