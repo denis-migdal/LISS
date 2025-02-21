@@ -1,7 +1,4 @@
 build/TS
 node_modules/
 package-lock.json
-tsconfig.tsbuildinfo
-dist/src
-dist/tests
-dist/others
+dist/dev
