@@ -1,2 +1,0 @@
-var e={d:(r,t)=>{for(var o in t)e.o(t,o)&&!e.o(r,o)&&Object.defineProperty(r,o,{enumerable:!0,get:t[o]})},o:(e,r)=>Object.prototype.hasOwnProperty.call(e,r),p:""},r={};e.d(r,{A:()=>t});const t=e.p+"fr/define/index.html";var o=r.A;export{o as default};
-//# sourceMappingURL=index.js.map

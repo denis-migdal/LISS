@@ -1,2 +1,0 @@
-var e={d:(r,t)=>{for(var a in t)e.o(t,a)&&!e.o(r,a)&&Object.defineProperty(r,a,{enumerable:!0,get:t[a]})},o:(e,r)=>Object.prototype.hasOwnProperty.call(e,r),p:""},r={};e.d(r,{A:()=>t});const t=e.p+"fr/manipulate/index.html";var a=r.A;export{a as default};
-//# sourceMappingURL=index.js.map
