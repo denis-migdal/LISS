@@ -1,12 +1,3 @@
--> share JS/CSS ressources...
-    -> link issue... (github pages grrrr)
-    -> declare migdal.ovh subdomains ? (resolve subdirs issues in links...)
-        -> liss-root
-        -> liss-dev    (remove /dist/dev/ in URLs)
-        -> liss-prod
-
--> CI/CD (build prod) => gitignore prod
-    -> https://stackoverflow.com/questions/74727745/github-workflow-where-does-npm-ci-store-the-node-modules-folder
 
 -> mv compos + hv to libs/
 -> dev
@@ -56,6 +47,15 @@
 
 =====================================
 
+generate global .d.ts
+    "declaration": true,
+    "declarationDir": "types",
+
+-> CI/CD (build prod) => gitignore prod
+    -> https://stackoverflow.com/questions/74727745/github-workflow-where-does-npm-ci-store-the-node-modules-folder
+
+=====================================
+
 -> update VSHS + ChartsHTML (doc + LISS)
 
 -> auto-load/playground/unit test
@@ -65,7 +65,7 @@
     -> show error...
     -> debounce/throttle editor (?)
 
-[INFO]
+==================== [INFO] ==================== 
 
 Repo: (493kB)
     - 24Mo  -> 4.3Mo (V2 -> V3)
