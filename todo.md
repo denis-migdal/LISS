@@ -67,19 +67,19 @@
 
 [INFO]
 
-Repo:
-    - 24Mo -> 4.3Mo (V2 -> V3)
+Repo: (493kB)
+    - 24Mo  -> 4.3Mo (V2 -> V3)
+    - 4.3Mo -> 1.3 Mo (use skeletons)
 
 /dist/X :
     - 3.6Mo -> 3.1Mo (dev -> prod)
-    - 3.6Mo -> 1.4Mo (use skeletons)
+    - 3.6Mo -> 1.4Mio (use skeletons)
 
 skeleton/liss.js (25.5kB)
     - 4.44Mo -> 73kB (V2 -> V3 + build highlight.js)
 
 liss .js (4.5kB)
     - 173kB -> 12kB (V2 -> V3)
-
 
 Highlight.js : https://highlightjs.org/download
     -> bash css javascript python shell typescript xm
