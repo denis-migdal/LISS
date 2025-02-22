@@ -35,7 +35,7 @@ class LISSPlayground extends PlaygroundArea {
         */
 
         return buildTestPage({
-            liss   : `/${LISS.VERSION}/index.js`,
+            liss   : `/${LISS.VERSION}/libs/LISS/index.js`,
             cdir   : `${this.klass.ASSETS_DIR}/`,
             js     : this.codes["page.js"  ].getCode(),
             html   : this.codes["page.html"].getCode(),

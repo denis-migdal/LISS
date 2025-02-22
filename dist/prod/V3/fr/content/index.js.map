@@ -1,0 +1,1 @@
+{"version":3,"file":"fr/content/index.js","mappings":"8EAAe,G","sources":["webpack://LISS/./V3/pages/fr/content/index.md"],"sourcesContent":["export default __webpack_public_path__ + \"fr/content/index.html\";"],"names":[],"sourceRoot":""}
