@@ -103,7 +103,7 @@ export async function loadComponent<T extends HTMLElement = HTMLElement>(
 
 	WaitingDefine.add(tagname);
 
-    let true_tagdir = LISSContext?.override_tags?.[tagname] ?? tagname;     
+    let true_tagdir = globalThis.LISSContext?.override_tags?.[tagname] ?? tagname;     
 
 	const compo_dir = `${cdir}${true_tagdir}/`;
 

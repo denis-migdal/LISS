@@ -57,7 +57,7 @@ export default async function buildNewPage(
         if( ! (url in files) ) {
 
             try {
-                const body = await Deno.readTextFile("./"+path);
+                const body = await Deno.readTextFile("./dist/dev/"+path);
 
                 req.respond({
                     body,
@@ -76,7 +76,7 @@ export default async function buildNewPage(
 
     await page.setRequestInterception(true);
 
-    await page.goto("http://localhost/dist/dev/", {waitUntil: "load"});    
+    await page.goto("http://localhost/V3/", {waitUntil: "load"});    
 
     return page;
 }

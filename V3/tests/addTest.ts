@@ -3,7 +3,7 @@
 // import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
 
 import {it} from "jsr:@std/testing/bdd";
-import buildTestPage from '../../src/utils/tests/buildTestPage.ts';
+import buildTestPage from '../src/utils/tests/buildTestPage.ts';
 import buildBrowsers from './browsers.ts';
 import buildNewPage from "./buildNewPage.ts";
 import { getComponentDir, getComponentName } from "./loadFile.ts";
@@ -16,7 +16,7 @@ const browsers = buildBrowsers({
                                 //"firefox"
                             )
 
-const PAGE_URL = "http://localhost/dist/dev/";
+const PAGE_URL = "http://localhost/V3/";
 
 import { exists } from "https://deno.land/std/fs/mod.ts";
 
@@ -60,8 +60,8 @@ export default async function addTest( {
                         {
                             [PAGE_URL]: {
                                 body: buildTestPage({
-                                    liss: "./index.js",
-                                    cdir: "./assets/V3/",
+                                    liss: "./libs/LISS/index.js",
+                                    cdir: "./assets/",
                                     html: page_html,
                                     js  : ``
                                 }),

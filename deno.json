@@ -1,10 +1,10 @@
 {
     "tasks": {
-        "test": "deno test --allow-all --unstable-sloppy-imports --unstable-node-globals ./src/assets/V3/"
+        "test": "deno test --allow-all --unstable-sloppy-imports --unstable-node-globals ./V3/assets/"
     },
     "imports": {
-        "LISS" : "./src/index.ts",
-        "TESTS": "./tests/V3/addTest.ts"
+        "LISS" : "./V3/index.ts",
+        "TESTS": "./V3/tests/addTest.ts"
     },
     "compilerOptions": {
         "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
