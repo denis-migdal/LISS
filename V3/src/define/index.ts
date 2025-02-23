@@ -2,9 +2,9 @@ import define      from "./define";
 import isDefined   from "./isDefined";
 import whenDefined from "./whenDefined";
 
-import LISS from "src/LISS";
+import LISS from "@LISS/src/LISS";
 
-declare module "src/LISS" {
+declare module "@LISS/src/LISS" {
     interface ILISS {
         define    : typeof define;
         isDefined: typeof isDefined;

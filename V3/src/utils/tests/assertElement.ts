@@ -1,4 +1,4 @@
-import whenDefined from "src/define/whenDefined";
+import whenDefined from "@LISS/src/define/whenDefined";
 
 type Options = {
     shadow_html?: string,
@@ -82,9 +82,9 @@ Got: ${elem.shadowRoot.innerHTML}`);
     }
 }
 
-import LISS from "src/LISS";
+import LISS from "@LISS/src/LISS";
 
-declare module "src/LISS" {
+declare module "@LISS/src/LISS" {
     interface ILISS {
         assertElement    : typeof assertElement;
     }

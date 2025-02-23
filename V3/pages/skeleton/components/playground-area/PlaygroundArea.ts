@@ -1,10 +1,10 @@
-import LISS from "src";
+import LISS from "@LISS/src";
 import CodeBlock from "../code-block/CodeBlock";
-import html from "src/utils/parsers/html";
-import getPropertyInitialValue from "src/utils/DOM/getPropertyInitialValue";
+import html from "@LISS/src/utils/parsers/html";
+import getPropertyInitialValue from "@LISS/src/utils/DOM/getPropertyInitialValue";
 
-import LISSUpdate from "src/LISSClasses/LISSUpdate";
-import ContentGenerator from "src/ContentGenerators/ContentGenerator";
+import LISSUpdate from "@LISS/src/LISSClasses/LISSUpdate";
+import ContentGenerator from "@LISS/src/ContentGenerators/ContentGenerator";
 
 export type Resource = {
     title: string,

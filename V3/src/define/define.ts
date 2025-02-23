@@ -1,4 +1,4 @@
-import ContentGenerator from "src/ContentGenerators/ContentGenerator";
+import ContentGenerator from "@LISS/src/ContentGenerators/ContentGenerator";
 import { _whenDefinedPromises } from "./whenDefined";
 
 export const WaitingDefine = new Set<string>();
@@ -25,9 +25,9 @@ export default async function define(tagname: string, Klass: new(...args:any[]) 
         p.resolve();
 }
 
-import LISS from "src/LISS";
+import LISS from "@LISS/src/LISS";
 
-declare module "src/LISS" {
+declare module "@LISS/src/LISS" {
     interface ILISS {
         define: typeof define;
     }

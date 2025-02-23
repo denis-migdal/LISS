@@ -1,10 +1,10 @@
-import define, { WaitingDefine } from "src/define/define";
-import LISS from "src";
-import AutoContentGenerator from "src/ContentGenerators/AutoContentGenerator";
-import isPageLoaded   from "src/utils/DOM/isPageLoaded";
-import whenPageLoaded from "src/utils/DOM/whenPageLoaded";
-import fetchText      from "src/utils/network/fetchText";
-import execute        from "src/utils/execute";
+import define, { WaitingDefine } from "@LISS/src/define/define";
+import LISS from "@LISS/src";
+import AutoContentGenerator from "@LISS/src/ContentGenerators/AutoContentGenerator";
+import isPageLoaded   from "@LISS/src/utils/DOM/isPageLoaded";
+import whenPageLoaded from "@LISS/src/utils/DOM/whenPageLoaded";
+import fetchText      from "@LISS/src/utils/network/fetchText";
+import execute        from "@LISS/src/utils/execute";
 
 const script =  document.querySelector<HTMLElement>('script:is([liss-auto],[liss-cdir],[liss-sw])');
 

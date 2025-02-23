@@ -1,6 +1,6 @@
-import LISS from "src";
-import buildTestPage from "src/utils/tests/buildTestPage";
-import PlaygroundArea from "pages/skeleton/components/playground-area/PlaygroundArea";
+import LISS from "@LISS/src";
+import buildTestPage from "@LISS/src/utils/tests/buildTestPage";
+import PlaygroundArea from "@LISS/pages/skeleton/components/playground-area/PlaygroundArea";
 
 class LISSPlayground extends PlaygroundArea {
 

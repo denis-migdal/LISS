@@ -1,6 +1,6 @@
-import { HTML } from "src/utils/parsers/template";
+import { HTML } from "@LISS/src/utils/parsers/template";
 import ContentGenerator from "./ContentGenerator";
-import encodeHTML from "src/utils/encode";
+import encodeHTML from "@LISS/src/utils/encode";
 
 const regex = /\$\{(.+?)\}/g;
 

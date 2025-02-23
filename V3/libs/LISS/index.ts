@@ -1,14 +1,14 @@
-import LISS from "src/LISS";
+import LISS from "@LISS/src/LISS";
 
-import "src/define";
-import "src/define/autoload";
+import "@LISS/src/define";
+import "@LISS/src/define/autoload";
 
-import "src/utils/parsers";
-import "src/utils/network/require";
+import "@LISS/src/utils/parsers";
+import "@LISS/src/utils/network/require";
 
-import "src/utils/tests/assertElement";
+import "@LISS/src/utils/tests/assertElement";
 
-declare module "src/LISS" {
+declare module "@LISS/src/LISS" {
     interface ILISS {
         VERSION: string
     }

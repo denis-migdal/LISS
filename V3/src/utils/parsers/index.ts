@@ -1,10 +1,10 @@
-import LISS from "src/LISS";
+import LISS from "@LISS/src/LISS";
 
 import html     from "./html"
 import template from "./template";
 import style    from "./style";
 
-declare module "src/LISS" {
+declare module "@LISS/src/LISS" {
     interface ILISS {
         html    : typeof html;
         template: typeof template;

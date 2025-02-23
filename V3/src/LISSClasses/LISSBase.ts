@@ -1,4 +1,4 @@
-import ContentGenerator from "src/ContentGenerators/ContentGenerator";
+import ContentGenerator from "@LISS/src/ContentGenerators/ContentGenerator";
 
 export default class LISSBase extends HTMLElement {
 

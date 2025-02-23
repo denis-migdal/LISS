@@ -1,8 +1,8 @@
-import { isRessourceReady, Ressource, waitRessource } from "src/utils/network/ressource";
-import template, { HTML }   from "src/utils/parsers/template";
-import style   , {CSS}      from "src/utils/parsers/style";
-import isDOMContentLoaded   from "src/utils/DOM/isDOMContentLoaded";
-import whenDOMContentLoaded from "src/utils/DOM/whenDOMContentLoaded";
+import { isRessourceReady, Ressource, waitRessource } from "@LISS/src/utils/network/ressource";
+import template, { HTML }   from "@LISS/src/utils/parsers/template";
+import style   , {CSS}      from "@LISS/src/utils/parsers/style";
+import isDOMContentLoaded   from "@LISS/src/utils/DOM/isDOMContentLoaded";
+import whenDOMContentLoaded from "@LISS/src/utils/DOM/whenDOMContentLoaded";
 
 type STYLE = CSS | CSS[];
 

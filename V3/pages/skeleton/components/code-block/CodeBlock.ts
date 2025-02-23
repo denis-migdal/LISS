@@ -1,4 +1,4 @@
-import LISS from "src";
+import LISS from "@LISS/src";
 import {getCursorEndPos, getCursorPos, hl, setCursorPos} from "../hl";
 
 // @ts-ignore
@@ -6,7 +6,7 @@ import html from "!!raw-loader!./CodeBlock.html";
 // @ts-ignore
 import css  from "!!raw-loader!./CodeBlock.css";
 // @ts-ignore
-import theme from "!!raw-loader!pages/skeleton/components/theme/Tomorrow.css";
+import theme from "!!raw-loader!@LISS/pages/skeleton/components/theme/Tomorrow.css";
 
 
 

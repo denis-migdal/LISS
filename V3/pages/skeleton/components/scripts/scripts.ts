@@ -1,12 +1,12 @@
-import LISS from "src";
-import {hl} from "pages/skeleton/components/hl";
+import LISS from "@LISS/src";
+import {hl} from "@LISS/pages/skeleton/components/hl";
 
 // @ts-ignore
 import css  from "!!raw-loader!./scripts.css";
 // @ts-ignore
-import theme from "!!raw-loader!pages/skeleton/components/theme/Tomorrow.css";
-import whenDOMContentLoaded from "src/utils/DOM/whenDOMContentLoaded";
-import createElement from "src/utils/DOM/createElement";
+import theme from "!!raw-loader!@LISS/pages/skeleton/components/theme/Tomorrow.css";
+import whenDOMContentLoaded from "@LISS/src/utils/DOM/whenDOMContentLoaded";
+import createElement from "@LISS/src/utils/DOM/createElement";
 
 
 export class Scripts extends LISS({

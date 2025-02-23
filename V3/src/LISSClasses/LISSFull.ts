@@ -1,1 +1,1 @@
-export {default as default} from "./LISSSignal.ts";
+export {default as default} from "./LISSSignal";
