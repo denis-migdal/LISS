@@ -7,7 +7,7 @@ type LISSv3_Opts<T extends Cstr<ContentGenerator> > = {
 } & ConstructorParameters<T>[0];
 
 //  builder
-export function LISS<T extends Cstr<ContentGenerator> = Cstr<ContentGenerator>>(opts: Partial<LISSv3_Opts<T>> = {}) {
+export function LISS<T extends Cstr<ContentGenerator> = Cstr<ContentGenerator>>(opts: Partial<LISSv3_Opts<T>> = {}): typeof LISSFull {
     
     const content_generator = opts.content_generator ?? ContentGenerator;
     // @ts-ignore
