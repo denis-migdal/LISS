@@ -15,6 +15,7 @@ type HistoryState = {
     cursor: number|null;
 }
 
+//TODO: Signal<T>
 export default class CodeBlock extends LISS({
     html,
     css: [css, theme]

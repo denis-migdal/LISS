@@ -33,7 +33,7 @@ export class Script extends LISS({
 
             this.host.classList.toggle("block", true);
 
-            const offset = code.search(/[\S]/) - 1;
+            const offset = code.search(/[\S]/);
             const indent = code.slice(1, offset);
 
             code = code.replaceAll("\n" + indent, "\n");
