@@ -1,5 +1,5 @@
 import LISS from "@LISS/src";
-import CodeBlock from "../code-block/CodeBlock";
+import CodeBlock from "../../code/code-block/";
 import html from "@LISS/src/utils/parsers/html";
 import getPropertyInitialValue from "@LISS/src/utils/DOM/getPropertyInitialValue";
 
@@ -12,7 +12,7 @@ export type Resource = {
 }
 
 // @ts-ignore
-import css  from "!!raw-loader!./PlaygroundArea.css";
+import css  from "!!raw-loader!./index.css";
 
 export default class PlaygroundArea extends LISSUpdate {
 

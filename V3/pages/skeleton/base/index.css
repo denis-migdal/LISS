@@ -1,0 +1,6 @@
+@import "@LISS/components/page/theme/reset.css";
+@import "@LISS/components/page/theme/table.css";
+@import "@LISS/components/page/page/index.css";
+@import "@LISS/components/page/menu/index.css";
+@import "@LISS/components/page/color-switch/index.css";
+@import "@LISS/components/code/code-switch/index.css";

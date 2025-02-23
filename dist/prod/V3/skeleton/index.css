@@ -13,6 +13,23 @@ script, style {
 summary {
     cursor: pointer;
 }
+table { 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table, th, td {
+    border: 1px solid grey;
+    border-collapse: collapse;
+}
+  
+tbody th {
+    text-align: left;
+}
+
+th,td {
+    padding: 5px;
+}
 @media print {
     @page {
         size  : A4;
@@ -251,23 +268,7 @@ h3::before {
         content: "🐍"
     }
 }
-table { 
-    margin-left: auto;
-    margin-right: auto;
-}
 
-table, th, td {
-    border: 1px solid grey;
-    border-collapse: collapse;
-}
-  
-tbody th {
-    text-align: left;
-}
-
-th,td {
-    padding: 5px;
-}
 
 
 /*# sourceMappingURL=index.css.map*/

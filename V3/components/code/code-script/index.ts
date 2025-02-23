@@ -1,13 +1,13 @@
 import LISS from "@LISS/src";
-import {hl} from "@LISS/pages/skeleton/components/hl";
+import {hl} from "../hl";
 
-// @ts-ignore
-import css  from "!!raw-loader!./scripts.css";
-// @ts-ignore
-import theme from "!!raw-loader!@LISS/pages/skeleton/components/theme/Tomorrow.css";
 import whenDOMContentLoaded from "@LISS/src/utils/DOM/whenDOMContentLoaded";
 import createElement from "@LISS/src/utils/DOM/createElement";
 
+// @ts-ignore
+import css  from "!!raw-loader!./index.css";
+// @ts-ignore
+import theme from "!!raw-loader!../Tomorrow.css";
 
 export class Scripts extends LISS({
     css: [css, theme]

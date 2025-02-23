@@ -2,11 +2,11 @@ import LISS from "@LISS/src";
 import {getCursorEndPos, getCursorPos, hl, setCursorPos} from "../hl";
 
 // @ts-ignore
-import html from "!!raw-loader!./CodeBlock.html";
+import html from "!!raw-loader!./index.html";
 // @ts-ignore
-import css  from "!!raw-loader!./CodeBlock.css";
+import css  from "!!raw-loader!./index.css";
 // @ts-ignore
-import theme from "!!raw-loader!@LISS/pages/skeleton/components/theme/Tomorrow.css";
+import theme from "!!raw-loader!../Tomorrow.css";
 
 
 

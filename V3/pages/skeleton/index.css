@@ -1,6 +1,1 @@
-@import "./components/theme/reset.css";
-@import "./components/page/page.css";
-@import "./components/menu/menu.css";
-@import "./components/color-switch/colors.css";
-@import "./components/code-switch/switch.css";
-@import "./components/theme/table.css";
+@import "@LISS/pages/skeleton/base";

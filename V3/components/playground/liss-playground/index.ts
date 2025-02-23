@@ -1,6 +1,6 @@
 import LISS from "@LISS/src";
 import buildTestPage from "@LISS/src/utils/tests/buildTestPage";
-import PlaygroundArea from "@LISS/pages/skeleton/components/playground-area/PlaygroundArea";
+import PlaygroundArea from "@LISS/components/playground/playground-area/";
 
 class LISSPlayground extends PlaygroundArea {
 
