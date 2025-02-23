@@ -38,6 +38,7 @@ class LISSPlayground extends PlaygroundArea {
             liss   : `/${LISS.VERSION}/libs/LISS/index.js`,
             cdir   : `${this.klass.ASSETS_DIR}/`,
             js     : this.codes["page.js"  ].getCode(),
+            sw     : `/${LISS.VERSION}/assets/sw.js`,
             html   : this.codes["page.html"].getCode(),
             tagname: this.name!.split(':')[0],
         })

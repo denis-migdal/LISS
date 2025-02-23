@@ -1,6 +1,13 @@
 // <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.0/brython.min.js"></script>
 
-export default function buildTestPage(args: {liss: string, cdir: string, js: string, html: string, tagname?: string}) {
+export default function buildTestPage(args: {
+        liss: string,
+        cdir: string,
+        sw ?: string,
+        js  : string,
+        html: string,
+        tagname?: string
+    }) {
 
     if( args.js === "" && args.html == "" && args.tagname !== undefined)
         args.html = `<${args.tagname}></${args.tagname}>`;
@@ -14,7 +21,7 @@ export default function buildTestPage(args: {liss: string, cdir: string, js: str
                 }
             </style>
             <script type="module" src='${args.liss}'
-                    liss-sw="/V3/assets/sw.js"
+                    liss-sw="${args.sw ?? ""}"
                     liss-mode="auto-load"
                     liss-cdir="${args.cdir}"
             ></script>

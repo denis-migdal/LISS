@@ -24,8 +24,8 @@ export function autoload(cdir: string) {
 
     const SW: Promise<void> = new Promise( async (resolve) => {
 
-        if( SW_PATH === null ) {
-            console.warn("You are using LISS Auto mode without sw.js.");
+        if( SW_PATH === null || SW_PATH === "") {
+            //console.warn("You are using LISS Auto mode without sw.js.");
             return resolve();
         }
         

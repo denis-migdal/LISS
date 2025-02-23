@@ -30,6 +30,7 @@ export default async function buildNewPage(
     .on('pageerror'    , error    => console.log(error) )
     //.on('response'     , response => console.log(`${response.status()} ${response.url()}`))
     .on('requestfailed', request  => {
+
         if( new URL(request.url()).pathname === "/favicon.ico" )
             return;
         console.warn(new URL(request.url()).pathname);
@@ -57,6 +58,7 @@ export default async function buildNewPage(
         if( ! (url in files) ) {
 
             try {
+
                 const body = await Deno.readTextFile("./dist/dev/"+path);
 
                 req.respond({
@@ -65,7 +67,12 @@ export default async function buildNewPage(
                 });
                 return;
             } catch(e) {
-                console.warn('WARN', (e as Error).message);
+                const hide404 = "hide-404" in req.headers();
+                if( hide404 ) {
+                    req.respond({body:"", status: 200})
+                    return;
+                }
+
                 req.respond({status: 404});
                 return;
             }
