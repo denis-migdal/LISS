@@ -14,6 +14,7 @@ export default function buildTestPage(args: {liss: string, cdir: string, js: str
                 }
             </style>
             <script type="module" src='${args.liss}'
+                    liss-sw="/V3/assets/sw.js"
                     liss-mode="auto-load"
                     liss-cdir="${args.cdir}"
             ></script>

@@ -26,22 +26,19 @@ export function autoload(cdir: string) {
 
         if( SW_PATH === null ) {
             console.warn("You are using LISS Auto mode without sw.js.");
-            resolve();
-            return;
+            return resolve();
         }
         
         try {
-            await navigator.serviceWorker.register(SW_PATH, {scope: "/"});
+            await navigator.serviceWorker.register(SW_PATH, {scope: "/V3/assets/"});
         } catch(e) {
             console.warn("Registration of ServiceWorker failed");
             console.error(e);
-            resolve();
+            return resolve();
         }
 
-        if( navigator.serviceWorker.controller ) {
-            resolve();
-            return;
-        }
+        if( navigator.serviceWorker.controller )
+            return resolve();
 
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             resolve();

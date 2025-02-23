@@ -6,6 +6,7 @@ export default async function fetchText(uri: string|URL, hide404: boolean = fals
     if( fetchContext !== undefined ) { // for the playground
         const path = new URL(uri, fetchContext.cwd );
         const value = fetchContext.files[path.toString()];
+
         if( value === "" )
             return undefined;
         if( value !== undefined)
@@ -13,9 +14,11 @@ export default async function fetchText(uri: string|URL, hide404: boolean = fals
     }
 
     const options = hide404
-                        ? {headers:{"liss-auto": "true"}}
+                        ? {headers:{
+                            "liss-auto": "true", //TODO: remove
+                            "hide-404" : "true"
+                        }}
                         : {};
-
 
     const response = await fetch(uri, options);
     if(response.status !== 200 )

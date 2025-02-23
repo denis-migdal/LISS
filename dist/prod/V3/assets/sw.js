@@ -26,9 +26,7 @@ async function liss_answer(e) {
 
 self.addEventListener('fetch', (e) => {
 
-    const isLissAuto = e.request.headers.has('liss-auto');
-
-    if( ! isLissAuto )
+    if( ! e.request.headers.has('hide-404') )
         return;
 
     return e.respondWith( liss_answer(e) )

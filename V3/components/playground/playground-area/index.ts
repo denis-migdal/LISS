@@ -267,8 +267,12 @@ html`<div class="card"><div class="header"><strong>${res.title}</strong></div></
 
         await Promise.all(this.RESSOURCES.map( async (ressource) => {
 
-            //TODO: remove 404 (sw.js)
-            const resp = await fetch(`${compo_dir}/${ressource.file}`);
+            const resp = await fetch(`${compo_dir}/${ressource.file}`, {
+                headers: {
+                    "liss-auto": "true", // TODO: remove...
+                    "hide-404" : "true"
+                }
+            });
 
             let text = "";
             if( resp.ok )
