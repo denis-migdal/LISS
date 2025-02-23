@@ -1,5 +1,3 @@
-
--> mv compos + hv to libs/
 -> dev
     -> CodeBlock (cf .dia)
         -> changes => set value internally...
@@ -47,23 +45,10 @@
 
 =====================================
 
-for deps: 
-"references": [
-        {"path": "./LISS"}
-    ],
-
 // type in different dir
     // https://www.typescriptlang.org/tsconfig/#typeRoots
-// no abs path in TS (urg)...
 
 https://stackoverflow.com/questions/55318663/how-to-generate-d-ts-and-d-ts-map-files-using-webpack
-
-generate global .d.ts
-    "declaration": true,
-    "declarationMap": true,
-    "declarationDir": "types",
-// https://www.npmjs.com/package/dts-bundle-webpack
-// https://www.npmjs.com/package/npm-dts-webpack-plugin
 
 -> CI/CD (build prod) => gitignore prod
     -> https://stackoverflow.com/questions/74727745/github-workflow-where-does-npm-ci-store-the-node-modules-folder
@@ -71,9 +56,6 @@ generate global .d.ts
 =====================================
 
 -> update VSHS + ChartsHTML (doc + LISS)
-
--> auto-load/playground/unit test
-    -> hide failed fetch
 
 -> playground
     -> show error...

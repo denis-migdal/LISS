@@ -2,22 +2,32 @@ import LISS from "@LISS/src";
 import {hl} from "../hl";
 
 import whenDOMContentLoaded from "@LISS/src/utils/DOM/whenDOMContentLoaded";
-import createElement from "@LISS/src/utils/DOM/createElement";
 
 // @ts-ignore
 import css  from "!!raw-loader!./index.css";
 // @ts-ignore
 import theme from "!!raw-loader!../Tomorrow.css";
 
-export class Scripts extends LISS({
+
+//TODO: Signal<T> for value...
+export class Script extends LISS({
     css: [css, theme]
 })<string> {
 
-    constructor() {
+    #code    : string;
+    #codeLang: string;
+    
+    constructor(code?: string, codeLang?: string) {
         super();
 
-        let code = this.host.textContent!;
-        const lang = this.host.getAttribute("code-lang")!;
+        this.#code     = code     ?? this.host.textContent!;
+        this.#codeLang = codeLang ?? this.host.getAttribute("code-lang")!;
+    }
+
+    protected override onUpdate() {
+
+        let code   = this.#code;
+        const lang = this.#codeLang;
 
         if(code[0] === '\n') {
 
@@ -61,16 +71,14 @@ export class Scripts extends LISS({
 
 }
 
-LISS.define("code-script", Scripts);
+LISS.define("code-script", Script);
 
 whenDOMContentLoaded().then( () => {
 
     for(let script of document.querySelectorAll('script[type^="c-"]') ) {
 
-        const code = createElement("code-script");
-
-        code.setAttribute("code-lang", script.getAttribute("type")!.slice(2));
-        code.textContent = script.textContent;
+        const code = new Script(script.textContent!,
+                                script.getAttribute("type")!.slice(2))
 
         script.replaceWith(code);
     }
