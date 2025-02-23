@@ -4,7 +4,6 @@ import html from "@LISS/src/utils/parsers/html";
 import getPropertyInitialValue from "@LISS/src/utils/DOM/getPropertyInitialValue";
 
 import LISSUpdate from "@LISS/src/LISSClasses/LISSUpdate";
-import ContentGenerator from "@LISS/src/ContentGenerators/ContentGenerator";
 
 export type Resource = {
     title: string,
@@ -14,10 +13,7 @@ export type Resource = {
 // @ts-ignore
 import css  from "!!raw-loader!./index.css";
 
-export default class PlaygroundArea extends LISSUpdate {
-
-    static override readonly SHADOW_MODE       = "open";
-    static override CONTENT_GENERATOR = new ContentGenerator({css});
+export default class PlaygroundArea extends LISS({css}, LISSUpdate) {
 
     protected resources: Record<string, HTMLElement> = {};
     protected codes    : Record<string, CodeBlock>   = {};
