@@ -1,35 +1,35 @@
+-> Doc
+-> Properties struct + getSignal<T> (for VSHS)
 -> CodeBlock (cf .dia)
     -> changes => set value internally...
--> Python
--> Doc
--> Properties struct + getSignal<T>
 
--> dev
-    -> python + TS code
-        -> files="js,bry,html" - default (html+css+js) ?
-        -> JS: replace imports or true import() when possible (?)
-        -> TS code fill JS code (only accepted in playground)
-        -> BRY brython script in playground only if brython
-            -> .host (HTML) / .content (shadowRoot)
-            -> emulate string prefix
-                https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
+-> update VSHS + ChartsHTML (doc + LISS)
 
-    -> LISS Signal/Properties
-        -> Props
-            -> .value dupl. {} to avoid sync issues (???)
-            -> + attr parser... + getInitialValues + cstr + signals...
-                -> decl getter/setter ??? (un peu enquiquinant....)
-                -> setter throw except (unsupported value)
-        -> test on chartsHTML
+============= [Signal props] ================
 
+-> LISS Signal/Properties
+    -> Props
+        -> .value dupl. {} to avoid sync issues (???)
+        -> + attr parser... + getInitialValues + cstr + signals...
+            -> decl getter/setter ??? (un peu enquiquinant....)
+            -> setter throw except (unsupported value)
+    -> test on chartsHTML
+
+=============== [Features] ===================
+
+-> BLISS: emulate string prefix
+    https://stackoverflow.com/questions/37203589/possible-to-make-custom-string-literal-prefixes-in-python
 -> features
     -> shared css
     -> closest fct ?
     -> globalDelegated event listener (??? -> composedEvent? => matches ?)
     -> inherit (content_generator override...)
 
--> README.md update
+-> playground: show errors...
 
+============== [DOC] ===================
+
+-> README.md update
 -> doc
     -> home
         -> intro
@@ -44,22 +44,19 @@
         -> DO/DON'T
         -> list features
 
-=====================================
 
--> update VSHS + ChartsHTML (doc + LISS)
+============= [TS] ================
 
--> playground
-    -> show error...
-    -> debounce/throttle editor (?)
-
-=====================================
+-> dev
+    -> playground: accept TS code (converted into JS) + unit test on TS.
+    -> true import in JS/TS (rewrite them before executing...)
 
 TS2JS
 
 https://stackoverflow.com/questions/12678716/transforming-typescript-into-javascript
 https://github.com/niutech/typescript-compile/blob/gh-pages/js/typescript.compile.js
 
-=====================================
+================ [.d.ts] =================
 
 // type in different dir
     // https://www.typescriptlang.org/tsconfig/#typeRoots
