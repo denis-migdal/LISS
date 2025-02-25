@@ -8,3 +8,7 @@ main {
     /* TODO width */
     /* TODO height with scale+zoom... */
 }
+
+footer {
+    display: none;
+}

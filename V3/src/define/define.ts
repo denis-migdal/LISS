@@ -54,10 +54,6 @@ function WrapPythonClass(Klass: new(...args:any[]) => HTMLElement) {
 
             // @ts-ignore
             this[symbol] = bry;
-
-            console.warn("before call")
-
-            this.#call("foo");
         }
 
         #call(name: string, ...args: any[]) {

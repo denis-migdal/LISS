@@ -1,7 +1,8 @@
 // @ts-ignore
-import addTest from "TESTS";
+import {addCodeTest} from "TESTS";
 
-await addTest({
+await addCodeTest({
+    files: "js",
     test: async (tagname: string) => {
 
         // @ts-ignore

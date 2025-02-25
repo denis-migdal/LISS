@@ -26,25 +26,37 @@ type addTest_Opts = {
     test        : (tagname: string) => Promise<void>
 }
 
-export default async function addTest( {
-                                            page_html,
-                                            test_suffix = "",
-                                            test
-                                        }: addTest_Opts ) {
-
-    const tagname   = getComponentName();
-    const test_name = tagname + test_suffix;
-    const callback  = test;
+async function getHTMLPage(page_html: undefined|null|string, component_dir: string, tagname: string) {
 
     if( page_html === undefined ) {
 
         page_html = null;
-        const page_html_file = getComponentDir() + './page.html';
+        const page_html_file = component_dir + './page.html';
         if( await exists(page_html_file) )
             page_html = await Deno.readTextFile( page_html_file )
     }
     if( page_html === null )
         page_html = `<${tagname}></${tagname}>`;
+
+    return page_html as string;
+}
+
+export async function addCodeTest({
+    page_html,
+    test_suffix,
+    files,
+    tagname,
+    component_dir,
+    test
+}: addTest_Opts & {tagname?: string, component_dir?: string, files: "bry"|"js"|"html"|"bry,html+css"|"js,html+css"}) {
+
+    tagname       ??= getComponentName();
+    component_dir ??= getComponentDir();
+
+    const test_name = tagname + (test_suffix ?? "");
+    const callback  = test;
+
+    const html = await getHTMLPage(page_html, component_dir, tagname);
 
     let browser: keyof typeof browsers;
     for( browser in browsers) {
@@ -62,7 +74,8 @@ export default async function addTest( {
                                 body: buildTestPage({
                                     liss: "./libs/LISS/index.js",
                                     cdir: "./assets/",
-                                    html: page_html,
+                                    files,
+                                    html,
                                     js  : ``
                                 }),
                                 contentType: "text/html"
@@ -76,5 +89,28 @@ export default async function addTest( {
                 //await page.screenshot({ path: "/tmp/example.png" });
             });
         }
+    }
+}
+
+export default async function addTest( {
+                                            page_html,
+                                            test_suffix = "",
+                                            test
+                                        }: addTest_Opts ) {
+
+    const tagname       = getComponentName();
+    const component_dir = getComponentDir();
+
+    page_html = await getHTMLPage(page_html, component_dir, tagname);
+
+    for(let files of ["js,html+css", "bry,html+css"] as const) {
+        await addCodeTest({
+            page_html,
+            files,
+            test_suffix: test_suffix + ":" + files,
+            test,
+            tagname,
+            component_dir,
+        })
     }
 }

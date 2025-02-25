@@ -26,7 +26,7 @@ def wrapjs(js_klass):
 			return this
 
 		def __getattr__(this, name: str):
-			print( name in this._js, var(this._js) )
+			#print( name in this._js, dir(this._js) )
 			return self.getProp(this._js, name)
 			#return this._js[name]
 

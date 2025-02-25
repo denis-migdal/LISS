@@ -6,9 +6,16 @@ import whenPageLoaded from "@LISS/src/utils/DOM/whenPageLoaded";
 import fetchText      from "@LISS/src/utils/network/fetchText";
 import execute        from "@LISS/src/utils/execute";
 
-const script =  document.querySelector<HTMLElement>('script:is([liss-auto],[liss-cdir],[liss-sw])');
+const script =  document.querySelector<HTMLElement>('script:is([liss-auto],[liss-cdir],[liss-sw],[liss-files])');
+
+function parseLISSFiles(files: string|null|undefined) {
+    if( ! files )
+        return ["js", "bry", "html+css"]
+    return files.split(",");
+}
 
 export const LISS_MODE    = script?.getAttribute('liss-mode') ?? null;
+export const LISS_FILES   = parseLISSFiles( script?.getAttribute('liss-files') );
 export const DEFAULT_CDIR = script?.getAttribute('liss-cdir') ?? null;
 
 // TODO: default ?
@@ -25,7 +32,7 @@ export function autoload(cdir: string) {
     const SW: Promise<void> = new Promise( async (resolve) => {
 
         if( SW_PATH === null || SW_PATH === "") {
-            //console.warn("You are using LISS Auto mode without sw.js.");
+            console.info("You are using LISS Auto mode without sw.js.");
             return resolve();
         }
         
@@ -90,6 +97,40 @@ type loadComponent_Opts = {
 
 type Cstr<T> = (...args: any[]) => T;
 
+
+async function tryFile( compo_dir: string,
+                        ext: string,
+                        target:Record<string,string>): Promise<boolean> {
+
+    // special value...
+    if( ext === "html+css") {
+        const promises = [
+            fetchText(`${compo_dir}index.html`, true)!,
+            fetchText(`${compo_dir}index.css` , true)!
+        ];
+
+        let result = await Promise.all(promises);
+
+        if( result[0] === undefined)
+            return false;
+
+        target["html"] = result[0];
+        if( result[1] !== undefined)
+            target["css" ] = result[1];
+
+        return true;
+    }
+
+    const result = await fetchText(`${compo_dir}index.${ext}`, true);
+
+    if( result === undefined )
+        return false;
+
+    target[ext] = result;
+
+    return true;
+}
+
 export async function loadComponent<T extends HTMLElement = HTMLElement>(
 	tagname: string,
 	{
@@ -104,29 +145,14 @@ export async function loadComponent<T extends HTMLElement = HTMLElement>(
 
 	const compo_dir = `${cdir}${true_tagdir}/`;
 
-	const files: Record<string,string|undefined> = {};
+    const files: Record<string,string> = {};
+    let found = false;
+    for(let file of LISS_FILES)
+        if( found = await tryFile(compo_dir, file, files) )
+            break;
 
-	// strats : JS -> Bry -> HTML+CSS (cf script attr).
-
-    files["js"] = await fetchText(`${compo_dir}index.js`, true);
-
-    if( files["js"] === undefined) {
-
-        files["bry"] = await fetchText(`${compo_dir}index.bry`, true);      
-
-        if( files["bry"] === undefined ) {
-            
-            const promises = [
-                fetchText(`${compo_dir}index.html`, true)!,
-                fetchText(`${compo_dir}index.css` , true)!
-            ];
-
-            [files["html"], files["css" ]] = await Promise.all(promises);
-
-            if( files["html"] === undefined )
-                throw new Error(`No files found for webcomponent ${tagname}`)
-        }
-    }
+    if( ! found )
+        throw new Error(`No files found for webcomponent ${tagname}`)
 
 	return await defineWebComponent(tagname, files, compo_dir);
 }

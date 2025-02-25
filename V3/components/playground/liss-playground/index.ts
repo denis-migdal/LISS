@@ -27,19 +27,21 @@ class LISSPlayground extends PlaygroundArea {
     
     override generateIFrameContent() {
 
-        /*
-        const brython = this.host.hasAttribute("brython");
-        let p_js    = codes["page.js"   ];
-        if( brython )
-            p_js = `globalThis.__BRYTHON__.runPythonSource(\`${codes["page.bry"]}\`, "_");`;
-        */
+        let files: string = "";
+        if( this.codeLang === "bry")
+            files = "bry,html+css";
+        if( this.codeLang === "js")
+            files = "js,html+css";
 
         return buildTestPage({
+            // liss config
             liss   : `/${LISS.VERSION}/libs/LISS/index.js`,
             cdir   : `${this.klass.ASSETS_DIR}/`,
-            js     : this.codes["page.js"  ].getCode(),
+            files,
             sw     : `/${LISS.VERSION}/assets/sw.js`,
+            // page config
             html   : this.codes["page.html"].getCode(),
+            js     : this.codes["page.js"  ].getCode(),
             tagname: this.name!.split(':')[0],
         })
     }

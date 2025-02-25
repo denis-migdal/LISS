@@ -10,7 +10,7 @@
         "build": "clear ; webpack --no-watch --mode=development",
         "build-prod": "clear ; webpack --no-watch --mode=production",
         "watch": "clear ; webpack --watch    --mode=development",
-        "tests": "clear ; cd tests; deno task test ; cd -"
+        "tests": "clear ; deno task test ;"
     },
     "author": "[AUTHOR]",
     "license": "[LICENCE]",
