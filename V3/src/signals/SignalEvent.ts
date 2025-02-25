@@ -25,8 +25,8 @@ export default class SignalEvent {
 
     protected trigger() {
 
-        for(let callback of this.#callbacks)
-            callback(this);
+        for(let i = 0; i < this.#callbacks.length; ++i)
+            this.#callbacks[i](this);
 
         return this;
     }
