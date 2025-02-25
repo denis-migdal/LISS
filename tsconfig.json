@@ -19,8 +19,5 @@
         "resolveJsonModule": true,
         "moduleResolution": "node",
         "incremental": true,
-        "composite": true,
-        "declaration": true,
-        "declarationMap": true
     }
 }
