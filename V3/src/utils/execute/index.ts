@@ -1,9 +1,12 @@
+import executeBry from "./bry";
 import executeJS from "./js";
 
-export default async function execute<T>(code: string, type: "js", origin: string): Promise<T> {
+const EXEC = {
+    js : executeJS,
+    bry: executeBry
+}
 
-    if( type === "js" )
-        return await executeJS<T>(code, origin);
+export default async function execute<T>(code: string, type: "js"|"bry", origin: string): Promise<T> {
 
-    throw new Error('');
+    return await EXEC[type]<T>(code, origin);
 }

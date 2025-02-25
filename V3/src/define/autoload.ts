@@ -111,13 +111,21 @@ export async function loadComponent<T extends HTMLElement = HTMLElement>(
     files["js"] = await fetchText(`${compo_dir}index.js`, true);
 
     if( files["js"] === undefined) {
-        // try/catch ?
-        const promises = [
-            fetchText(`${compo_dir}index.html`, true)!,
-            fetchText(`${compo_dir}index.css` , true)!
-        ];
 
-        [files["html"], files["css" ]] = await Promise.all(promises);
+        files["bry"] = await fetchText(`${compo_dir}index.bry`, true);      
+
+        if( files["bry"] === undefined ) {
+            
+            const promises = [
+                fetchText(`${compo_dir}index.html`, true)!,
+                fetchText(`${compo_dir}index.css` , true)!
+            ];
+
+            [files["html"], files["css" ]] = await Promise.all(promises);
+
+            if( files["html"] === undefined )
+                throw new Error(`No files found for webcomponent ${tagname}`)
+        }
     }
 
 	return await defineWebComponent(tagname, files, compo_dir);
@@ -130,8 +138,10 @@ async function defineWebComponent(tagname: string,
                                 ) {
     
     let klass;
-    if( "js" in files )
+    if( files["js"]  !== undefined )
         klass = (await execute<any>(files["js"], "js", origin)).default;
+    if( files["bry"] !== undefined )
+        klass = (await execute<any>(files["bry"], "bry", origin)).default;
 
     if( klass === undefined )
         klass = LISS({

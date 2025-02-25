@@ -1,7 +1,8 @@
--> dev
-    -> CodeBlock (cf .dia)
-        -> changes => set value internally...
-    -> Scripts   (only print)
+-> CodeBlock (cf .dia)
+    -> changes => set value internally...
+-> Python
+-> Doc
+-> Properties struct + getSignal<T>
 
 -> dev
     -> python + TS code
@@ -45,6 +46,21 @@
 
 =====================================
 
+-> update VSHS + ChartsHTML (doc + LISS)
+
+-> playground
+    -> show error...
+    -> debounce/throttle editor (?)
+
+=====================================
+
+TS2JS
+
+https://stackoverflow.com/questions/12678716/transforming-typescript-into-javascript
+https://github.com/niutech/typescript-compile/blob/gh-pages/js/typescript.compile.js
+
+=====================================
+
 // type in different dir
     // https://www.typescriptlang.org/tsconfig/#typeRoots
 
@@ -52,14 +68,6 @@ https://stackoverflow.com/questions/55318663/how-to-generate-d-ts-and-d-ts-map-f
 
 -> CI/CD (build prod) => gitignore prod
     -> https://stackoverflow.com/questions/74727745/github-workflow-where-does-npm-ci-store-the-node-modules-folder
-
-=====================================
-
--> update VSHS + ChartsHTML (doc + LISS)
-
--> playground
-    -> show error...
-    -> debounce/throttle editor (?)
 
 ==================== [INFO] ==================== 
 
@@ -78,4 +86,4 @@ liss .js (4.5kB)
     - 173kB -> 12kB (V2 -> V3)
 
 Highlight.js : https://highlightjs.org/download
-    -> bash css javascript python shell typescript xm
+    -> bash css javascript python shell typescript xml

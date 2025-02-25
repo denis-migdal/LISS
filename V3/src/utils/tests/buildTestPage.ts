@@ -20,6 +20,7 @@ export default function buildTestPage(args: {
                     background-color: white;
                 }
             </style>
+            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js" defer></script>
             <script type="module" src='${args.liss}'
                     liss-sw="${args.sw ?? ""}"
                     liss-mode="auto-load"

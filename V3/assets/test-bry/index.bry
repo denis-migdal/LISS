@@ -1,0 +1,13 @@
+from browser import self
+
+WebC = self.wrapjs(self.LISS())
+
+class DefaultExport(WebC):
+    def __init__(this):
+        this.content.replaceChildren("Hello!")
+
+    def foo(this):
+        print( self.document.querySelector("test-bry").faa() )
+    
+    def faa(this):
+        print(2)

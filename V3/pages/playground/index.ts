@@ -6,7 +6,8 @@ const examples = [
     "hello-world",
     "auto-liss",
     "auto-vanilla",
-    "auto-attrs"
+    "auto-attrs",
+    "test-bry"
 ];
 
 const DEFAULT_EXAMPLE = "hello-world";

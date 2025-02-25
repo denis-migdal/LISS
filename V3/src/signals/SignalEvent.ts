@@ -1,15 +1,24 @@
 
 export default class SignalEvent {
 
-    #callbacks = new Set<(pthis: SignalEvent) => void>();
+    #callbacks = new Array<(pthis: SignalEvent) => void>();
 
     listen(callback: (pthis: SignalEvent) => void) {
-        this.#callbacks.add(callback);
+        this.#callbacks.push(callback);
 
         return this;
     }
     unlisten(callback: (pthis: SignalEvent) => void) {
-        this.#callbacks.delete(callback);
+
+        // do not guarantee order ?
+        const idx = this.#callbacks.lastIndexOf(callback);
+        if( idx === -1 )
+            return this;
+
+        if( idx !== this.#callbacks.length - 1 )
+            this.#callbacks[idx] = this.#callbacks[this.#callbacks.length-1];
+
+        --this.#callbacks.length;
 
         return this;
     }
