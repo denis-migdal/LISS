@@ -8,7 +8,7 @@ type LISSv3_Opts<T extends Cstr<ContentGenerator> > = {
 } & ConstructorParameters<T>[0];
 
 //  builder
-export function LISS<
+function LISS<
         T extends Cstr<ContentGenerator> = Cstr<ContentGenerator>,
         U extends typeof LISSBase        = typeof LISSFull
     >

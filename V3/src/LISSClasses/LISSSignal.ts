@@ -3,8 +3,6 @@ import ROSignal   from "@LISS/src/signals/ROSignal";
 import LISSUpdate from "./LISSUpdate";
 import getPropertyInitialValue from "@LISS/src/utils/DOM/getPropertyInitialValue";
 
-//TODO: getter ?
-
 export default class LISSSignal<T> extends LISSUpdate {
 
     #signal = new Signal<T>();

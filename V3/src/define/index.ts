@@ -6,9 +6,9 @@ import LISS from "@LISS/src/LISS";
 
 declare module "@LISS/src/LISS" {
     interface ILISS {
-        define    : typeof define;
-        isDefined: typeof isDefined;
-        whenDefined   : typeof whenDefined;
+        define      : typeof define;
+        isDefined   : typeof isDefined;
+        whenDefined : typeof whenDefined;
     }
 }
 
