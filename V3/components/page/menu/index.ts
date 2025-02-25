@@ -27,9 +27,6 @@ type MenuNode<T extends Record<string,any> = {}> = {
 type PageMenuNode  = MenuNode<{html: HTMLElement}>;
 type PagesMenuNode = MenuNode<{dir: string}>;
 
-// @ts-ignore
-import content  from "!!raw-loader!/V3/pages/content.txt";
-
 function buildPagesMenu(content: string) {
 
     const root: PagesMenuNode = {
@@ -236,21 +233,22 @@ function updatePageMenu(menu: PageMenuNode) {
     menu_page.replaceChildren(...html);
 }
 
-const cur_page =  searchCurPagesHeader(buildPagesMenu(content));
-menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
+export function initMenu(menu: string) {
 
-const idx = cur_page.parent!.children.indexOf(cur_page);
-document.body.style.setProperty('counter-set', `h1 ${idx}` );
-
-const hasH1 = document.body.querySelector("h1") !== null;
-
-if( hasH1 ) {
-
-    const menu = buildPageMenu();
-
-    window.addEventListener('scroll', () => updatePageMenu(menu) );
-    updatePageMenu(menu);
+    const cur_page =  searchCurPagesHeader(buildPagesMenu(menu));
+    menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
+    
+    const idx = cur_page.parent!.children.indexOf(cur_page);
+    document.body.style.setProperty('counter-set', `h1 ${idx}` );
+    
+    const hasH1 = document.body.querySelector("h1") !== null;
+    
+    if( hasH1 ) {
+    
+        const menu = buildPageMenu();
+    
+        window.addEventListener('scroll', () => updatePageMenu(menu) );
+        updatePageMenu(menu);
+    }
+    
 }
-
-// force module recognition to avoid "Cannot redeclare block-scoped variable" error.
-export {}
