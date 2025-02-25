@@ -81,14 +81,3 @@ function WrapPythonClass(Klass: new(...args:any[]) => HTMLElement) {
         }*/
     }
 }
-
-
-import LISS from "@LISS/src/LISS";
-
-declare module "@LISS/src/LISS" {
-    interface ILISS {
-        define: typeof define;
-    }
-}
-
-LISS.define = define;
