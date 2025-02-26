@@ -1,4 +1,4 @@
-import { Signal } from "@LISS/src/signals/Signal";
+import Signal     from "@LISS/src/signals/Signal";
 import ROSignal   from "@LISS/src/signals/ROSignal";
 import LISSUpdate from "./LISSUpdate";
 import getPropertyInitialValue from "@LISS/src/utils/DOM/getPropertyInitialValue";

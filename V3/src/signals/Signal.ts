@@ -1,7 +1,7 @@
 import IndirectSignal from "./IndirectSignal";
 import ROSignal from "./ROSignal";
 
-export class Signal<T> extends IndirectSignal<T> {
+export default class Signal<T> extends IndirectSignal<T> {
 
     protected _value: T|null = null;
 

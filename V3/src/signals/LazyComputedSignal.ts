@@ -1,7 +1,7 @@
 import IndirectSignal from "./IndirectSignal";
 import ROSignal from "./ROSignal";
 
-export class LazyComputedSignal<T = unknown, U = unknown> extends IndirectSignal<T, U> {
+export default class LazyComputedSignal<T = unknown, U = unknown> extends IndirectSignal<T, U> {
     
     constructor(source: null|ROSignal<T> = null, compute: null|((source: ROSignal<T>) => U|null) = null) {
         
