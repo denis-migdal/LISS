@@ -22,12 +22,22 @@ export default function buildTestPage(args: {
                     margin: 0;
                     background-color: white;
                 }
+                :not(:defined) {
+                    visibility: hidden;
+                }
             </style>
             ${
                 args.files === "" || args.files === undefined || args.files?.includes("bry")
                     ? `<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js" defer></script>`
                     : ""
             }
+            <script type="importmap">
+            {
+                "imports": {
+                    "@LISS": "${args.liss}"
+                }
+            }
+            </script>
             <script type="module" src='${args.liss}'
                     liss-sw="${args.sw ?? ""}"
                     liss-mode="auto-load"

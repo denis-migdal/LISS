@@ -1,5 +1,5 @@
-const WF = require("./build/WebpackFramework");
+import buildConfigs from "./build/WebpackFramework/index.js";
 
-module.exports = WF.buildConfigs("./V3/",
-                                "./dist/${version}/V3/",
-                                { "@LISS": "V3/" });
+export default buildConfigs("./V3/",
+                            "./dist/${version}/V3/",
+                            { "@LISS": "V3/" });

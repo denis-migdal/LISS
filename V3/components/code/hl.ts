@@ -1,5 +1,5 @@
-// const hljs = require('highlight.js');
-const hljs = require('./highlight.min.js');
+// need to add "export default"...
+import hljs from './highlight.min.js';
 
 export function hl(code: string, language: string): string {
     return hljs.highlight(code, { language }).value;

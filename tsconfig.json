@@ -12,6 +12,7 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitOverride": true,
         "noImplicitReturns": true,
+        "allowSyntheticDefaultImports": true,
 
         "module": "esnext",
         "target": "esnext",

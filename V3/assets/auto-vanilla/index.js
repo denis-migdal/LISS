@@ -1,3 +1,5 @@
+import LISS from "@LISS"
+
 const template =
       LISS.template`Hello <em>World</em>`;
 
