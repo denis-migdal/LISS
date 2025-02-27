@@ -72,6 +72,7 @@ export default class PropertiesManager {
     }
 
     getValue(name: string) {
+        console.warn(name, this.#properties);
         this.#properties[name].signal.value;
     }
     getDefault(name: string) {
