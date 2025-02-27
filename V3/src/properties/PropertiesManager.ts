@@ -19,9 +19,10 @@ export function attrname2propname<T extends string>(attr_name: T): PropertyName<
 	return result as any;
 }
 
-export type PropertyDescriptor<T = unknown> = PropertyFullDescription<T>
-                                            | ((raw: string) => T);
-export type PropertiesDescriptor = Record<string, PropertyDescriptor<unknown>>;
+export type PropertyDescriptor<T = any> = PropertyFullDescription<T>
+                                            | ((raw: string) => T)
+                                            | T;
+export type PropertiesDescriptor = Record<string, PropertyDescriptor>;
 
 export default class PropertiesManager {
 
@@ -36,13 +37,19 @@ export default class PropertiesManager {
 
             if( typeof props === "function" && props.constructor.name === "Function")
                 props = { parser: props };
+            else if( props === null || typeof props !== "object" || ! ("parser" in props) )
+                props = { fixed: props };
 
             this.#properties[name] = new Property(props as PropertyFullDescription<unknown>);
 
+            if( name === "content" )
+                continue;
+
+            // TODO: remove (use property struct)
             const vpropname  = attrname2propname(name);
             const dpropname = attrname2propname('default-' + name);
-            const v = getPropertyInitialValue(target, vpropname as any, cstrVals[vpropname]  );
-            const d = getPropertyInitialValue(target, dpropname as any, cstrVals[dpropname] );
+            const v = getPropertyInitialValue(target, vpropname as any, cstrVals[vpropname] ) ?? null;
+            const d = getPropertyInitialValue(target, dpropname as any, cstrVals[dpropname] ) ?? null;
 
             if( v !== null)
                 this.#properties[name].JS_value   = v;
@@ -54,6 +61,15 @@ export default class PropertiesManager {
         const attrs = target.getAttributeNames();
         for(let i = 0; i < attrs.length; ++i)
             this.#onAttrChanged(attrs[i], target.getAttribute(attrs[i]) );
+
+        if( "content" in propertiesDesc ) {
+
+            this.#onAttrChanged("content", target.textContent );
+
+            new MutationObserver( () => {
+                this.#onAttrChanged("content", target.textContent);
+            }).observe(target.host, {characterData: true, subtree: true});
+        }
 
         // @ts-ignore
         target.attributeChangedCallback = ( name: string,
@@ -71,9 +87,12 @@ export default class PropertiesManager {
             this.#properties[name].signal.listen( callback );        
     }
 
+    getSignal(name: string) {
+        return this.#properties[name].signal;
+    }
+
     getValue(name: string) {
-        console.warn(name, this.#properties);
-        this.#properties[name].signal.value;
+        return this.#properties[name].signal.value;
     }
     getDefault(name: string) {
         throw new Error("not implemented");

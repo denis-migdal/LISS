@@ -9,7 +9,7 @@ type Properties<T extends Record<string, any>> = {
 
 export default class LISSProperties<T extends Record<string, any>> extends LISSSignal<T> {
 
-    #manager: PropertiesManager;
+    protected readonly manager: PropertiesManager;
 
     static PropertiesDescriptor: PropertiesDescriptor = {};
 
@@ -41,10 +41,10 @@ export default class LISSProperties<T extends Record<string, any>> extends LISSS
 
         super(value, signal);
 
-        this.#manager = new PropertiesManager(this, this.klass.PropertiesDescriptor, {});
+        this.manager = new PropertiesManager(this, this.klass.PropertiesDescriptor, {});
 
-        this.properties        = new this.klass.PropertiesKlass(this.#manager);
-        this.defaultProperties = new this.klass.DefaultPropertiesKlass(this.#manager);
+        this.properties        = new this.klass.PropertiesKlass(this.manager);
+        this.defaultProperties = new this.klass.DefaultPropertiesKlass(this.manager);
 
         // getInitialPropertyValue => NON => setProperty() system...
         // listen properties changes => if attached => requestUpdate

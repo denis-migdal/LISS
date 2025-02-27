@@ -11,7 +11,7 @@ export type PropertyFullDescription<T> = {
 
 export default class Property<T = unknown> {
 
-    #signal: ROSignal<T>;
+    readonly signal: ROSignal<T>;
 
     #HTML_valueSignal  : ParsedSignal<T>;
     #HTML_defaultSignal: ParsedSignal<T>;
@@ -28,7 +28,7 @@ export default class Property<T = unknown> {
         this.#HTML_defaultSignal = new ParsedSignal<T>(args.parser);
 
         if( args.fixed !== undefined) {
-            this.#signal = new Signal(args.fixed); // should be RO.
+            this.signal = new Signal(args.fixed); // should be RO.
             return;
         }
 
@@ -43,15 +43,12 @@ export default class Property<T = unknown> {
         if( args.default !== undefined )
             sources.push( new Signal(args.default) );
 
-        this.#signal = new PrioritySignal<T>(...sources);
-    }
-
-
-    get signal() {
-        return this.#signal;
+        this.signal = new PrioritySignal<T>(...sources);
     }
 
     set JS_value(value: T|null) {
+        console.warn('set', value);
+        console.trace();
         this.#JS_valueSignal.value = value;
     }
     set JS_default(value: T|null) {

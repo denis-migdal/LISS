@@ -20,7 +20,9 @@ export default class LISSFather extends LISSUpdate {
             this.LISSChildren = null;
 
             for(let i = 0; i < records.length; ++i)
-                this.processRemovedNodes(records[i].removedNodes);                
+                this.processRemovedNodes(records[i].removedNodes);
+            
+            this.requestUpdate();
         });
     }
 

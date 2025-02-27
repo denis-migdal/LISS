@@ -18,6 +18,10 @@ export default class Signal<T> extends IndirectSignal<T> {
         super.source = source; // may trigger if source change
     }
 
+    override get source() {
+        return super.source;
+    }
+
     override get value() {
 
         if( this.source !== null)

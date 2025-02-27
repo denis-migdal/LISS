@@ -37,11 +37,15 @@ export default class ParsedSignal<T> extends ROSignal<T> {
     get value() {
 
         if( this.#parsed === false ) {
+
             // trigger without ack ignored
             if( this.#str === null)
                 this.#signal.value = null;
-            else
-                this.#parser(this.#str, this.#signal);
+            else {
+                const result = this.#parser(this.#str, this.#signal);
+                if( result !== undefined )
+                    this.#signal.value = result;
+            }
 
             this.#parsed = true;
         }

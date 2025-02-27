@@ -6,6 +6,8 @@ export default class LISSUpdate extends LISSBase {
         super();
 
         observer.observe(this);
+
+        this.requestUpdate();
     }
 
     #requestID: null|number = null;
