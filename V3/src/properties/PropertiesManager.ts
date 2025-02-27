@@ -29,7 +29,9 @@ export default class PropertiesManager {
     #properties: Record<string, Property> = {};
     
     // TODO: cstr params (x1) + data...
-    constructor(target: LISSUpdate, propertiesDesc: PropertiesDescriptor, cstrVals: Record<string, any>) {
+    constructor(target: LISSUpdate, propertiesDesc: PropertiesDescriptor, cstrVals: Record<string, any>|null) {
+
+        cstrVals ??= {};
 
         for( let name in propertiesDesc ) {
 
@@ -42,11 +44,15 @@ export default class PropertiesManager {
 
             this.#properties[name] = new Property(props as PropertyFullDescription<unknown>);
 
-            if( name === "content" )
+            const vpropname  = attrname2propname(name);
+
+            if( name === "content" ) {
+                if( cstrVals[name] !== null)
+                    this.#properties[name].JS_value = cstrVals[vpropname] ?? null;
                 continue;
+            }
 
             // TODO: remove (use property struct)
-            const vpropname  = attrname2propname(name);
             const dpropname = attrname2propname('default-' + name);
             const v = getPropertyInitialValue(target, vpropname as any, cstrVals[vpropname] ) ?? null;
             const d = getPropertyInitialValue(target, dpropname as any, cstrVals[dpropname] ) ?? null;

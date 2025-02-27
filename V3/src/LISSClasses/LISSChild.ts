@@ -1,3 +1,4 @@
+import ROSignal from "../signals/ROSignal";
 import LISSFather, { WAITING_UPGRADE } from "./LISSFather";
 import LISSProperties from "./LISSProperties";
 
@@ -5,11 +6,11 @@ export default class LISSChild<T extends Record<string,any> = any> extends LISSP
 
     protected father: LISSFather|null = null;
 
-    constructor() {
-        super();
+    constructor(value: T|ROSignal<T>|null = null) {
+        super(value);
 
         if( (this as any)[WAITING_UPGRADE] )
-            (this.parentElement as any).onAttach(this);
+            (this.parentElement as any).attach(this);
     }
 
     override requestUpdate() {
@@ -18,13 +19,18 @@ export default class LISSChild<T extends Record<string,any> = any> extends LISSP
     }
 
     get isAttached() {
-        return this.father == null;
+        return this.father !== null;
     }
 
-    protected onAttach(father: LISSFather) {
+    private attach(father: LISSFather) {
         this.father = father;
+        this.onAttach();
     }
-    protected onDetach(father: LISSFather) {
+    private detach() {
+        this.onDetach();
         this.father = null;
     }
+
+    protected onAttach(){}
+    protected onDetach(){}
 }

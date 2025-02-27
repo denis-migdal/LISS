@@ -47,8 +47,6 @@ export default class Property<T = unknown> {
     }
 
     set JS_value(value: T|null) {
-        console.warn('set', value);
-        console.trace();
         this.#JS_valueSignal.value = value;
     }
     set JS_default(value: T|null) {

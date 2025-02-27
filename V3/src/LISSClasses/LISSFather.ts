@@ -31,7 +31,7 @@ export default class LISSFather extends LISSUpdate {
         for(let j = 0; j < nodes.length; ++j) {
             const node = nodes[j]
             if( node instanceof LISSChild && node.isAttached )
-                this.onDetach( node );
+                this.detach( node );
             else
                 (node as any)[WAITING_UPGRADE] = false;
         }
@@ -43,6 +43,8 @@ export default class LISSFather extends LISSUpdate {
         if( this.LISSChildren !== null )
             return;
 
+        console.warn("UPDATE", ...this.children);
+
         const children = this.children;
         this.LISSChildren = new Array(children.length);
 
@@ -50,11 +52,12 @@ export default class LISSFather extends LISSUpdate {
         for(let i = 0; i < children.length; ++i) {
 
             const child = children[i];
+
             if( ! (child instanceof LISSChild) )
                 continue;
 
             if( ! child.isAttached )
-                this.onAttach( child );
+                this.attach( child );
 
             this.LISSChildren[offset++] = child;
         }
@@ -66,10 +69,15 @@ export default class LISSFather extends LISSUpdate {
         this.updateChildrenList();
     }
 
-    protected onDetach(child: LISSChild) {
-        (child as any).onDetach(this);
+    private attach(child: LISSChild) {
+        (child as any).attach(this);
+        this.onAttach(child);
     }
-    protected onAttach(child: LISSChild) {
-        (child as any).onAttach(this);
+    private detach(child: LISSChild) {
+        this.onDetach(child);
+        (child as any).detach(this);
     }
+
+    protected onDetach(child: LISSChild) {}
+    protected onAttach(child: LISSChild) {}
 }

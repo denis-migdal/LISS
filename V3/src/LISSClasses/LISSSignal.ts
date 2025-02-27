@@ -9,16 +9,16 @@ export default class LISSSignal<T> extends LISSUpdate {
 
     #callback = () => this.requestUpdate();
 
-    constructor(value: null|T = null, signal: null|ROSignal<T> = null) {
+    constructor(value: null|T|ROSignal<T> = null) {
         super();
 
-        value  ??= getPropertyInitialValue(this, "value" , null);
-        signal ??= getPropertyInitialValue(this, "source", null)
-
-        if( value  !== null)
-            this.#signal.value = value;
-        if( signal !== null)
-            this.#signal.source = signal;
+        if( value === null ) {
+            this.#signal.source = getPropertyInitialValue(this, "source", null)
+            this.#signal.value  = getPropertyInitialValue(this, "value" , null)
+        } else if( value instanceof ROSignal)
+            this.#signal.source = value;
+        else
+            this.#signal.value  = value,
 
         this.#signal.listen( this.#callback );
     }
@@ -26,8 +26,14 @@ export default class LISSSignal<T> extends LISSUpdate {
     set source(source: ROSignal<T>|null) {
         this.#signal.source = source;
     }
+    get source() {
+        return this.#signal.source;
+    }
+
     set value(value: T|null) {
         this.#signal.value = value;
     }
-
+    get value() {
+        return this.#signal.value;
+    }
 }

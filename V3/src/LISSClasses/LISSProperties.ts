@@ -34,14 +34,13 @@ export default class LISSProperties<T extends Record<string, any>> extends LISSS
     }
     static override get observedAttributes() { return Object.keys(this.klass.PropertiesDescriptor); }
 
-    constructor(value : null|T = null,
-                signal: null|ROSignal<T> = null,
+    constructor(value : null|T|ROSignal<T> = null,
                 //TODO: params
             ) {
 
-        super(value, signal);
+        super(value);
 
-        this.manager = new PropertiesManager(this, this.klass.PropertiesDescriptor, {});
+        this.manager = new PropertiesManager(this, this.klass.PropertiesDescriptor, this.value);
 
         this.properties        = new this.klass.PropertiesKlass(this.manager);
         this.defaultProperties = new this.klass.DefaultPropertiesKlass(this.manager);

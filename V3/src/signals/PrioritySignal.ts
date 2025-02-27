@@ -31,8 +31,6 @@ export default class PrioritySignal<T> extends ROSignal<T> {
                 break;
         }
 
-        console.warn("Prioritu", i, val);
-
         this.#current_priority = i;
         
         return val;
