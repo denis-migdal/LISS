@@ -13,7 +13,7 @@ export default class LISSChild<T extends Record<string,any> = any> extends LISSP
     }
 
     override requestUpdate() {
-        if( this.isAttached )
+        if( this.isAttached && this.father !== undefined)
             this.father!.requestUpdate();
     }
 
