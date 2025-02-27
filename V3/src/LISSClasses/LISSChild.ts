@@ -12,6 +12,10 @@ export default class LISSChild<T extends Record<string,any> = any> extends LISSP
             (this.parentElement as any).onAttach(this);
     }
 
+    get isAttached() {
+        return this.father == null;
+    }
+
     protected onAttach(father: LISSFather) {
         this.father = father;
     }

@@ -10,41 +10,25 @@ function observe( target: LISSFather, callback: (records: MutationRecord[]) => v
 // extends LISSSignal (?) Properties merger (?)
 export default class LISSFather extends LISSUpdate {
 
-    protected LISSChildren = new Array<LISSChild>();
+    protected LISSChildren: LISSChild[]|null = null;
 
     constructor() {
         super();
 
         observe(this, (records: MutationRecord[]) => {
 
-            this.updateChildrenList();
+            this.LISSChildren = null;
 
-            for(let i = 0; i < records.length; ++i) {
-                this.processAddedNodes  (records[i].addedNodes);
+            for(let i = 0; i < records.length; ++i)
                 this.processRemovedNodes(records[i].removedNodes);                
-            }
         });
-
-        this.updateChildrenList();
-        this.processAddedNodes(this.childNodes);
-    }
-
-    protected processAddedNodes(nodes: NodeList) {
-
-        for(let j = 0; j < nodes.length; ++j) {
-            const node = nodes[j]
-            if( node instanceof LISSChild )
-                this.onAttach( node );
-            else
-                (node as any)[WAITING_UPGRADE] = true;
-        }
     }
 
     protected processRemovedNodes(nodes: NodeList) {
 
         for(let j = 0; j < nodes.length; ++j) {
             const node = nodes[j]
-            if( node instanceof LISSChild )
+            if( node instanceof LISSChild && node.isAttached )
                 this.onDetach( node );
             else
                 (node as any)[WAITING_UPGRADE] = false;
@@ -52,9 +36,32 @@ export default class LISSFather extends LISSUpdate {
     }
 
     protected updateChildrenList() {
-        this.LISSChildren = [ ...this.children ].filter( (e) => {
-            return e instanceof LISSChild
-        })
+
+        // wasn't invalidated
+        if( this.LISSChildren !== null )
+            return;
+
+        const children = this.children;
+        this.LISSChildren = new Array(children.length);
+
+        let offset = 0;
+        for(let i = 0; i < children.length; ++i) {
+
+            const child = children[i];
+            if( ! (child instanceof LISSChild) )
+                continue;
+
+            if( ! child.isAttached )
+                this.onAttach( child );
+
+            this.LISSChildren[offset++] = child;
+        }
+    }
+
+    protected override onInit(): void {}
+
+    protected override onUpdate(): void {  
+        this.updateChildrenList();
     }
 
     protected onDetach(child: LISSChild) {

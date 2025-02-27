@@ -33,6 +33,11 @@ export default class LISSUpdate extends LISSBase {
         this.#requestID = requestAnimationFrame( () => {
             this.#requestID       = null;
             this.#updateRequested = false;
+
+            if( this.#initCalled === false ) {
+                this.#initCalled = true;
+                this.onInit();
+            }
             this.onUpdate();
         });
     }
@@ -48,6 +53,11 @@ export default class LISSUpdate extends LISSBase {
             return;
 
         this.#scheduleUpdate();
+    }
+
+    #initCalled = false;
+    protected onInit() {
+
     }
 
     protected onUpdate() {
