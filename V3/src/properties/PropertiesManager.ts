@@ -19,7 +19,8 @@ export function attrname2propname<T extends string>(attr_name: T): PropertyName<
 	return result as any;
 }
 
-export type PropertyDescriptor<T = unknown> = PropertyFullDescription<T>;
+export type PropertyDescriptor<T = unknown> = PropertyFullDescription<T>
+                                            | ((raw: string) => T);
 export type PropertiesDescriptor = Record<string, PropertyDescriptor<unknown>>;
 
 export default class PropertiesManager {
@@ -30,7 +31,13 @@ export default class PropertiesManager {
     constructor(target: LISSUpdate, propertiesDesc: PropertiesDescriptor, cstrVals: Record<string, any>) {
 
         for( let name in propertiesDesc ) {
-            this.#properties[name] = new Property(propertiesDesc[name]);
+
+            let props = propertiesDesc[name];
+
+            if( typeof props === "function" && props.constructor.name === "Function")
+                props = { parser: props };
+
+            this.#properties[name] = new Property(props as PropertyFullDescription<unknown>);
 
             const vpropname  = attrname2propname(name);
             const dpropname = attrname2propname('default-' + name);
