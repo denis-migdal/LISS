@@ -110,10 +110,12 @@ function buildPageMenu(parent: PageMenuNode|null = null) {
         while( level <= curpos.level )
             curpos = curpos.parent!;
 
+        let text = title.getAttribute('short') ?? title.textContent!;
+
         const elem: PageMenuNode = {
             html    : title,
             href    : `#${title.id}`,
-            text    : getTitlePrefix(level, curpos.children.length) + title.textContent!,
+            text    : getTitlePrefix(level, curpos.children.length) + text,
             level,
             children: [],
             parent: curpos
