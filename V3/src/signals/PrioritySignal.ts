@@ -5,10 +5,13 @@ export default class PrioritySignal<T> extends ROSignal<T> {
     #signals: ROSignal<T>[];
     #current_priority = 0;
 
-    constructor(...signals: ROSignal<T>[]) {
+    #defaultValue: T|null = null;
+
+    constructor(defaultValue: T|null, ...signals: ROSignal<T>[]) {
         super();
 
-        this.#signals = signals;
+        this.#signals      = signals;
+        this.#defaultValue = defaultValue;
 
         // listen will trigger, all but 0th ignored.
         for(let i = signals.length - 1; i >= 0 ; --i)
@@ -32,6 +35,9 @@ export default class PrioritySignal<T> extends ROSignal<T> {
         }
 
         this.#current_priority = i;
+
+        if(val === null)
+            val = this.#defaultValue;
         
         return val;
     }

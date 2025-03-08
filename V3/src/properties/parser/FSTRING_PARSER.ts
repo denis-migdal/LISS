@@ -3,7 +3,9 @@ const R2 = /@([\w_]+)/g;
 
 export default function FSTRING_PARSER(value: string) {
     
-    value = value.trim();
+    if( value === "")
+        return null;
+
     value = value.replaceAll(R1, (_, word) => "${ctx." + word + "}");
     value = value.replaceAll(R2, (_, word) => `ctx.${word}`);
 

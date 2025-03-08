@@ -2,10 +2,11 @@ import ParsedSignal, { ParserAlgo } from "../signals/ParsedSignal";
 import PrioritySignal from "../signals/PrioritySignal";
 import ROSignal       from "../signals/ROSignal";
 import Signal         from "../signals/Signal";
+import { names } from "./callback";
 
 export type PropertyFullDescription<T> = {
-    parser: ParserAlgo<T>,
-    fixed?: T,
+    parser  : ParserAlgo<T>,
+    fixed  ?: T,
     default?: T
 };
 
@@ -13,49 +14,66 @@ export default class Property<T = unknown> {
 
     readonly signal: ROSignal<T>;
 
-    #HTML_valueSignal  : ParsedSignal<T>;
-    #HTML_defaultSignal: ParsedSignal<T>;
+    #HTML_valueSignal  : null|ParsedSignal<T> = null;
+    #HTML_defaultSignal: null|ParsedSignal<T> = null;
 
-    #JS_valueSignal   = new Signal<T>();
-    #JS_defaultSignal = new Signal<T>();
+    #JS_signal: null|Signal<T> = null;
 
-    #dataSignal       = new Signal<T>(); // how to get from data ?
-                                         // or split (? dble priority ?)
+    #source: null|Record<string, ROSignal<any>> = null;
 
-    constructor(args: PropertyFullDescription<T>) {
-
-        this.#HTML_valueSignal   = new ParsedSignal<T>(args.parser);
-        this.#HTML_defaultSignal = new ParsedSignal<T>(args.parser);
+    constructor(source: null|Record<string, ROSignal<any>>, args: PropertyFullDescription<T>) {
 
         if( args.fixed !== undefined) {
             this.signal = new Signal(args.fixed); // should be RO.
             return;
         }
 
+        this.#source = source;
+
+        this.#HTML_valueSignal   = new ParsedSignal<T>(source, args.parser);
+        this.#HTML_defaultSignal = new ParsedSignal<T>(source, args.parser);
+        this.#JS_signal          = new Signal<T>();
+
         const sources: ROSignal<T>[] = [
             this.#HTML_valueSignal,
-            this.  #JS_valueSignal,
-            this.      #dataSignal,
-            this.  #JS_defaultSignal,
+            this.  #JS_signal,
             this.#HTML_defaultSignal,
         ];
 
-        if( args.default !== undefined )
-            sources.push( new Signal(args.default) );
+        const defVal: T|null = args.default ?? null;
+        this.signal = new PrioritySignal<T>(defVal, ...sources);
+    }
 
-        this.signal = new PrioritySignal<T>(...sources);
+    set parser(parser: ParserAlgo<any>) {
+        this.#HTML_valueSignal  !.parser = parser;
+        this.#HTML_defaultSignal!.parser = parser;
     }
 
     set JS_value(value: T|null) {
-        this.#JS_valueSignal.value = value;
-    }
-    set JS_default(value: T|null) {
-        this.#JS_defaultSignal.value = value;
+
+        if( value !== null) {
+            const argnames: string[] = (value as any)[names];
+            if( argnames !== undefined ) {
+
+                const fcts = value as (values:null|Record<string, any>) => T;
+
+                //TODO: unlisten if removed... - requires a callback...
+                for(let name of argnames)
+                    this.#source![name].listen( () => {
+                        // TODO: LCS...
+                        this.#JS_signal!.value = fcts(this.#source);
+                    });
+
+                return;
+            }
+        }
+
+        this.#JS_signal!.value = value;
     }
     set HTML_value(value: string|null) {
-        this.#HTML_valueSignal.rawString = value;
+        this.#HTML_valueSignal!.rawString = value;
     }
     set HTML_default(value: string|null) {
-        this.#HTML_defaultSignal.rawString = value;
+        this.#HTML_defaultSignal!.rawString = value;
     }
 }

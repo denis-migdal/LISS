@@ -1,13 +1,13 @@
 import ROSignal   from "@LISS/src/signals/ROSignal";
-import LISSSignal from "./LISSSignal";
 import PropertiesManager, { attrname2propname, PropertiesDescriptor } from "../properties/PropertiesManager";
+import LISSValue from "./LISSValue";
 
 type Properties<T extends Record<string, any>> = {
     new(propertiesManager: PropertiesManager): Properties<T>
     [K: string]: typeof K extends keyof T ? T[typeof K] : never
 }
 
-export default class LISSProperties<T extends Record<string, any>> extends LISSSignal<T> {
+export default class LISSProperties<T extends Record<string, any>> extends LISSValue<T> {
 
     protected readonly manager: PropertiesManager;
 
@@ -26,36 +26,44 @@ export default class LISSProperties<T extends Record<string, any>> extends LISSS
             this.klass._PropertiesKlassCache = buildPropertiesKlass(this.klass.PropertiesDescriptor);
         return this.klass._PropertiesKlassCache!;
     }
-    protected static _DefaultPropertiesKlassCache: Properties<any>|null = null;
-    static get DefaultPropertiesKlass() {
-        if( this.klass._DefaultPropertiesKlassCache === null)
-            this.klass._DefaultPropertiesKlassCache = buildPropertiesKlass(this.klass.PropertiesDescriptor, "Default");
-        return this.klass._DefaultPropertiesKlassCache!;
-    }
+
     static override get observedAttributes() { return Object.keys(this.klass.PropertiesDescriptor); }
+
+    protected buildSignalStore(): null|Record<string,ROSignal<any>> {
+        return null;
+    }
 
     constructor(value : null|T|ROSignal<T> = null,
                 //TODO: params
             ) {
 
-        super(value);
+        super();
 
-        this.manager = new PropertiesManager(this, this.klass.PropertiesDescriptor, this.value);
+        this.manager = new PropertiesManager(this,
+                                             this.buildSignalStore(),
+                                             this.klass.PropertiesDescriptor,
+                                             value);
 
-        this.properties        = new this.klass.PropertiesKlass(this.manager);
-        this.defaultProperties = new this.klass.DefaultPropertiesKlass(this.manager);
-
+        this.#properties = new this.klass.PropertiesKlass(this.manager);
+        
         // getInitialPropertyValue => NON => setProperty() system...
         // listen properties changes => if attached => requestUpdate
     }
 
-    readonly properties;
-    readonly defaultProperties;
+    #properties;
+
+    // @ts-ignore
+    override get value() {
+        return this.#properties as unknown as Partial<T>;
+    }
+    // @ts-ignore
+    override set value(val: Partial<T>) {
+        Object.assign(this.#properties, val);
+    }
 }
 
 function buildPropertiesKlass<T extends Record<string, any>>(
-                                descriptor: PropertiesDescriptor,
-                                suffix: string = "Value"): Properties<T> {
+                                descriptor: PropertiesDescriptor): Properties<T> {
 
     // build properties
     class Properties {
@@ -67,9 +75,6 @@ function buildPropertiesKlass<T extends Record<string, any>>(
     const propsnames = Object.keys(descriptor);
     const props: PropertyDescriptorMap = {};
 
-    const get = `get${suffix}`;
-    const set = `setJS${suffix}`;
-
     for(let name of ["content", ...propsnames]) {
 
         const key = attrname2propname(name);
@@ -78,11 +83,11 @@ function buildPropertiesKlass<T extends Record<string, any>>(
             enumerable: true,
             get: function (this: Properties) {
                 // @ts-ignore
-                return this._propertiesManager[get](name);
+                return this._propertiesManager.getValue(name);
             },
             set: function (this: Properties, value: any) {
                 // @ts-ignore
-                this._propertiesManager[set](name, value)
+                this._propertiesManager.setJSValue(name, value)
             }
         }
     }

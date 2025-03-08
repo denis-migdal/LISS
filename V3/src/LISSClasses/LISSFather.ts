@@ -1,3 +1,5 @@
+import ROSignal from "../signals/ROSignal";
+import Signal from "../signals/Signal";
 import LISSChild from "./LISSChild";
 import LISSUpdate from "./LISSUpdate";
 
@@ -26,6 +28,8 @@ export default class LISSFather extends LISSUpdate {
         });
     }
 
+    readonly signals = buildSignalStore();
+
     protected processRemovedNodes(nodes: NodeList) {
 
         for(let j = 0; j < nodes.length; ++j) {
@@ -42,8 +46,6 @@ export default class LISSFather extends LISSUpdate {
         // wasn't invalidated
         if( this.LISSChildren !== null )
             return;
-
-        console.warn("UPDATE", ...this.children);
 
         const children = this.children;
         this.LISSChildren = new Array(children.length);
@@ -80,4 +82,31 @@ export default class LISSFather extends LISSUpdate {
 
     protected onDetach(child: LISSChild) {}
     protected onAttach(child: LISSChild) {}
+}
+
+
+function buildSignalStore() {
+
+    const signals: Record<string, ROSignal<any>> = {};
+
+    function get(name: string): Signal<any> {
+        let signal = signals[name];
+        if( signal === undefined) 
+            signal = signals[name] = new Signal();
+        return signal as Signal<any>;
+    }
+
+    return new Proxy(signals, {
+        get<U extends string>(_: any, prop: U): ROSignal<any> {
+            return get(prop);
+        },
+        set(_, prop: string, value: ROSignal<any>) {
+            get(prop).source = value;
+            return true;
+        },
+        deleteProperty(_, prop: string) {
+            get(prop).source = null;
+            return true;
+        }
+    });
 }

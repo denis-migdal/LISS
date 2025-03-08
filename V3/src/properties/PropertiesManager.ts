@@ -1,4 +1,6 @@
 import LISSUpdate from "../LISSClasses/LISSUpdate";
+import { ParserAlgo } from "../signals/ParsedSignal";
+import ROSignal from "../signals/ROSignal";
 import getPropertyInitialValue from "../utils/DOM/getPropertyInitialValue";
 import Property, { PropertyFullDescription } from "./Property";
 
@@ -29,7 +31,7 @@ export default class PropertiesManager {
     #properties: Record<string, Property> = {};
     
     // TODO: cstr params (x1) + data...
-    constructor(target: LISSUpdate, propertiesDesc: PropertiesDescriptor, cstrVals: Record<string, any>|null) {
+    constructor(target: LISSUpdate, source: null|Record<string, ROSignal<any>>, propertiesDesc: PropertiesDescriptor, cstrVals: Record<string, any>|null) {
 
         cstrVals ??= {};
 
@@ -42,26 +44,13 @@ export default class PropertiesManager {
             else if( props === null || typeof props !== "object" || ! ("parser" in props) )
                 props = { fixed: props };
 
-            this.#properties[name] = new Property(props as PropertyFullDescription<unknown>);
+            this.#properties[name] = new Property(source, props as PropertyFullDescription<unknown>);
 
             const vpropname  = attrname2propname(name);
 
-            if( name === "content" ) {
-                if( cstrVals[name] !== null)
-                    this.#properties[name].JS_value = cstrVals[vpropname] ?? null;
-                continue;
-            }
-
-            // TODO: remove (use property struct)
-            const dpropname = attrname2propname('default-' + name);
-            const v = getPropertyInitialValue(target, vpropname as any, cstrVals[vpropname] ) ?? null;
-            const d = getPropertyInitialValue(target, dpropname as any, cstrVals[dpropname] ) ?? null;
-
-            if( v !== null)
-                this.#properties[name].JS_value   = v;
-            if( d !== null)
-                this.#properties[name].JS_default = d;
-
+            const val = cstrVals[vpropname];
+            if( val !== undefined )
+                this.#properties[name].JS_value = val;
         }
 
         const attrs = target.getAttributeNames();
@@ -100,14 +89,11 @@ export default class PropertiesManager {
     getValue(name: string) {
         return this.#properties[name].signal.value;
     }
-    getDefault(name: string) {
-        throw new Error("not implemented");
-    }
     setJSValue(name: string, value: unknown) {
         this.#properties[name].JS_value = value;
     }
-    setJSDefault(name: string, value: unknown) {
-        this.#properties[name].JS_default = value;
+    setParser(name: string, parser: ParserAlgo<any>) {
+        this.#properties[name].parser = parser;
     }
 
     #onAttrChanged(name: string, value: string|null) {

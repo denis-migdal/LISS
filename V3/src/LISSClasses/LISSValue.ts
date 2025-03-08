@@ -5,7 +5,7 @@ import getPropertyInitialValue from "@LISS/src/utils/DOM/getPropertyInitialValue
 
 export default class LISSSignal<T> extends LISSUpdate {
 
-    #signal = new Signal<T>();
+    readonly signal = new Signal<T>();
 
     #callback = () => this.requestUpdate();
 
@@ -13,27 +13,27 @@ export default class LISSSignal<T> extends LISSUpdate {
         super();
 
         if( value === null ) {
-            this.#signal.source = getPropertyInitialValue(this, "source", null)
-            this.#signal.value  = getPropertyInitialValue(this, "value" , null)
+            this.signal.source = getPropertyInitialValue(this, "source", null)
+            this.signal.value  = getPropertyInitialValue(this, "value" , null)
         } else if( value instanceof ROSignal)
-            this.#signal.source = value;
+            this.signal.source = value;
         else
-            this.#signal.value  = value,
+            this.signal.value  = value,
 
-        this.#signal.listen( this.#callback );
+        this.signal.listen( this.#callback );
     }
 
     set source(source: ROSignal<T>|null) {
-        this.#signal.source = source;
+        this.signal.source = source;
     }
     get source() {
-        return this.#signal.source;
+        return this.signal.source;
     }
 
     set value(value: T|null) {
-        this.#signal.value = value;
+        this.signal.value = value;
     }
     get value() {
-        return this.#signal.value;
+        return this.signal.value;
     }
 }
