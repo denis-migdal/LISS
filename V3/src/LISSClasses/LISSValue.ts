@@ -3,37 +3,35 @@ import ROSignal   from "@LISS/src/signals/ROSignal";
 import LISSUpdate from "./LISSUpdate";
 import getPropertyInitialValue from "@LISS/src/utils/DOM/getPropertyInitialValue";
 
+export function getSignal<T extends any = unknown>(obj: HTMLElement, defaultVal: T|null = null) {
+    let signal: Signal<T> = (obj as any).signal;
+
+    if( signal === undefined )
+        signal = (obj as any).signal = new Signal<T>(defaultVal);
+
+    return signal;
+}
+
 export default class LISSSignal<T> extends LISSUpdate {
 
-    readonly signal = new Signal<T>();
+    readonly signal: Signal<T>;
 
     #callback = () => this.requestUpdate();
 
-    constructor(value: null|T|ROSignal<T> = null) {
+    constructor(value_or_signal: null|T|ROSignal<T> = null) {
         super();
 
-        if( value === null ) {
-            this.signal.source = getPropertyInitialValue(this, "source", null)
-            this.signal.value  = getPropertyInitialValue(this, "value" , null)
-        } else if( value instanceof ROSignal)
-            this.signal.source = value;
-        else
-            this.signal.value  = value,
+        this.signal = getPropertyInitialValue(this, "signal") ?? new Signal<T>();
 
+        if( value_or_signal !== null ) { // value given by the constructor
+
+            if( value_or_signal instanceof ROSignal)
+                this.signal.source = value_or_signal;
+            else
+                this.signal.value  = value_or_signal;
+
+        }
+        
         this.signal.listen( this.#callback );
-    }
-
-    set source(source: ROSignal<T>|null) {
-        this.signal.source = source;
-    }
-    get source() {
-        return this.signal.source;
-    }
-
-    set value(value: T|null) {
-        this.signal.value = value;
-    }
-    get value() {
-        return this.signal.value;
     }
 }
