@@ -1,4 +1,23 @@
 -> Doc
+    -> après TW/PW cours ? (en fonction des notions du cours)
+        -> (webcomp + tard ? TP3/4 ?)
+
+WebComp : structure + style + comportement (boîte noire)
+    -> donc attention aux interactions (signaux, properties)
+
+Content
+    -> content generator
+    -> sharedCSS
+    -> run_intensive_dom_operation
+    -> update system + diff type of LISS + signals
+    -> html + css helpers
+DO NOT CHANGE DOM HOST
+    -> internal state
+
+- property signals / values getter/setter ???
+
+- conseil : contre le scientillement
+
 -> Properties struct + getSignal<T> (for VSHS)
 -> CodeBlock (cf .dia)
     -> changes => set value internally...

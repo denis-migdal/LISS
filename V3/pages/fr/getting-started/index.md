@@ -56,7 +56,7 @@ Cela est normal, puisque vous ne l'avez pas encore défini.
 
 ## Créer votre composant Web
 
-Nous allons donc définir le contenu initial de notre composant Web via un fichier <script type="c-html">index.html</script> :
+Nous allons donc définir la structure initial de notre composant Web via un fichier <script type="c-html">index.html</script> :
 
 <liss-playground name="hello-world:1" show="index.html,output">
 </liss-playground>
