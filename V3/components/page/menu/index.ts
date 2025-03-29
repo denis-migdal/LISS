@@ -238,9 +238,13 @@ function updatePageMenu(menu: PageMenuNode) {
 export function initMenu(menu: string) {
 
     const cur_page =  searchCurPagesHeader(buildPagesMenu(menu));
+
+    if(cur_page.parent === null)
+        return;
+
     menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
     
-    const idx = cur_page.parent!.children.indexOf(cur_page);
+    const idx = cur_page.parent.children.indexOf(cur_page);
     document.body.style.setProperty('counter-set', `h1 ${idx}` );
     
     const hasH1 = document.body.querySelector("h1") !== null;
