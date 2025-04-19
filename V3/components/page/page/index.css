@@ -53,3 +53,13 @@ main {
         width: 100%;
     }
 }
+
+.flex-3 {
+    gap: 1px;
+    display: grid;
+    grid: auto / 1fr 1fr 1fr;
+
+    & img {
+        width: 100%;
+    }
+}
