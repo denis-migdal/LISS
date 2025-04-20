@@ -5,6 +5,34 @@
     }
 }
 
+body.overview {
+    
+    overflow-y: hidden;
+
+    margin-left: 0;
+    margin-right: 0;
+
+    main {
+
+        margin: 0;
+
+        border-left: none;
+        border-right: none;
+
+        columns: auto 210mm;
+
+        overflow-x: auto;
+
+        /* TODO: scale */
+        --scale: calc( (var(--screen_width)/818) / var(--overview) );
+        height: calc( (100vh - 38px) / var(--scale) );
+        width: calc( 100vw / var(--scale) );
+
+        transform: scale( var(--scale) );
+        transform-origin: top left;
+    }
+}
+
 main {
     display   : block;
     box-sizing: border-box;
@@ -26,14 +54,14 @@ main {
 @media screen and (max-width: 210mm) {
     main {
         transform-origin: top left;
-        scale: min(1, calc( var(--screen_width) / var(--main-width) ) );
+        scale: min(1, calc( var(--screen_width)/818 ) );
     }
 }
 /* scale up */
 @media screen and (min-width: 210mm) and (display-mode: fullscreen) {
     main {
         transform-origin: top left;
-        scale: max(1, calc( var(--screen_width) / var(--main-width) ) );
+        scale: max(1, calc( var(--screen_width)/818 ) );
     }
 }
 /* center */
