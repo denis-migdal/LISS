@@ -66,9 +66,12 @@ export class Script extends LISS({
             return `<h>${content}</h>`;
         });
 
+        // enable c/c
+        code = code.replaceAll('\n', '<br/>');
+        code = code.replaceAll('  ', '&nbsp;&nbsp;');
+
         this.content.innerHTML = code;
     }
-
 }
 
 LISS.define("code-script", Script);
