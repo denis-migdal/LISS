@@ -1,3 +1,41 @@
+-> (base ?)
+-> ContentGenerator
+
+-> update
+-> value
+-> properties
+
+-> Father/Child
+
+-> LISS composition:
+    -> LISSBare/LISSFull : different defaults
+    => how to compose / generic composition ?
+        -> createLISSFactory(extensions)
+        -> extensions: [{}] ? -> register + disable system...
+        -> options ?
+        -> static components.foo = {}
+            -> Component class
+                -> how to add methods
+                -> how to extend properties
+                -> etc.
+            <- save klass config ?
+            <- but how to extend ?
+        -> 6 classes
+        -> +Bare : ~= nothing ?
+        -> Base
+            -> ContentGenerator (ok) [how to no content ?]
+        -> Update (+ disable update)
+            -> strategy
+            -> onUpdate / requestUpdate / onInit
+        -> Value (true/false/default-initial value ?)
+            -> require update (?)
+            -> only expose signal.
+        -> Properties
+            -> PropertiesDescriptor + signal store
+            -> .value (??)
+        -> Child / Father : system...
+
+
 -> Doc
     -> après TW/PW cours ? (en fonction des notions du cours)
         -> (webcomp + tard ? TP3/4 ?)
