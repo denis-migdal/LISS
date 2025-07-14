@@ -1,5 +1,5 @@
 import "@LISS/pages/skeleton/base";
-import "@LISS/components/playground/liss-playground/";
+//import "@LISS/components/playground/liss-playground/";
 import { initMenu } from "@LISS/components/page/menu";
 
 

@@ -1,8 +1,7 @@
 import { isRessourceReady, Ressource, waitRessource } from "@LISS/src/utils/network/ressource";
 import template, { HTML }   from "@LISS/src/utils/parsers/template";
 import style   , {CSS}      from "@LISS/src/utils/parsers/style";
-import isDOMContentLoaded   from "@LISS/src/utils/DOM/isDOMContentLoaded";
-import whenDOMContentLoaded from "@LISS/src/utils/DOM/whenDOMContentLoaded";
+import DOMContentLoaded   from "@LISS/src/utils/DOM/DOMContentLoaded";
 
 type STYLE = CSS | CSS[];
 
@@ -25,7 +24,7 @@ export default class ContentGenerator {
 
         const isReady = isRessourceReady<HTML> (html)
                      && isRessourceReady<STYLE>(css)
-                     && isDOMContentLoaded();
+                     && DOMContentLoaded.isDone;
 
         if( isReady )
             this.prepare(html, css);
@@ -33,7 +32,7 @@ export default class ContentGenerator {
         const whenReady: Promise<[HTML|undefined, STYLE|undefined, unknown]> = Promise.all([
             waitRessource<HTML |undefined>(html),
             waitRessource<STYLE|undefined>(css),
-            whenDOMContentLoaded()
+            DOMContentLoaded
         ]);
 
         whenReady.then( (args) => this.prepare(args[0], args[1]) );

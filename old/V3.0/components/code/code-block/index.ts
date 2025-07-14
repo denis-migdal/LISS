@@ -163,6 +163,8 @@ export default class CodeBlock extends LISS({
                 sel.removeAllRanges();
                 sel.addRange(range);
 
+                console.warn( this.#output.textContent );
+
                 this.#output.dispatchEvent(new Event("input"));
             }
         });

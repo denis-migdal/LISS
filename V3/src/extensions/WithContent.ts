@@ -1,31 +1,104 @@
-import type {Cstr} from ".";
+import template, { HTML }   from "@LISS/src/utils/parsers/template";
+import style   , {CSS}      from "@LISS/src/utils/parsers/style";
+import { Cstr } from "../utils/types";
 
-// static readonly SHADOW_MODE      : "open"|"closed"|null = null;
-// static readonly CONTENT_GENERATOR: ContentGenerator|null = null;
+type STYLE = CSS | CSS[];
+export type ContentGenerator_Opts = {
+    html   ?: HTML,
+    css    ?: STYLE
+}
+// TODO Ressource<>
+// import { isRessourceReady, Ressource, waitRessource } from "@LISS/src/utils/network/ressource"
+// + readyness
 
-// DOCUMENTER !
-// move out whenDOMContentLoaded -> define all -> bare (init ?)
-// (bare ?) + isReady ~> override and / whenReady ~> override and promise.All.
-// is & when same object... ~> static...
+const sharedCSS = new CSSStyleSheet(); // TODO: static prop ?
 
-export default function WithBare<T extends HTMLElement>(
-                                    base : Cstr<T>,
-                                    args: {
+type SHADOW_MODE = "open"|"closed"|null;
 
-                                    }
-                                ) {
+
+export class ContentGenerator {
+
+    constructor({html, css}: ContentGenerator_Opts) {
+        // TODO: for now we assume this is ready... (cf Ressource)
+        this.prepare(html, css);
+    }
+
+    /** init content :
+        - createContent : build the HTML
+        - fillContent   : replace the HTML (uses createContent)
+        - initContent   : initialize DOM (create shadow root + uses fillContent + CSS)
+    **/
+
+    initContent(target: HTMLElement, mode: SHADOW_MODE) {
+
+        let content: ShadowRoot|HTMLElement = target;
+        if( mode !== null) {
+            content = target.attachShadow({mode});
+            content.adoptedStyleSheets.push(sharedCSS, ...this.stylesheets);
+        }
+        //TODO: CSS when no shadow ???
+        
+        this.fillContent(content);
+
+        return content;
+    }
+
+    fillContent(target: ShadowRoot|HTMLElement|DocumentFragment) {
+        
+        if( this.template !== null)
+            target.replaceChildren( this.createContent() );
+
+        //TODO...
+        customElements.upgrade(target);
+    }
+
+    createContent() {
+        return this.template!.cloneNode(true);
+    }
+
+    /** process ressources **/
+    
+    protected stylesheets: CSSStyleSheet[]       = [];
+    protected template   : DocumentFragment|null = null;
+
+    protected prepare(html: HTML|undefined, css: STYLE|undefined) {
+        if( html !== undefined )
+            this.prepareTemplate(html);
+        if( css  !== undefined )
+            this.prepareStyle   (css);
+    }
+
+    protected prepareTemplate(html: HTML) {
+        this.template = template(html);
+    }
+    protected prepareStyle(css: STYLE) {
+
+        if( ! Array.isArray(css) )
+            css = [css];
+
+        this.stylesheets = css.map(e => style(e) );
+    }
+}
+
+type WithContent_Opts<G extends typeof ContentGenerator> = {
+    generator?: G,
+    mode     ?: SHADOW_MODE,
+} & NoInfer<ConstructorParameters<G>[0]>;
+
+export default function WithContent<T extends HTMLElement, G extends typeof ContentGenerator>(base : Cstr<T>, {
+                                        generator = ContentGenerator as G,
+                                        mode      = "open",
+                                        ...generator_opts
+                                    }: WithContent_Opts<G> = {}) {
+
+    // @ts-ignore
+    const gen = new generator(generator_opts);
 
     // @ts-ignore
     return class LISSContent extends base {
-        
-        readonly content  : ShadowRoot|HTMLElement;
 
-        constructor(...args: any[]) {
-            super(...args);
+        protected generator = gen;
 
-            this.content = CONTENT_GENERATOR.initContent(this,
-                                                         SHADOW_MODE);
-        }
+        readonly content  : ShadowRoot|HTMLElement = gen.initContent(this, mode);
     }
-
 }

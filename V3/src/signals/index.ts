@@ -1,9 +1,7 @@
-/*
-
-SignalEvent          ( no value )
-^ ROSignal           ( value  R+abstract )
-    ^ IndirectSignal ( source R/W ) [doesn't trigger if value wasn't read or this.ack()]
-        ^ Signal     ( value  R/W )
-        ^ LazyComputedSignal ( compute R/W ) [compute value on demand + cache value]
-    ^ PrioritySignal
-*/
+export {default as SignalEvent        } from "./SignalEvent";
+export {default as SignalEventListener} from "./SignalEventListener";
+export {default as AbstractSignal     } from "./AbstractSignal";
+export {default as SignalWithSource   } from "./SignalWithSource";
+export {default as Signal             } from "./Signal";
+export {default as LazyComputedSignal } from "./LazyComputedSignal";
+export {default as SignalListener     } from "./SignalListener";

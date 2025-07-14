@@ -1,18 +1,14 @@
-/**
-    - (un)listen
-    - trigger (protected)
-*/
+
 export default class SignalEvent {
 
-    #callbacks = new Array<() => void>();
+    #callbacks = new Array<(pthis: SignalEvent) => void>();
 
-    listen(callback: () => void) {
+    listen(callback: (pthis: SignalEvent) => void) {
         this.#callbacks.push(callback);
 
         return this;
     }
-
-    unlisten(callback: () => void) {
+    unlisten(callback: (pthis: SignalEvent) => void) {
 
         // do not guarantee order ?
         const idx = this.#callbacks.lastIndexOf(callback);
@@ -30,7 +26,7 @@ export default class SignalEvent {
     protected trigger() {
 
         for(let i = 0; i < this.#callbacks.length; ++i)
-            this.#callbacks[i]();
+            this.#callbacks[i](this);
 
         return this;
     }

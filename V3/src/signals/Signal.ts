@@ -1,50 +1,12 @@
-import IndirectSignal from "./IndirectSignal";
-import ROSignal from "./ROSignal";
+import SignalWithSource from "./SignalWithSource";
 
-export default class Signal<T> extends IndirectSignal<T> {
+export default class Signal<T> extends SignalWithSource<T,T> {
 
-    protected _value: T|null = null;
-
-    constructor(value: T|null = null, source: ROSignal<T>|null = null) {
-        super(source);
-        this._value = value;
+    override get value(): T|null {
+        return this._listener.value as T|null;
     }
 
-    override set source(source: ROSignal<T>|null) {
-
-        if( source !== null )
-            this._value = null;
-
-        super.source = source; // may trigger if source change
-    }
-
-    override get source() {
-        return super.source;
-    }
-
-    override get value() {
-
-        if( this.source !== null)
-            return super.value;
-
-        this.ack();
-        return this._value;
-    }
-
-    override set value(value: T|null) {
-
-        const oldValue = this._value;
-        this._value = value;
-
-        if( this.source !== null ) {
-            this.source = null; // will trigger
-            return;
-        }
-
-        // trigger only if value changed
-        if( value !== oldValue)
-            this.trigger();
-
-        return;
+    override set value( value: T|null) {
+        this._listener.value = value;
     }
 }

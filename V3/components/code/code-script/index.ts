@@ -1,60 +1,60 @@
-import LISS from "@LISS/src";
-import {hl} from "../hl";
-
-import whenDOMContentLoaded from "@LISS/src/utils/DOM/whenDOMContentLoaded";
+import {LISS, WithBare, WithContent} from "@LISS/src/extensions";
+import DOMContentLoaded from "@LISS/src/utils/FutureEvents/DOMContentLoaded";
+import define from "@LISS/src/define";
+import { hl } from "../hl";
 
 // @ts-ignore
-import css  from "!!raw-loader!./index.css";
+import css   from "!!raw-loader!./index.css";
 // @ts-ignore
 import theme from "!!raw-loader!../Tomorrow.css";
 
+export function unindent(code: string) {
+    const offset = code.search(/[\S]/);
+    const indent = code.slice(1, offset);
 
-//TODO: Signal<T> for value...
-export class Script extends LISS({
-    css: [css, theme]
-})<string> {
+    code = code.replaceAll("\n" + indent, "\n");
 
-    #code    : string;
-    #codeLang: string;
-    
+    const end = code.lastIndexOf('\n');
+    code = code.slice(1, end);
+
+    return code;
+}
+
+export function keepSpaces(code: string) {
+    code = code.replaceAll('\n', '<br/>\n');
+    code = code.replaceAll('  ', '&nbsp;&nbsp;');
+
+    return code;
+}
+
+export default class Script extends LISS({ css: [theme, css] },
+                            WithBare, WithContent) {
+
     constructor(code?: string, codeLang?: string) {
         super();
 
-        this.#code     = code     ?? this.host.textContent!;
-        this.#codeLang = codeLang ?? this.host.getAttribute("code-lang")!;
-    }
-
-    protected override onUpdate() {
-
-        let code   = this.#code;
-        const lang = this.#codeLang;
+        code     ??= this.host.textContent!;
+        codeLang ??= this.host.getAttribute("code-lang") ?? "text";
 
         if(code[0] === '\n') {
-
             this.host.classList.toggle("block", true);
 
-            const offset = code.search(/[\S]/);
-            const indent = code.slice(1, offset);
-
-            code = code.replaceAll("\n" + indent, "\n");
-
-            const end = code.lastIndexOf('\n');
-            code = code.slice(1, end);
+            code = unindent(code);
         }
 
-        // TODO: get position then reinject ?
+        // ...
         const replaced: string[] = [];
         code = code.replaceAll(/\<h\>(.*?)\<\/h\>/g, (_, match) => {
             replaced.push(match);
             return `__${replaced.length-1}__`
         });
-
-        if(lang === "html") {
+    
+        if(codeLang === "html") {
             code = code.replace("<xbody>", "</body>");
             code = code.replace("<xscript>", "</script>");
         }
 
-        code = hl(code, lang);
+        code = hl(code, codeLang);
 
         code = code.replaceAll(/__([\d]*)__/g, (_, match) => {
 
@@ -66,17 +66,15 @@ export class Script extends LISS({
             return `<h>${content}</h>`;
         });
 
-        // enable c/c
-        code = code.replaceAll('\n', '<br/>');
-        code = code.replaceAll('  ', '&nbsp;&nbsp;');
-
-        this.content.innerHTML = code;
+        this.content.innerHTML = keepSpaces(code); // due to stupid FF bug.
+        // use a div for FF ?
     }
 }
 
-LISS.define("code-script", Script);
+define('code-script', Script);
 
-whenDOMContentLoaded().then( () => {
+
+DOMContentLoaded.then( () => {
 
     for(let script of document.querySelectorAll('script[type^="c-"]') ) {
 

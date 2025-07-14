@@ -1,41 +1,22 @@
-import IndirectSignal from "./IndirectSignal";
-import ROSignal from "./ROSignal";
+import AbstractSignal   from "./AbstractSignal";
+import SignalWithSource from "./SignalWithSource";
 
-export default class LazyComputedSignal<T = unknown, U = unknown> extends IndirectSignal<T, U> {
-    
-    constructor(source: null|ROSignal<T> = null, compute: null|((source: ROSignal<T>) => U|null) = null) {
-        
-        super(source);
+export default class LazyComputedSignal<IN, OUT> extends SignalWithSource<IN, OUT> {
 
-        this.#compute = compute;
+    #value: OUT|null = null;
+    #cmp  : (v: IN|null) => OUT|null;
+
+    constructor( src: AbstractSignal<IN>, cmp: (v: IN|null) => OUT|null) {
+        super();
+        this.#cmp = cmp;
+        this._listener.source = src;
     }
 
-    #compute: null|((sources: ROSignal<T>) => U|null);
+    override get value(): OUT|null {
 
-    get computeFct() {
-        return this.#compute;
-    }
-    set computeFct(compute: null|((sources: ROSignal<T>) => U|null)) {
+        if( this._listener.pending )
+            this.#value = this.#cmp(this._listener.value);
 
-        if( this.#compute === compute )
-            return;
-
-        this.#compute = compute;
-        this.trigger();
-    }
-
-    #cachedValue: null|U = null;
-
-    override get value() {
-
-        if( this._valueRead === true )
-            return this.#cachedValue;
-
-        this.ack();
-
-        if( this.source === null || this.#compute === null)
-            return this.#cachedValue = null;
-
-        return this.#cachedValue = this.#compute(this.source);
+        return this.#value;
     }
 }

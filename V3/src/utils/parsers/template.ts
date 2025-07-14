@@ -1,5 +1,4 @@
-import isTemplateString from "./isTemplateString";
-import { Template } from "./types";
+import { isTemplateString, Template } from "./types";
 
 export type HTML  = DocumentFragment|HTMLElement|string;
 

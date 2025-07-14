@@ -1,36 +1,32 @@
-import type {Cstr} from ".";
-
-type Future = {
-    is  : boolean,
-    when: Promise<void>
-}
+import FutureEvent from "../utils/FutureEvents";
+import DOMContentLoaded from "../utils/FutureEvents/DOMContentLoaded";
+import { Cstr } from "../utils/types";
 
 type WithBare_Opts = {
-    initWhen?: Future
+    defineAfter?: FutureEvent<void>
 }
-
-//TODO: DOMLoaded
 
 export default function WithBare<T extends HTMLElement>(base : Cstr<T>,
                                             {
-                                                initWhen = DOMLoaded
+                                                defineAfter = DOMContentLoaded
                                             }: WithBare_Opts = {}) {
 
     // @ts-ignore
     return class LISSBare extends base {
         
+        // required for define()
+
+        static get defineAfter() {
+            return defineAfter;
+        }
+
+        // small helper
+
         // @ts-ignore
         readonly host     : T = this;
         readonly controler: Omit<this, keyof T
             |"host"|"controler"|"attributeChangedCallback"> = this;
 
-        static get isReady() {
-            return initWhen.is
-        }
-        static get whenReady() {
-            return initWhen.when
-        }
-        
         // defined for auto-completion.
         static observedAttributes: string[] = [];
         attributeChangedCallback(name  : string,

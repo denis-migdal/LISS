@@ -1,5 +1,4 @@
-import isTemplateString from "./isTemplateString";
-import { Template } from "./types";
+import { isTemplateString, Template } from "./types";
 
 const template = document.createElement("template");
 const df = template.content;

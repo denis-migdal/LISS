@@ -6,5 +6,4 @@ const doc = document.implementation.createDocument(
 
 export default function createElement(tagname: string): HTMLElement {
     return doc.createElement(tagname);
-    // return html(`<${tagname}/>`);
 }

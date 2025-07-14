@@ -6,6 +6,17 @@
         - manipulate:🕮 Manipuler un composant Web
         - content:🕮 Mettre à jour un composant Web (TODO)
         - signals:🕮 Les signaux (TODO)
+        - extensions:extensions
+            - bare:bare
+            - update:update
+            - value:value (depends on update)
+            - content:content
+            - properties:properties
+            - fatherchild:father-child
+        - helpers:Helpers
+            - define:define + autoload
+            - signals:Signaux
+            - utils:Utils (TODO) + tests + Future
     + en:🇬🇧
     - playground:🧪 Playground
     - https://github.com/denis-migdal/LISS:⭐ Github
