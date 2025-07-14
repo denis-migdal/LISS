@@ -106,6 +106,13 @@ class CodeEditor extends LISS({ html, css: [css, theme] },
 
     #initEditor() {
 
+        this._input.listen( () => {
+            const text = this.input.value ?? "";
+
+            this.#history.reset();
+            this.onCodeChange( text, null );
+        });
+
         // code content has been changed
         this.#output.addEventListener("input", () => {
             this.onCodeChange(this.#output.textContent)
@@ -167,13 +174,6 @@ class CodeEditor extends LISS({ html, css: [css, theme] },
             }
         });
 
-    }
-
-    protected override onInputChange(): void {
-        const text = this.input.value ?? "";
-
-        this.#history.reset();
-        this.onCodeChange( text, null );
     }
 
     static observedAttributes = ["code-lang"];

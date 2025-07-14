@@ -1,4 +1,4 @@
-import { AbstractSignal, SignalListener } from "../signals";
+import { AbstractSignal, Signal, SignalListener } from "../signals";
 import { Cstr } from "../utils/types";
 
 export interface Input<T> {
@@ -11,7 +11,7 @@ export function getInput<T>(target: Element): Input<T> {
 
     if( ! ("_input" in target) )
         // @ts-ignore
-        target.input = new SignalListener<T>(); // will shadow input getter
+        target.input = new Signal<T>(); // will shadow input getter
 
     // @ts-ignore
     return target.input;
@@ -24,7 +24,7 @@ export default function WithInput<IN, T extends HTMLElement = HTMLElement>(
     // @ts-ignore
     return class LISSInput extends base {
 
-        protected readonly _input: SignalListener<IN>;
+        protected readonly _input: Signal<IN>;
 
         get input(): Input<IN> {
             return this._input;
@@ -33,23 +33,14 @@ export default function WithInput<IN, T extends HTMLElement = HTMLElement>(
         constructor() {
             super();
 
-            const callback = () => this.onInputChange();
-
             if( this.input !== undefined ) {
                 // @ts-ignore
                 this._input = this.input;
                 // @ts-ignore
                 delete this.input; // un-shadow getter.
             } else {
-                this._input = new SignalListener<IN>();
+                this._input = new Signal<IN>();
             }
-            
-            this._input.callback = callback;
-        }
-
-        protected onInputChange() {
-            if( "requestUpdate" in this )
-                (this.requestUpdate as any)();
         }
     }
 }
