@@ -10,3 +10,4 @@ export {default as LazyComputedSignal } from "./LazyComputedSignal";
 export {default as SyncedSignal       } from "./SyncedSignal";
 
 export {default as OutputMerger       } from "./OutputMerger";
+export {default as InputMerger        } from "./InputMerger";

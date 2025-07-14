@@ -14,11 +14,8 @@ export default class SignalListener<T> extends SignalEventListener {
                 opts     : Partial<SignalEventListenerOpts> = {}) {
 
         super(src, callback, opts);
-
-        this.#src = src;
     }
 
-    #src: AbstractSignal<T>|null;
     #value: T|null = null;
 
     override get source(): AbstractSignal<T>|null {
@@ -37,10 +34,10 @@ export default class SignalListener<T> extends SignalEventListener {
         
         this.ack();
 
-        if( this.#src === null )
+        if( this.source === null )
             return this.#value;
 
-        return this.#src.value;
+        return this.source.value;
     }
     set value(value: T|null) {
 
