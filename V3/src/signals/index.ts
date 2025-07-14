@@ -5,3 +5,5 @@ export {default as SignalWithSource   } from "./SignalWithSource";
 export {default as Signal             } from "./Signal";
 export {default as LazyComputedSignal } from "./LazyComputedSignal";
 export {default as SignalListener     } from "./SignalListener";
+
+export {default as OutputMerger       } from "./OutputMerger";
