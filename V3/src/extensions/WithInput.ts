@@ -1,7 +1,7 @@
 import { AbstractSignal, SignalListener } from "../signals";
 import { Cstr } from "../utils/types";
 
-interface Input<T> {
+export interface Input<T> {
     set value(v: T|null); // external mustn't be allowed to read the value
                           // (would generate an ack)
     source: AbstractSignal<T>|null;
