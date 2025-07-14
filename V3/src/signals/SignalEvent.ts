@@ -8,8 +8,6 @@ export default class SignalEvent {
 
     listen(callback: () => void) {
         this.#callbacks.push(callback);
-
-        return this;
     }
 
     unlisten(callback: () => void) {
@@ -17,14 +15,12 @@ export default class SignalEvent {
         // do not guarantee order ?
         const idx = this.#callbacks.lastIndexOf(callback);
         if( idx === -1 )
-            return this;
+            return;
 
         if( idx !== this.#callbacks.length - 1 )
             this.#callbacks[idx] = this.#callbacks[this.#callbacks.length-1];
 
         --this.#callbacks.length;
-
-        return this;
     }
 
     protected trigger() {

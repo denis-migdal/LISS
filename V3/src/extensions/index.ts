@@ -7,8 +7,9 @@ import WithContent from "./WithContent";
 
 export {default as WithBare   } from "./WithBare";
 export {default as WithContent} from "./WithContent";
-export {default as WithInput  } from "./WithInput";
-export {default as WithOutput } from "./WithOutput";
+export {default as WithInput  , getInput  } from "./WithInput";
+export {default as WithOutput , getOutput } from "./WithOutput";
+export {default as WithRWValue, getValue  } from "./WithRWValue";
 export {default as WithUpdate } from "./WithUpdate";
 
 export const DEFAULT_EXTENSIONS = [
@@ -16,6 +17,27 @@ export const DEFAULT_EXTENSIONS = [
     WithContent
 ];
 
+// With
+export function With<T extends Extension[]>(...extensions: T) {
+
+    type Ext = ExtensionsReturn<T>;
+
+    return function <E extends Cstr<HTMLElement>>(base: E,
+                                                  args: ExtensionsArgs<T>)
+            :  Cstr<InstanceType<Ext> & InstanceType<E>> & Omit<Ext & E, "new">
+    {
+        
+        let cur = base;
+        for(let i = 0; i < extensions.length; ++i)
+            cur = extensions[i](cur, args);
+
+        return cur as any;
+    }
+}
+
+/*
+export type Extension<T extends Cstr<HTMLElement> = any, U extends Cstr<HTMLElement> = any, V extends {} = any> = (base: T, args?: V) => U;
+*/
 
 // LISS
 export function LISS(

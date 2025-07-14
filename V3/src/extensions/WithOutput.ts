@@ -2,7 +2,7 @@ import { AbstractSignal, Signal } from "../signals";
 import { Cstr } from "../utils/types";
 
 
-export type Output<T> = AbstractSignal<T>;
+export type Output<T> = Omit<AbstractSignal<T>, "trigger">;
 
 export function getOutput<T>(target: Element): Output<T> {
 
