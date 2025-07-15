@@ -10,6 +10,7 @@ export {default as WithContent} from "./WithContent";
 export {default as WithInput  , getInput  } from "./WithInput";
 export {default as WithOutput , getOutput } from "./WithOutput";
 export {default as WithRWValue, getValue  } from "./WithRWValue";
+export {default as WithMeta   , getMeta   } from "./WithMeta";
 export {default as WithUpdate } from "./WithUpdate";
 
 export const DEFAULT_EXTENSIONS = [
@@ -34,10 +35,6 @@ export function With<T extends Extension[]>(...extensions: T) {
         return cur as any;
     }
 }
-
-/*
-export type Extension<T extends Cstr<HTMLElement> = any, U extends Cstr<HTMLElement> = any, V extends {} = any> = (base: T, args?: V) => U;
-*/
 
 // LISS
 export function LISS(

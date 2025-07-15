@@ -1,4 +1,4 @@
-import { AbstractSignal, Signal, SignalListener } from "../signals";
+import { AbstractSignal, Signal } from "../signals";
 import { Cstr } from "../utils/types";
 
 export interface Input<T> {
