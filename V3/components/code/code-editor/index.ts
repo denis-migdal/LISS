@@ -78,6 +78,13 @@ class CodeEditor extends LISS({ html, css: [css, theme] },
 
         this.#initEditor();
 
+        this._input.listen( () => {
+            const text = this.input.value ?? "";
+
+            this.#history.reset();
+            this.onCodeChange( text, null );
+        });
+
         this.onCodeChange( this._input.value, null );
     }
 
@@ -105,13 +112,6 @@ class CodeEditor extends LISS({ html, css: [css, theme] },
     }
 
     #initEditor() {
-
-        this._input.listen( () => {
-            const text = this.input.value ?? "";
-
-            this.#history.reset();
-            this.onCodeChange( text, null );
-        });
 
         // code content has been changed
         this.#output.addEventListener("input", () => {
