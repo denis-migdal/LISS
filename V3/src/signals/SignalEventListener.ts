@@ -33,17 +33,11 @@ export default class SignalEventListener {
 
     #opts: SignalEventListenerOpts;
 
-    #src: SignalEvent|null = null;
     #callback: () => void;
-    #signalCallback = () => { this.trigger() }
-    #pending = false;
 
-    set callback(callback: () => void) {
-        this.#callback = callback;
-        // avoid immediate call to prevent issue.
-        //if( this.#pending ) // there is a value in waiting
-        //    this.#callback();
-    }
+    // event...
+
+    #pending = false;
 
     get pending() {
         return this.#pending;
@@ -53,6 +47,7 @@ export default class SignalEventListener {
         this.#pending = false;
     }
 
+    #signalCallback = () => { this.trigger() }
     protected trigger() {
 
         if( this.#opts.ack && this.#pending )
@@ -68,8 +63,21 @@ export default class SignalEventListener {
         this.#callback();
     }
 
+    // source...
+
+    #src: SignalEvent|null = null;
+
     get source() {
         return this.#src;
+    }
+
+    set source(src: SignalEvent|null) {
+        
+        if( src === this.#src )
+            return;
+
+        this.setSourceWithoutTrigger(src);
+        this.trigger();
     }
 
     // used for subclasses...
@@ -82,14 +90,5 @@ export default class SignalEventListener {
 
         if( this.#src !== null )
             this.#src.listen(this.#signalCallback);
-    }
-
-    set source(src: SignalEvent|null) {
-        
-        if( src === this.#src )
-            return;
-
-        this.setSourceWithoutTrigger(src);
-        this.trigger();
     }
 }
