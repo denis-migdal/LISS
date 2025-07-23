@@ -1,5 +1,8 @@
-// need to add "export default"...
 import hljs from './highlight.min.js';
+// https://highlightjs.org/download
+// sql + plaintext + css + typescript + xml + bash + shell + python
+// javascript (?)
+// need to add "export default hljs;" at the end of the file
 
 export function hl(code: string, language: string): string {
     return hljs.highlight(code, { language }).value;
