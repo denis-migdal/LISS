@@ -13,3 +13,7 @@ script, style {
 summary {
     cursor: pointer;
 }
+
+ol > li > ol {
+    list-style-type: lower-alpha;
+}
