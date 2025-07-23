@@ -32,7 +32,7 @@
         white-space: nowrap;
         background: light-dark(white, lightblue);
         font-style: italic;
-        border: 1px dashed gray;
+        /*border: 1px dashed gray;*/
         color: gray;
         border-radius: 4px;
 
