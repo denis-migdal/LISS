@@ -16,12 +16,14 @@ menu_area .classList.add('menu_area');
 menu_area.append(menu_pages, menu_page);
      body.prepend(menu_area);
 
+const HR = Symbol("HR");
+
 type MenuNode<T extends Record<string,any> = {}> = {
     text    : string,
     href    : string,
     level   : number,
     parent  : null|MenuNode<T>,
-    children: MenuNode<T>[]
+    children: (MenuNode<T>| typeof HR)[]
 } & T;
 
 type PageMenuNode  = MenuNode<{html: HTMLElement}>;
@@ -42,6 +44,11 @@ function buildPagesMenu(content: string) {
     current[1] = root;
 
     for(let item of content.split("\n") ) {
+
+        if( item[1] === "-") {
+            root.children.push(HR);
+            continue;
+        }
 
         const offset = item.search(/(\-|\+)/);
         const level = offset / 4 + 2;
@@ -133,8 +140,11 @@ function searchCurPageHeader(htree: PageMenuNode, position: number): null | Page
     const headers = htree.children;
 
     for(let i = headers.length - 1; i >= 0; --i) {
-        if( headers[i].html.offsetTop <= position + 2.5*14 + 5 )
-            return searchCurPageHeader(headers[i], position) ?? headers[i];
+        const header = headers[i];
+        if( header === HR )
+            continue;
+        if( header.html.offsetTop <= position + 2.5*14 + 5 )
+            return searchCurPageHeader(header, position) ?? header;
     }
 
     return null;
@@ -146,10 +156,11 @@ function searchCurPagesHeader(htree: PagesMenuNode): PagesMenuNode {
     let cur = htree;
     
     while(true) {
-        const find = cur.children.find( (node) => curpage.startsWith(node.dir) )
+        const find = cur.children.find( (node) => node !== HR
+                                                && curpage.startsWith(node.dir) )
         if(find === undefined)
             return cur;
-        cur = find;
+        cur = find as any;
     }
 }
 
@@ -170,12 +181,15 @@ function getTitlePrefix(level: number, idx: number) {
 }
 
 
-function buildMenu(nodes: MenuNode[]) {
+function buildMenu(nodes: (MenuNode|typeof HR)[]) {
 
     const menu = document.createElement("div");
     menu.classList.add("menu");
 
     menu.append( ... nodes.map( (s) => {
+        if( s === HR)
+            return document.createElement("hr");
+
         const item = document.createElement("a");
         item.textContent= s.text;
         item.setAttribute("href", s.href);
