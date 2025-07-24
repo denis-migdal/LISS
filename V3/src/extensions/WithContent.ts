@@ -15,8 +15,6 @@ export type ContentGenerator_Opts = {
 
 const sharedCSS = new CSSStyleSheet(); // TODO: static prop ?
 
-const INSERTED_CSS = new Set<string>();
-
 export class ContentGenerator {
 
     // TODO: for now we assume this is ready... (cf Ressource)
@@ -36,20 +34,6 @@ export class ContentGenerator {
         if( mode !== null) {
             content = target.attachShadow({mode});
             content.adoptedStyleSheets.push(sharedCSS, ...this.stylesheets);
-        } else {
-
-            const tagname = target.tagName.toLowerCase();
-            if( ! INSERTED_CSS.has(tagname) ) {
-                INSERTED_CSS.add(tagname);
-
-                const stylesheets = this.stylesheets.map( s => {
-                    return style( sheet2str(s)
-                                        .replaceAll(":host(", `${tagname}:is(`)
-                                        .replaceAll(":host" , tagname) );
-                });
-
-                document.adoptedStyleSheets.push( ...stylesheets );
-            }
         }
         
         this.fillContent(content);
@@ -92,15 +76,6 @@ export class ContentGenerator {
 
         this.stylesheets = css.map(e => style(e) );
     }
-}
-
-function sheet2str(sheet: CSSStyleSheet) {
-
-    let str = "";
-    for(let i = 0; i < sheet.cssRules.length; ++i)
-        str += sheet.cssRules[i].cssText;
-
-    return str;
 }
 
 type WithContent_Opts<G extends typeof ContentGenerator> = {
