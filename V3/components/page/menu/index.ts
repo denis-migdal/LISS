@@ -253,9 +253,16 @@ export function initMenu(menu: string) {
 
     const cur_page =  searchCurPagesHeader(buildPagesMenu(menu));
 
-
     menu_pages.replaceChildren(...generateMenuHTML(cur_page) );
+
+    const home = document.createElement("span");
+    const link = document.createElement("a");
+    link.textContent = "🏠";
+    link.setAttribute('href', "/");
+    home.append(link);
     
+    menu_pages.prepend(home);
+
     if(cur_page.parent === null)
         return;
     

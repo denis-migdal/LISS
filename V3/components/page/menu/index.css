@@ -69,7 +69,8 @@
             }
 
             /* body.hide_h1 & > span:first-child { */
-            & > span:first-child {
+            &.menu_pages > span:nth-child(2),
+            &.menu_page  > span:first-child {
                 display: none;
             }
 
