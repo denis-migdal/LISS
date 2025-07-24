@@ -3,9 +3,11 @@ import style   , {CSS}      from "@LISS/src/utils/parsers/style";
 import { Cstr } from "../utils/types";
 
 type STYLE = CSS | CSS[];
+type SHADOW_MODE = "open"|"closed"|null;
+
 export type ContentGenerator_Opts = {
-    html   ?: HTML,
-    css    ?: STYLE
+    html?: HTML,
+    css ?: STYLE
 }
 // TODO Ressource<>
 // import { isRessourceReady, Ressource, waitRessource } from "@LISS/src/utils/network/ressource"
@@ -13,13 +15,12 @@ export type ContentGenerator_Opts = {
 
 const sharedCSS = new CSSStyleSheet(); // TODO: static prop ?
 
-type SHADOW_MODE = "open"|"closed"|null;
-
+const INSERTED_CSS = new Set<string>();
 
 export class ContentGenerator {
 
+    // TODO: for now we assume this is ready... (cf Ressource)
     constructor({html, css}: ContentGenerator_Opts) {
-        // TODO: for now we assume this is ready... (cf Ressource)
         this.prepare(html, css);
     }
 
@@ -35,8 +36,21 @@ export class ContentGenerator {
         if( mode !== null) {
             content = target.attachShadow({mode});
             content.adoptedStyleSheets.push(sharedCSS, ...this.stylesheets);
+        } else {
+
+            const tagname = target.tagName.toLowerCase();
+            if( ! INSERTED_CSS.has(tagname) ) {
+                INSERTED_CSS.add(tagname);
+
+                const stylesheets = this.stylesheets.map( s => {
+                    return style( sheet2str(s)
+                                        .replaceAll(":host(", `${tagname}:is(`)
+                                        .replaceAll(":host" , tagname) );
+                });
+
+                document.adoptedStyleSheets.push( ...stylesheets );
+            }
         }
-        //TODO: CSS when no shadow ???
         
         this.fillContent(content);
 
@@ -78,6 +92,15 @@ export class ContentGenerator {
 
         this.stylesheets = css.map(e => style(e) );
     }
+}
+
+function sheet2str(sheet: CSSStyleSheet) {
+
+    let str = "";
+    for(let i = 0; i < sheet.cssRules.length; ++i)
+        str += sheet.cssRules[i].cssText;
+
+    return str;
 }
 
 type WithContent_Opts<G extends typeof ContentGenerator> = {
