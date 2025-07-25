@@ -21,8 +21,9 @@ export function unindent(code: string) {
 }
 
 export function keepSpaces(code: string) {
-    code = code.replaceAll('\n', '<br/>\n');
-    code = code.replaceAll('  ', '&nbsp;&nbsp;');
+    code = code.replaceAll('\n', '<br/>\n')
+               .replaceAll('  ', '&nbsp;&nbsp;')
+               .replaceAll('\n ', '\n&nbsp;');
 
     return code;
 }
@@ -87,6 +88,8 @@ DOMContentLoaded.then( () => {
 
         const code = new Script(script.textContent!,
                                 script.getAttribute("type")!.slice(2))
+
+        code.classList.add(...script.classList);
 
         script.replaceWith(code);
     }
