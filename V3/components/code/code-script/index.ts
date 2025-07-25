@@ -23,6 +23,8 @@ export function unindent(code: string) {
 export function keepSpaces(code: string) {
     code = code.replaceAll('\n', '<br/>\n')
                .replaceAll('  ', '&nbsp;&nbsp;')
+               .replaceAll('> ', '>&nbsp;')
+               .replaceAll(' <', '&nbsp;<')
                .replaceAll('\n ', '\n&nbsp;');
 
     return code;
