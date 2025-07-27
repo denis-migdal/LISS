@@ -83,7 +83,6 @@ export default class Script extends LISS({ css: [theme, css] },
 
 define('code-script', Script);
 
-
 DOMContentLoaded.then( () => {
 
     for(let script of document.querySelectorAll('script[type^="c-"]') ) {
@@ -91,7 +90,9 @@ DOMContentLoaded.then( () => {
         const code = new Script(script.textContent!,
                                 script.getAttribute("type")!.slice(2))
 
-        code.classList.add(...script.classList);
+        const attrs = script.attributes;
+        for(let attr of attrs)
+            code.setAttribute(attr.name, attr.value);
 
         script.replaceWith(code);
     }

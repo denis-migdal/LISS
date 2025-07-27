@@ -1,7 +1,7 @@
 const body = document.body;
 const menu_area  = document.createElement('div')!;
 const menu_pages = document.createElement('div')!;
-const menu_page  = document.createElement('div')!;
+export const menu_page  = document.createElement('div')!;
 
 menu_page .classList.add('menu_page');
 menu_pages.classList.add('menu_pages');
@@ -16,9 +16,9 @@ menu_area .classList.add('menu_area');
 menu_area.append(menu_pages, menu_page);
      body.prepend(menu_area);
 
-const HR = Symbol("HR");
+export const HR = Symbol("HR");
 
-type MenuNode<T extends Record<string,any> = {}> = {
+export type MenuNode<T extends Record<string,any> = {}> = {
     text    : string,
     href    : string,
     level   : number,
@@ -26,7 +26,7 @@ type MenuNode<T extends Record<string,any> = {}> = {
     children: (MenuNode<T>| typeof HR)[]
 } & T;
 
-type PageMenuNode  = MenuNode<{html: HTMLElement}>;
+export type PageMenuNode  = MenuNode<{html: HTMLElement}>;
 type PagesMenuNode = MenuNode<{dir: string}>;
 
 function buildPagesMenu(content: string) {
@@ -119,9 +119,13 @@ function buildPageMenu(parent: PageMenuNode|null = null) {
 
         let text = title.getAttribute('short') ?? title.textContent!;
 
+        let id = title.id;
+        if( id === "")
+            id = title.id = text;
+
         const elem: PageMenuNode = {
             html    : title,
-            href    : `#${title.id}`,
+            href    : `#${id}`,
             text    : getTitlePrefix(level, curpos.children.length) + text,
             level,
             children: [],
@@ -135,7 +139,7 @@ function buildPageMenu(parent: PageMenuNode|null = null) {
     return root;
 }
 
-function searchCurPageHeader(htree: PageMenuNode, position: number): null | PageMenuNode {
+export function searchCurPageHeader(htree: PageMenuNode, position: number): null | PageMenuNode {
 
     const headers = htree.children;
 
@@ -171,7 +175,7 @@ const hid = [
     ["a", "b" , "c"  , "d" , "e", "f" , "g"  , "h"   , "i" , "j" ],
 ]
 
-function getTitlePrefix(level: number, idx: number) {
+export function getTitlePrefix(level: number, idx: number) {
 
     if( level >= hid.length )
         return "";
@@ -199,7 +203,7 @@ function buildMenu(nodes: (MenuNode|typeof HR)[]) {
     return menu;
 }
 
-function generateMenuHTML(target: MenuNode) {
+export function generateMenuHTML(target: MenuNode) {
 
     let headers = [];
 
@@ -278,5 +282,4 @@ export function initMenu(menu: string) {
         window.addEventListener('scroll', () => updatePageMenu(menu) );
         updatePageMenu(menu);
     }
-    
 }

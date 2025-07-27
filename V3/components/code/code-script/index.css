@@ -31,7 +31,8 @@
         white-space: nowrap;
         background: light-dark(white, lightblue);
         font-style: italic;
-        /*border: 1px dashed gray;*/
+        /*outline: 1px dashed gray;
+        box-shadow: 0 0 0 1px light-dark(white, lightblue);*/
         color: gray;
         border-radius: 4px;
 

@@ -7,3 +7,7 @@ const doc = document.implementation.createDocument(
 export default function createElement(tagname: string): HTMLElement {
     return doc.createElement(tagname);
 }
+
+export function cloneNode<T extends Element>(node: T, deep = false) {
+    return doc.importNode(node, deep);
+}
