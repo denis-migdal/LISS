@@ -139,7 +139,9 @@ function buildPageMenu(parent: PageMenuNode|null = null) {
     return root;
 }
 
-export function searchCurPageHeader(htree: PageMenuNode, position: number): null | PageMenuNode {
+export function searchCurPageHeader( htree   : PageMenuNode,
+                                     position: number
+                                ) : null | PageMenuNode {
 
     const headers = htree.children;
 
@@ -147,6 +149,7 @@ export function searchCurPageHeader(htree: PageMenuNode, position: number): null
         const header = headers[i];
         if( header === HR )
             continue;
+
         if( header.html.offsetTop <= position + 2.5*14 + 5 )
             return searchCurPageHeader(header, position) ?? header;
     }

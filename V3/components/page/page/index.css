@@ -15,6 +15,7 @@ body.overview {
 
     margin-left: 0;
     margin-right: 0;
+    margin-top: 0;
 
     main {
 
@@ -29,11 +30,15 @@ body.overview {
 
         /* TODO: scale */
         --scale: calc( (var(--screen_width)/818) / var(--overview) );
-        height: calc( (100vh - 38px) / var(--scale) );
+        height: calc( 100vh / var(--scale) );
         width: calc( 100vw / var(--scale) );
 
         transform: scale( var(--scale) );
         transform-origin: top left;
+    }
+
+    & .menu_area {
+        display: none;
     }
 }
 
