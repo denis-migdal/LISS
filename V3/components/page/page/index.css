@@ -101,3 +101,15 @@ main {
         width: 100%;
     }
 }
+
+@media print {
+    .onscreen {
+        display: none;
+    }
+}
+
+@media screen {
+    .onprint {
+        display: none;
+    }
+}
