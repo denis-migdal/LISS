@@ -82,6 +82,15 @@ main {
     }
 }
 
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.center {
+    width: fit-content;
+}
+
 .flex-2 {
     gap: 1px;
     display: grid;
