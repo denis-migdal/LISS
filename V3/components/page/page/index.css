@@ -111,6 +111,17 @@ div.center {
     }
 }
 
+
+.flex-4 {
+    gap: 1px;
+    display: grid;
+    grid: auto / 1fr 1fr 1fr 1fr;
+
+    & img {
+        width: 100%;
+    }
+}
+
 @media print {
     .onscreen {
         display: none;
