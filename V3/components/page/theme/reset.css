@@ -32,3 +32,7 @@ main > div {
 div > ul, div > ol {
     margin-top: 0;
 }
+
+img {
+    break-inside: avoid;
+}
