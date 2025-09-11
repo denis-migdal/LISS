@@ -122,6 +122,13 @@ div.center {
     }
 }
 
+.dark  {
+    color-scheme: dark;
+}
+.light {
+    color-scheme: light;
+}
+
 @media print {
     .onscreen {
         display: none;
