@@ -286,3 +286,10 @@ export function initMenu(menu: string) {
         updatePageMenu(menu);
     }
 }
+
+document.addEventListener("click", (ev) => {
+    const target = ev.target as HTMLElement;
+    if( target.tagName[0] === "H" && target.tagName.length === 2) {// header
+        window.location.href = `#${target.id}`;
+    }    
+});

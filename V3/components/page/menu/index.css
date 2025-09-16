@@ -117,3 +117,12 @@ h3::before {
     counter-increment: h3;
     content: counter(h1, upper-roman) "." counter(h2) "." counter(h3, lower-alpha) ". ";
 }
+
+h1, h2, h3, h4, h5, h6 {
+    cursor: pointer;
+
+    &:hover::after {
+        content: "🔗";
+        opacity: 0.5;
+    }
+}
