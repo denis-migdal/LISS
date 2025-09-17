@@ -289,7 +289,9 @@ export function initMenu(menu: string) {
 
 document.addEventListener("click", (ev) => {
     const target = ev.target as HTMLElement;
-    if( target.tagName[0] === "H" && target.tagName.length === 2) {// header
+    const tagname = target.tagName
+    if( tagname[0] === "H" && tagname.length === 2 
+        && tagname[1] >= '0' && tagname[1] <= '9' ) {// header
         window.location.href = `#${target.id}`;
     }    
 });
