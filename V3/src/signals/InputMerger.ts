@@ -24,7 +24,8 @@ class InternalSignal<T> extends AbstractSignal<T> {
 
     get value() {
         const val = this.#listener.value;
-        if( val === null)
+        // undefined should NOT occurs...
+        if( val === null || val === undefined)
             return null;
 
         return val[this.#idx];
