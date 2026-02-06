@@ -1,14 +1,10 @@
 import { Cstr } from "@MWL/types/Cstr";
-import Mix, {createExtension} from "@MWL/mixins/mixer";
-
 import { Extension, ExtensionsArgs, ExtensionsReturn } from "./types";
 
 // default config.
 import WithBare from "./WithBare";
-import WithContent from "./WithContent";
 
 export {default as WithBare   } from "./WithBare";
-export {default as WithContent} from "./WithContent";
 export {default as WithInput  , getInput  } from "./WithInput";
 export {default as WithOutput , getOutput } from "./WithOutput";
 export {default as WithRWValue, getValue  } from "./WithRWValue";

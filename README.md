@@ -13,11 +13,8 @@ https://liss.migdal.ovh/V3/fr/
 ## Usage (TODO)
 
 ```ts
-class X extends LISSBase.With(ShadowRoot({
-                                            template: "", 
-                                            style   : "",    
-                                        }))
-                        .With(Input) {
+class X extends LISSBase.With(Content(template("...")))
+                        .With(Style  (   style("..."))) {
     // ...
 }
 ```
