@@ -1,8 +1,10 @@
 <div align="center">
-  <h1>LISS: Light, Intuitive, Simplier, and Safer Web Components.</h1>
+  <h1>LISS: Light, Intuitive, Simpler, and Safer Web Components.</h1>
 
   <p>Build safe and simple vanilla WebComponents</p>
 </div>
+
+<i>LISS Is Super Simple.</i>
 
 ## Documentation
 

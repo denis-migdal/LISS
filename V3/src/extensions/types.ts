@@ -17,4 +17,4 @@ export type ExtensionsReturn<T extends Extension[], K extends keyof T & number =
     // instance props
     Cstr<UnionToIntersection<InstanceType<ExtensionReturn<T[K]>>>>
     // static props
-  & UnionToIntersection<Omit<ExtensionReturn<T[K]>, "new">>;
+  & Omit<UnionToIntersection<ExtensionReturn<T[K]>>, "new">;
