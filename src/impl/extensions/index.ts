@@ -1,5 +1,7 @@
-import { Cstr } from "../utils/types";
-import { Extension, ExtensionReturn, ExtensionsArgs, ExtensionsReturn } from "./types";
+import { Cstr } from "@MWL/types/Cstr";
+import Mix from "@MWL/mixins/mixer";
+
+import { Extension, ExtensionsArgs, ExtensionsReturn } from "./types";
 
 // default config.
 import WithBare from "./WithBare";
@@ -58,37 +60,3 @@ export function LISS(
 
     return cur;
 }
-
-//Static props are lost (?)
-
-function WithB1<T extends Cstr<HTMLElement>>(base : T) {
-
-    return class X extends base {
-        protected foo = 12;
-    }
-}
-function WithB2<T extends Cstr<HTMLElement>>(base : T) {
-
-    return class X extends base {
-        protected fuu = 12;
-
-        static OK = 2;
-    }
-}
-
-class Z2 extends WithB1(WithB2(HTMLElement)) {
-
-}
-Z2.OK
-
-class Z extends LISS({}, WithB1, WithB2) {
-
-    faa() {
-        this.foo
-        this.fuu
-    }
-}
-
-type X = ExtensionsReturn<[typeof WithB2, typeof WithB1]>
-
-(Z as any as X).OK
