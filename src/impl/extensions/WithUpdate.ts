@@ -1,4 +1,4 @@
-import { Cstr } from "../utils/types";
+import { Cstr } from "@MWL/types/Cstr";
 
 type Updatable = HTMLElement & { onUpdate: () => void };
 

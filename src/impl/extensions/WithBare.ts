@@ -1,6 +1,6 @@
-import FutureEvent from "../utils/FutureEvents";
-import DOMContentLoaded from "../utils/FutureEvents/DOMContentLoaded";
-import { Cstr } from "../utils/types";
+import { Cstr } from "@MWL/types/Cstr";
+import FutureEvent from "../../utils/FutureEvents";
+import DOMContentLoaded from "../../utils/FutureEvents/DOMContentLoaded";
 
 type WithBare_Opts = {
     defineAfter?: FutureEvent<void>

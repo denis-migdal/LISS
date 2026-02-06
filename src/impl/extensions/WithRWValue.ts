@@ -2,8 +2,8 @@ import { AbstractSignal, Signal } from "../signals";
 import WithInput , { getInput , Input  } from "./WithInput";
 import WithOutput, { getOutput, Output } from "./WithOutput";
 
-import { Cstr } from "../utils/types";
 import { With } from ".";
+import { Cstr } from "@MWL/types/Cstr";
 
 class InputOutputMerger<T> implements Input<T>, Output<T> {
     

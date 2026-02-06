@@ -1,6 +1,6 @@
-import {LISS, WithBare, WithContent} from "@LISS/src/extensions";
-import DOMContentLoaded from "@LISS/src/utils/FutureEvents/DOMContentLoaded";
-import define from "@LISS/src/define";
+import {LISS, WithBare, WithContent} from "@LISS/impl/extensions";
+import DOMContentLoaded from "@LISS/utils/FutureEvents/DOMContentLoaded";
+import define from "@LISS/impl/define";
 import { hl } from "../hl";
 
 // @ts-ignore

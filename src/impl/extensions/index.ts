@@ -13,7 +13,6 @@ export {default as WithUpdate } from "./WithUpdate";
 
 export const DEFAULT_EXTENSIONS = [
     WithBare,
-    WithContent
 ];
 
 // With

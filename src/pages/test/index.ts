@@ -1,7 +1,7 @@
 import "@LISS/components/code/code-editor";
-import { getInput } from "@LISS/src/extensions/WithInput";
-import { getOutput } from "@LISS/src/extensions/WithOutput";
-import createElement from "@LISS/src/utils/DOM/createElement";
+import { getInput } from "@LISS/impl/extensions/WithInput";
+import { getOutput } from "@LISS/impl/extensions/WithOutput";
+import createElement from "@LISS/utils/DOM/createElement";
 
 const code = createElement("code-editor");
 

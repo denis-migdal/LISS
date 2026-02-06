@@ -1,5 +1,5 @@
-import FutureEvent from "./utils/FutureEvents";
-import { Cstr } from "@MWL/";
+import FutureEvent from "../utils/FutureEvents";
+import { Cstr } from "@MWL/types/Cstr";
 
 export default async function define(tagname: string, Klass: Cstr<HTMLElement>) {
 

@@ -1,6 +1,5 @@
+import { Cstr } from "@MWL/types/Cstr";
 import { AbstractSignal, Signal } from "../signals";
-import { Cstr } from "../utils/types";
-
 
 export type Output<T> = Omit<AbstractSignal<T>, "trigger">;
 

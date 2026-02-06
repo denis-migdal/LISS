@@ -1,5 +1,5 @@
-import {LISS, WithBare, WithContent, WithInput, WithOutput} from "@LISS/extensions"
-import define from "@LISS/define";
+import {LISS, WithBare, WithContent, WithInput, WithOutput} from "@LISS/impl/extensions"
+import define from "@LISS/impl/define";
 import { getCursorPos, hl, setCursorPos } from "../hl";
 
 

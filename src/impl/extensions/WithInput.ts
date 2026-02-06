@@ -1,5 +1,5 @@
+import { Cstr } from "@MWL/types/Cstr";
 import { AbstractSignal, Signal } from "../signals";
-import { Cstr } from "../utils/types";
 
 export interface Input<T> {
     set value(v: T|null); // external mustn't be allowed to read the value

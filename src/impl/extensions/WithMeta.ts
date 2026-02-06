@@ -1,6 +1,6 @@
+import { Cstr } from "@MWL/types/Cstr";
 import { Signal } from "../signals";
 import { Input } from "./WithInput";
-import { Cstr } from "../utils/types";
 
 // configure how the component is printed.
 // RO only. If RW, then this is an input/output.
