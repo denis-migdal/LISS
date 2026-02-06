@@ -3,9 +3,10 @@
 // import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
 
 import {it} from "jsr:@std/testing/bdd";
-import buildTestPage from '../src/utils/tests/buildTestPage.ts';
+//TODO: maybe in old V3.0 version ?
+import buildTestPage from './src/utils/tests/buildTestPage.ts';
 import buildBrowsers from './browsers.ts';
-import buildNewPage from "./buildNewPage.ts";
+import buildNewPage  from "./buildNewPage.ts";
 import { getComponentDir, getComponentName } from "./loadFile.ts";
 
 const browsers = buildBrowsers({

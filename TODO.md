@@ -4,6 +4,7 @@ V3.2
 - Update README/docs
 - Update TODO, + search TODO comments.
 - See v3.1 branch... (/old)
+- Move out Puppeteers test helpers.
 
 V3.1
 ====
