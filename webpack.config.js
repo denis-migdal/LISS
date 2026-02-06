@@ -1,5 +1,7 @@
 import buildConfigs from "./build/WebpackFramework/index.js";
 
-export default buildConfigs("./V3/",
-                            "./dist/${version}/V3/",
-                            { "@LISS": "V3/" });
+export default buildConfigs("./src/", "./dist/${version}/",
+                            {
+                                "@LISS": "src/",
+                                "@MWL" : "libs/MWL/src/",
+                            });

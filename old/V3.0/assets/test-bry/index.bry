@@ -1,7 +1,0 @@
-from browser import self
-
-WebC = self.wrapjs(self.LISS())
-
-class DefaultExport(WebC):
-    def __init__(this):
-        this.content.replaceChildren("Hello (py)!")

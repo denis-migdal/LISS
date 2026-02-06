@@ -1,5 +1,0 @@
-from browser import window;
-
-body = window.document.body
-
-body.append( BryParams(34).host );

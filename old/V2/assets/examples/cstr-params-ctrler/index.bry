@@ -1,9 +1,0 @@
-from browser import self
-
-WebC = self.wrapjs(self.LISS())
-
-class WebComponent(WebC):
-    def __init__(this, value="HTML"):
-        super().__init__()
-        print("called", value)
-        this.content.replaceChildren(value)

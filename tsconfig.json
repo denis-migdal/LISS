@@ -1,9 +1,12 @@
 {
-    "include": ["V3"],
-    "exclude": ["V3/tests"],
+    "include": ["src"],
+    "exclude": ["tests"],
     "compilerOptions": {
         "outDir": "./build/TS",
-        "paths": {"@LISS/*": ["./V3/*"]},
+        "paths": {
+            "@LISS/*": ["./src/*"],
+            "@MWL/*" : ["./libs/MWL/src/*"],
+        },
         "sourceMap": true,
         "alwaysStrict": true,
         "strict": true,
