@@ -2,9 +2,9 @@ import { createExtension } from "@MWL/mixins/mixer";
 import { Cstr }            from "@MWL/types/Cstr";
 import { getShadowRoot }   from "./Content";
 
-export function WithStyle(base     : Cstr<HTMLElement>,
-                          ...styles: CSSStyleSheet[]
-                        ) {
+export function WithStyle<B extends Cstr<HTMLElement>>(base  : B,
+                                                    ...styles: CSSStyleSheet[]
+                                                    ) {
 
     return class Mixed extends base {
 

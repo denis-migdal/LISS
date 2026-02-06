@@ -1,9 +1,9 @@
 import { createExtension } from "@MWL/mixins/mixer";
 import { Cstr }            from "@MWL/types/Cstr";
 
-export function WithContent(base    : Cstr<HTMLElement>,
-                            template: DocumentFragment
-                        ) {
+export function WithContent<B extends Cstr<HTMLElement>>(base: B,
+                                                     template: DocumentFragment
+                                                ) {
 
     return class Mixed extends base {
 
