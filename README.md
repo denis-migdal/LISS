@@ -6,9 +6,21 @@
 
 <i>LISS Is Super Simple.</i>
 
-## Documentation
+## Documentation (old)
 
 https://liss.migdal.ovh/V3/fr/
+
+## Usage (TODO)
+
+```ts
+class X extends LISSBase.With(ShadowRoot({
+                                            template: "", 
+                                            style   : "",    
+                                        }))
+                        .With(Input) {
+    // ...
+}
+```
 
 ## Build
 

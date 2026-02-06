@@ -1,7 +1,9 @@
 V3.2
 ====
 
-See v3.1 branch... (/old)
+- Update README/docs
+- Update TODO, + search TODO comments.
+- See v3.1 branch... (/old)
 
 V3.1
 ====
