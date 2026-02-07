@@ -35,3 +35,17 @@ function fillContent(target: HTMLElement) {
 export function getShadowRoot(target: HTMLElement) {
     return target.shadowRoot ?? target.attachShadow({ mode: 'open' });
 }
+
+// register extension to LISSBase
+import { Mixin  } from "@MWL/mixins/types";
+import { WithExt, registerLISSExtension} from "./Base";
+
+declare module "./Base" {
+    interface LISSExt<B   extends Cstr    = Cstr<HTMLElement>,
+                    Acc extends Mixin[] = []
+                    > {
+
+        WithContent: WithExt<B, Acc, typeof Content>
+    }
+}
+registerLISSExtension(Content);

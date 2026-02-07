@@ -24,3 +24,17 @@ export function WithStyle<B extends Cstr<HTMLElement>>(base  : B,
 
 const Style = createExtension(WithStyle);
 export default Style;
+
+// register extension to LISSBase
+import { Mixin  } from "@MWL/mixins/types";
+import { WithExt, registerLISSExtension} from "./Base";
+
+declare module "./Base" {
+    interface LISSExt<B   extends Cstr    = Cstr<HTMLElement>,
+                    Acc extends Mixin[] = []
+                    > {
+
+        WithStyle: WithExt<B, Acc, typeof Style>
+    }
+}
+registerLISSExtension(Style);
