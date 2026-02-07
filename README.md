@@ -13,8 +13,8 @@ https://liss.migdal.ovh/V3/fr/
 ## Usage (TODO)
 
 ```ts
-class X extends LISSBase.With(Content(template("...")))
-                        .With(Style  (   style("..."))) {
+class X extends LISSBase.WithContent(template("..."))
+                        .WithStyle  (style   ("...")) {
     // ...
 }
 ```

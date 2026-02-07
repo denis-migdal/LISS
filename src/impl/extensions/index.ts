@@ -1,10 +1,47 @@
-export {default as Bare   } from "./Bare";
-export {default as Content} from "./Content";
-export {default as Style} from "./Style";
+import Bare    from "./Bare";
+import Content from "./Content";
+import Style   from "./Style";
 
-import Bare from "./Bare";
+export {Bare, Content, Style};
+
+// LISSBase declaration :
+
 import Mix  from "@MWL/mixins/mixer";
-export const LISSBare = Mix(HTMLElement).With(Bare());
+import { Mixin, WithMixins } from "@MWL/mixins/types";
+
+import { Cstr } from "@MWL/types/Cstr";
+
+type NextBuilder<B   extends Cstr,
+                 Acc extends Mixin[],
+                 E   extends (...args: any[]) => Mixin
+            > = WithMixins    <B, [...Acc, ReturnType<E>]>
+              & LISSMixBuilder<B, [...Acc, ReturnType<E>]>;
+
+//TODO: plugin interface.
+type LISSMixBuilder<B   extends Cstr    = Cstr<HTMLElement>,
+                    Acc extends Mixin[] = []
+                > = WithMixins<B, Acc> & {
+
+    With<M extends Mixin>(mixin: M): WithMixins    <B, [...Acc, M]>
+                                   & LISSMixBuilder<B, [...Acc, M]>;
+
+    
+    WithContent(...opts: Parameters<typeof Content>)
+                        : NextBuilder<B, Acc, typeof Content>
+}
+
+const LISSBase = (Mix(HTMLElement) as any as LISSMixBuilder).With(Bare());
+
+function registerLISSExtension(Ext: (...args: any[]) => Mixin) {
+    // @ts-ignore
+    LISSBase[`With${Ext.name}`] = function(...args: any[]) {
+        return Ext(args)(this);
+    }
+}
+
+registerLISSExtension(Content);
+
+export {LISSBase};
 
 /*
 //temporary typing tests

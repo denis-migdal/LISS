@@ -1,8 +1,10 @@
 import { createExtension } from "@MWL/mixins/mixer";
 import { Cstr }            from "@MWL/types/Cstr";
 
+type Clonable = {cloneNode(deep?: boolean): Node};
+
 export function WithContent<B extends Cstr<HTMLElement>>(base: B,
-                                                     template: DocumentFragment
+                                                     template: Clonable
                                                 ) {
 
     return class Mixed extends base {
@@ -19,7 +21,7 @@ export default Content;
 
 function fillContent(target: HTMLElement) {
 
-    const template: DocumentFragment = (target.constructor as any).template
+    const template: Clonable = (target.constructor as any).template
 
     const root    = getShadowRoot(target);
     const content = template.cloneNode(true);
