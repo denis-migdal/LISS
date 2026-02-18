@@ -4,5 +4,4 @@ import "@LISS/components/code/code-switch/";
 
 // may be async ?
 import "../../../components/page/menu";
-import "../../../components/code/code-script";
-//import "./code/code-block/CodeBlock";
+import "../../../components/code/code-block";

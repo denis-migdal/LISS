@@ -1,12 +1,10 @@
-import {LISS, WithBare, WithContent} from "@LISS/impl/extensions";
 import DOMContentLoaded from "@LISS/utils/FutureEvents/DOMContentLoaded";
 import define from "@LISS/impl/define";
 import { hl } from "../hl";
 
-// @ts-ignore
-import css   from "!!raw-loader!./index.css";
-// @ts-ignore
-import theme from "!!raw-loader!../Tomorrow.css";
+import { LISSBase } from "@LISS/impl/extensions";
+import style from "@LISS/utils/parsers/style";
+import template from "@LISS/utils/parsers/template";
 
 export function unindent(code: string) {
     const offset = code.search(/[\S]/);
@@ -53,8 +51,13 @@ export function raw2html(code: string, codeLang: string) {
     return keepSpaces(code); // due to stupid FF bug.
 }
 
-export default class Script extends LISS({ css: [theme, css] },
-                            WithBare, WithContent) {
+const CSS   = require("!!raw-loader!./index.css").default;
+const THEME = require("!!raw-loader!../Tomorrow.css").default;
+const HTML  = "";
+
+export default class CodeBlock extends LISSBase
+                                      .WithContent( template(HTML) )
+                                      .WithStyle(style(CSS), style(THEME) ) {
 
     constructor(code?: string, codeLang?: string) {
         super();
@@ -81,13 +84,13 @@ export default class Script extends LISS({ css: [theme, css] },
     }
 }
 
-define('code-script', Script);
+define(CodeBlock);
 
 DOMContentLoaded.then( () => {
 
     for(let script of document.querySelectorAll('script[type^="c-"]') ) {
 
-        const code = new Script(script.textContent!,
+        const code = new CodeBlock(script.textContent!,
                                 script.getAttribute("type")!.slice(2))
 
         const attrs = script.attributes;
