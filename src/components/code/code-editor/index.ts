@@ -6,8 +6,7 @@ import template     from "@LISS/utils/parsers/template";
 import style        from "@LISS/utils/parsers/style";
 
 import History      from "@MWL/History";
-import { Properties, setProperty } from "@MWL/extensions/Properties";
-import { Output }   from "@MWL/extensions/Output";
+import { setProperty } from "@MWL/extensions/Properties";
 
 // Browsers APIs are broken...
 
@@ -38,10 +37,10 @@ export default class CodeEditor extends LISSBase
                                 .WithContent( template(HTML) )
                                 .WithStyle( style(CSS), style(THEME) )
                                 .WithInput({
-                                    value: null as string|null
+                                    value: ""
                                 })
                                 .WithOutput({
-                                    value: null as string|null
+                                    value: ""
                                 }) {
 
     #codeLang!: string;
@@ -137,7 +136,7 @@ export default class CodeEditor extends LISSBase
                 if( ev.code === "Enter" )
                     char = '\n';
 
-                let text = this.#editor.textContent;
+                let text = this.#editor.textContent!;
                 const start = getCursorBegPos(this.#editor)!;
                 const end   = getCursorEndPos(this.#editor)!;
 
