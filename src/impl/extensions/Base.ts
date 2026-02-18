@@ -11,9 +11,9 @@ export interface LISSExt<B   extends Cstr    = Cstr<HTMLElement>,
 
 }
 
-type NextBuilder<B   extends Cstr,
-                 Acc extends Mixin[],
-                 E   extends (...args: any[]) => Mixin
+export type NextBuilder<B   extends Cstr,
+                        Acc extends Mixin[],
+                        E   extends (...args: any[]) => Mixin
             > = WithMixins    <B, [...Acc, ReturnType<E>]>
               & LISSMixBuilder<B, [...Acc, ReturnType<E>]>;
 

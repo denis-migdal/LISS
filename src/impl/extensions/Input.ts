@@ -1,9 +1,9 @@
 // register extension to LISSBase
 import { Mixin  } from "@MWL/mixins/types";
-import { WithExt, registerLISSExtension} from "./Base";
+import { registerLISSExtension} from "./Base";
 import { Cstr } from "@MWL/types/Cstr";
 
-import Input from "@MWL/extensions/Input";
+import Input, {WithInput} from "@MWL/extensions/Input";
 
 export default Input;
 
@@ -12,7 +12,8 @@ declare module "./Base" {
                     Acc extends Mixin[] = []
                     > {
 
-        WithInput: WithExt<B, Acc, typeof Input>
+        WithInput<T extends Record<string, any> = {}>(props?: T):
+            NextBuilder<B, Acc, (props: T) => typeof WithInput<B, T>>
     }
 }
 registerLISSExtension(Input);

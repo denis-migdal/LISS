@@ -3,7 +3,7 @@ import { Mixin  } from "@MWL/mixins/types";
 import { WithExt, registerLISSExtension} from "./Base";
 import { Cstr } from "@MWL/types/Cstr";
 
-import Output from "@MWL/extensions/Output";
+import Output, { WithOutput } from "@MWL/extensions/Output";
 
 export default Output;
 
@@ -12,7 +12,8 @@ declare module "./Base" {
                     Acc extends Mixin[] = []
                     > {
 
-        WithOutput: WithExt<B, Acc, typeof Output>
+        WithOutput<T extends Record<string, any> = {}>(props?: T):
+                NextBuilder<B, Acc, (props: T) => typeof WithOutput<B, T>>
     }
 }
 registerLISSExtension(Output);

@@ -7,7 +7,6 @@ import style        from "@LISS/utils/parsers/style";
 
 import History      from "@MWL/History";
 import { Properties, setProperty } from "@MWL/extensions/Properties";
-import {Input}      from "@MWL/extensions/Input";
 import { Output }   from "@MWL/extensions/Output";
 
 // Browsers APIs are broken...
@@ -38,26 +37,16 @@ const THEME = require("!!raw-loader!../Tomorrow.css").default;
 export default class CodeEditor extends LISSBase
                                 .WithContent( template(HTML) )
                                 .WithStyle( style(CSS), style(THEME) )
-                                .WithInput()
-                                .WithOutput() {
+                                .WithInput({
+                                    value: null as string|null
+                                })
+                                .WithOutput({
+                                    value: null as string|null
+                                }) {
 
     #codeLang!: string;
     readonly #history = new History<CodeState>();
-
     readonly #editor  = this.content.firstElementChild! as HTMLElement;
-
-
-    // === INPUT ===
-    static override InputProperties = Properties({
-        value: ""
-    })
-    declare input: Input<typeof CodeEditor>
-
-    // === Output ===
-    static override OutputProperties = Properties({
-        value: ""
-    })
-    declare output: Output<typeof CodeEditor>
 
     constructor(codeLang: string|null = null) {
         super();
@@ -159,9 +148,6 @@ export default class CodeEditor extends LISSBase
 
                 text = text.slice(0, start) + char + text.slice(end);
 
-                console.warn(start, end);
-                console.warn(text, "-");
-
                 this.onCodeChange(text, start+char.length);
 
             }
@@ -202,3 +188,15 @@ export default class CodeEditor extends LISSBase
 }
 
 define(CodeEditor);
+
+/*
+class X extends LISSBase.WithInput({foo: 34}) {}
+const Y = WithInput(Object, {foo: 34});
+
+
+const x = new X();
+x.input.foo
+
+const y = new Y();
+y.input.foo
+*/
