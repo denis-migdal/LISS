@@ -23,6 +23,8 @@ function fillContent(target: HTMLElement) {
 
     const template: Clonable = (target.constructor as any).template
 
+    console.warn(template);
+
     const root    = getShadowRoot(target);
     const content = template.cloneNode(true);
 

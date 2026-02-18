@@ -3,8 +3,10 @@ import LISSBase from "./Base";
 import Bare    from "./Bare";
 import Content from "./Content";
 import Style   from "./Style";
+import Input   from "./Input";
+import Output  from "./Output";
 
-export {LISSBase, Bare, Content, Style};
+export {LISSBase, Bare, Content, Style, Input, Output};
 
 /*
 //temporary typing tests

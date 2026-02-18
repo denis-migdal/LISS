@@ -38,6 +38,6 @@ export default LISSBase;
 export function registerLISSExtension(Ext: (...args: any[]) => Mixin) {
     // @ts-ignore
     LISSBase[`With${Ext.name}`] = function(...args: any[]) {
-        return Ext(args)(this);
+        return Ext(...args)(this);
     }
 }

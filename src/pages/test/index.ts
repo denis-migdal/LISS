@@ -1,18 +1,7 @@
-import "@LISS/components/code/code-editor";
-import { getInput } from "@LISS/impl/extensions/WithInput";
-import { getOutput } from "@LISS/impl/extensions/WithOutput";
-import createElement from "@LISS/utils/DOM/createElement";
+import CodeEditor from "@LISS/components/code/code-editor";
 
-const code = createElement("code-editor");
+const code = new CodeEditor("ts");
 
-const input = getInput<string>(code);
-
-input.value = "console.log('ok')\n    console.log('ok');";
-
-const output = getOutput<string>(code);
-
-output.listen( () => {
-    console.warn("changed");
-});
+code.input.value = "console.log('ok')\n    console.log('ok');";
 
 document.querySelector('main')!.prepend(code);
