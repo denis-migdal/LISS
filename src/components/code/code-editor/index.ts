@@ -1,5 +1,5 @@
 import define from "@LISS/impl/define";
-import { getCursorPos, hl, setCursorPos } from "../hl";
+import { getCursorBegPos, getCursorEndPos, getCursorPos, hl, setCursorPos } from "../hl";
 
 import { LISSBase } from "@LISS/impl/extensions";
 import template     from "@LISS/utils/parsers/template";
@@ -98,7 +98,6 @@ export default class CodeEditor extends LISSBase
             codeLang = attrCodeLang;
         
         this.#codeLang = codeLang ?? "text";
-        
 
         // spellchecker enabled only if text.
         this.#editor.setAttribute("spellcheck", this.#codeLang === "text"
@@ -142,11 +141,6 @@ export default class CodeEditor extends LISSBase
 
                 ev.preventDefault();
     
-                // https://stackoverflow.com/questions/2237497/make-the-tab-key-insert-a-tab-character-in-a-contenteditable-div-and-not-blur
-                var doc = this.#editor.ownerDocument.defaultView!;
-                var sel = doc.getSelection()!;
-                var range = sel.getRangeAt(0);
-
                 let char!: string;
 
                 if( ev.code === "Tab" )
@@ -154,15 +148,22 @@ export default class CodeEditor extends LISSBase
                 if( ev.code === "Enter" )
                     char = '\n';
 
-                const lastNode = document.createTextNode(char);
-                range.insertNode( lastNode ); 
+                let text = this.#editor.textContent;
+                const start = getCursorBegPos(this.#editor)!;
+                const end   = getCursorEndPos(this.#editor)!;
 
-                range.setStartAfter(lastNode);
-                range.setEndAfter(lastNode); 
-                sel.removeAllRanges();
-                sel.addRange(range);
+                if( "chrome" in window ) {
+                    if( char === "\n" && end === text.length)
+                        char = "\n\n";
+                }
 
-                this.onCodeChange(this.#editor.textContent!);
+                text = text.slice(0, start) + char + text.slice(end);
+
+                console.warn(start, end);
+                console.warn(text, "-");
+
+                this.onCodeChange(text, start+char.length);
+
             }
         });
     }

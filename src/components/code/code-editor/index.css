@@ -35,7 +35,7 @@
         outline-offset: -3px;
 
         /* ensures last line height even if empty */
-        &:empty::after {
+        &::after {
             content: "\200b"
         }
     }
