@@ -6,7 +6,8 @@ import template     from "@LISS/utils/parsers/template";
 import style        from "@LISS/utils/parsers/style";
 
 import History      from "@MWL/History";
-import { setProperty } from "@MWL/extensions/Properties";
+import asRW         from "@MWL/types/asRW";
+import { RProperties } from "@MWL/events/Properties";
 
 // Browsers APIs are broken...
 
@@ -74,7 +75,7 @@ export default class CodeEditor extends LISSBase
     protected printCode(code: string) {
 
         this.#editor.innerHTML = hl(code, this.#codeLang);
-        setProperty(this.output, "value", code);
+        asRW(this.output).value = code;
     }
 
     // init events.
