@@ -7,7 +7,6 @@ import style        from "@LISS/utils/parsers/style";
 
 import History      from "@MWL/History";
 import asRW         from "@MWL/types/asRW";
-import { RProperties } from "@MWL/events/Properties";
 
 // Browsers APIs are broken...
 
