@@ -21,7 +21,7 @@ function hasDefineAfter<T extends Cstr<HTMLElement>>(Klass: T)
 function getFullTagname(Klass            : Cstr<HTMLElement>,
                         tagname_or_prefix: string|null = null) {
 
-    let prefix: string|null  = "";
+    let prefix: string|null  = null;
     if( tagname_or_prefix !== null && tagname_or_prefix.at(-1) === "-" )
         prefix = tagname_or_prefix;
 
