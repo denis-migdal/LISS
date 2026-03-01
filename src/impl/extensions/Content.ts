@@ -1,4 +1,4 @@
-import { createExtension } from "@MWL/mixins/mixer";
+import { createExtension } from "@MWL/extensions/core/mixins/mixer";
 import { Cstr }            from "@MWL/types/Cstr";
 
 type Clonable = {cloneNode(deep?: boolean): Node};
@@ -37,7 +37,7 @@ export function getShadowRoot(target: HTMLElement) {
 }
 
 // register extension to LISSBase
-import { Mixin  } from "@MWL/mixins/types";
+import { Mixin  } from "@MWL/extensions/core/mixins/types";
 import { WithExt, registerLISSExtension} from "./Base";
 
 declare module "./Base" {

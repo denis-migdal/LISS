@@ -8,6 +8,11 @@ import style        from "@LISS/utils/parsers/style";
 import History      from "@MWL/History";
 import asRW         from "@MWL/types/asRW";
 
+// for asRW()
+import "@MWL/events/signals/Signal";
+import { mutable } from "@MWL/types/mutable";
+import { setValue } from "@MWL/events/signals/Signal";
+
 // Browsers APIs are broken...
 
 //TODO :
@@ -25,6 +30,10 @@ const HTML  = require("!!raw-loader!./index.html").default;
 const CSS   = require("!!raw-loader!./index.css").default;
 const THEME = require("!!raw-loader!../Tomorrow.css").default;
 
+const DEFAULTS = {
+    value: ""
+}
+
 /*
     - input : original source code / can be filled through host textContent
     - output: current  source code (can be edited)
@@ -36,12 +45,8 @@ const THEME = require("!!raw-loader!../Tomorrow.css").default;
 export default class CodeEditor extends LISSBase
                                 .WithContent( template(HTML) )
                                 .WithStyle( style(CSS), style(THEME) )
-                                .WithInput({
-                                    value: ""
-                                })
-                                .WithOutput({
-                                    value: ""
-                                }) {
+                                .WithInput (DEFAULTS)
+                                .WithOutput(DEFAULTS) {
 
     #codeLang!: string;
     readonly #history = new History<CodeState>();
@@ -51,6 +56,7 @@ export default class CodeEditor extends LISSBase
         super();
 
         this.#initEditor(codeLang);
+        this.inputSignal.addListener( () => this.onInputChange() );
         this.onCodeChange( this.input.value, null );
     }
 
@@ -74,7 +80,7 @@ export default class CodeEditor extends LISSBase
     protected printCode(code: string) {
 
         this.#editor.innerHTML = hl(code, this.#codeLang);
-        asRW(this.output).value = code;
+        setValue(this.outputSignal, {value: code});
     }
 
     // init events.
@@ -155,7 +161,7 @@ export default class CodeEditor extends LISSBase
 
     // reactif...
 
-    override onInputChange() {
+    onInputChange() {
         
         const text = this.input.value ?? "";
 

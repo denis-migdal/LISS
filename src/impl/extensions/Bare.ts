@@ -1,4 +1,4 @@
-import { createExtension } from "@MWL/mixins/mixer";
+import { createExtension } from "@MWL/extensions/core/mixins/mixer";
 import { Cstr }            from "@MWL/types/Cstr";
 
 export function WithBare<B extends Cstr<HTMLElement>>(base: B) {

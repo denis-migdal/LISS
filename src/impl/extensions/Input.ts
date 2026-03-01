@@ -1,5 +1,5 @@
 // register extension to LISSBase
-import { Mixin  } from "@MWL/mixins/types";
+import { Mixin  } from "@MWL/extensions/core/mixins/types";
 import { registerLISSExtension} from "./Base";
 import { Cstr } from "@MWL/types/Cstr";
 

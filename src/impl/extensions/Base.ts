@@ -1,7 +1,7 @@
 import { Cstr } from "@MWL/types/Cstr";
 
-import Mix  from "@MWL/mixins/mixer";
-import { Mixin, WithMixins } from "@MWL/mixins/types";
+import Mix                   from "@MWL/extensions/core/mixins/mixer";
+import { Mixin, WithMixins } from "@MWL/extensions/core/mixins/types";
 
 import Bare    from "./Bare";
 

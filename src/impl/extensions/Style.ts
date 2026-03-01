@@ -1,4 +1,4 @@
-import { createExtension } from "@MWL/mixins/mixer";
+import { createExtension } from "@MWL/extensions/core/mixins/mixer";
 import { Cstr }            from "@MWL/types/Cstr";
 import { getShadowRoot }   from "./Content";
 
@@ -26,7 +26,7 @@ const Style = createExtension(WithStyle);
 export default Style;
 
 // register extension to LISSBase
-import { Mixin  } from "@MWL/mixins/types";
+import { Mixin  } from "@MWL/extensions/core/mixins/types";
 import { WithExt, registerLISSExtension} from "./Base";
 
 declare module "./Base" {
