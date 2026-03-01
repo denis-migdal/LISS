@@ -6,8 +6,8 @@ import template     from "@LISS/utils/parsers/template";
 import style        from "@LISS/utils/parsers/style";
 
 import History      from "@MWL/History";
-
 import { setValue } from "@MWL/events/signals/Signal";
+import link         from "@MWL/events/links/link";
 
 // Browsers APIs are broken...
 
@@ -52,27 +52,34 @@ export default class CodeEditor extends LISSBase
         super();
 
         this.#initEditor(codeLang);
-        this.parsedInput.addListener( () => {
-            const text = this.input.value ?? "";
 
+        link(this.parsedInput, this.outputSignal);
+
+        this.parsedInput.addListener( () => {
             this.#history.reset();
-            this.updateState( text, null );
+            this.updateState( this.input.value, null );
         });
         this.updateState( this.input.value, null );
     }
 
-    // handle cursor & history
-    protected updateState(        code: string|null,
-                               cursor?: null|number,
-                         updateHistory: boolean = false) {
+    protected onIuTriggered(      code: string,
+                               cursor?: number|null,
+                         updateHistory: boolean = false
+                        ) {
 
-        code ??= "";
+        this.updateState(code, cursor, updateHistory);
+        setValue(this.outputSignal, {value: code});
+    }
+
+    // handle cursor & history
+    protected updateState(        code: string,
+                               cursor?: number|null,
+                         updateHistory: boolean = false) {
 
         if( cursor === undefined)
             cursor = getCursorPos(this.#editor);
 
         this.#editor.innerHTML = hl(code, this.#codeLang);
-        setValue(this.outputSignal, {value: code});
 
         if( cursor !== null )
             setCursorPos(this.#editor, cursor);
@@ -98,7 +105,7 @@ export default class CodeEditor extends LISSBase
 
         // code content has been changed
         this.#editor.addEventListener("input", () => {
-            this.updateState(this.#editor.textContent)
+            this.onIuTriggered(this.#editor.textContent);
         });
 
         // special keys
@@ -121,7 +128,7 @@ export default class CodeEditor extends LISSBase
                             return;
                     }
                     let {code, cursor} = this.#history.currentState;
-                    this.updateState(code, cursor ?? code.length, false);
+                    this.onIuTriggered(code, cursor ?? code.length, false);
                 }
 
                 return;
@@ -149,7 +156,7 @@ export default class CodeEditor extends LISSBase
 
                 text = text.slice(0, start) + char + text.slice(end);
 
-                this.updateState(text, start+char.length);
+                this.onIuTriggered(text, start+char.length);
 
             }
         });
