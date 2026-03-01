@@ -6,11 +6,7 @@ import template     from "@LISS/utils/parsers/template";
 import style        from "@LISS/utils/parsers/style";
 
 import History      from "@MWL/History";
-import asRW         from "@MWL/types/asRW";
 
-// for asRW()
-import "@MWL/events/signals/Signal";
-import { mutable } from "@MWL/types/mutable";
 import { setValue } from "@MWL/events/signals/Signal";
 
 // Browsers APIs are broken...
@@ -56,31 +52,33 @@ export default class CodeEditor extends LISSBase
         super();
 
         this.#initEditor(codeLang);
-        this.inputSignal.addListener( () => this.onInputChange() );
-        this.onCodeChange( this.input.value, null );
+        this.parsedInput.addListener( () => {
+            const text = this.input.value ?? "";
+
+            this.#history.reset();
+            this.updateState( text, null );
+        });
+        this.updateState( this.input.value, null );
     }
 
     // handle cursor & history
-    protected onCodeChange(code: string|null, cursor?: null|number) {
+    protected updateState(        code: string|null,
+                               cursor?: null|number,
+                         updateHistory: boolean = false) {
 
         code ??= "";
 
         if( cursor === undefined)
             cursor = getCursorPos(this.#editor);
 
-        this.printCode(code);
+        this.#editor.innerHTML = hl(code, this.#codeLang);
+        setValue(this.outputSignal, {value: code});
 
         if( cursor !== null )
             setCursorPos(this.#editor, cursor);
 
-        this.#history.push({code, cursor});
-    }
-
-    // write + trigger output
-    protected printCode(code: string) {
-
-        this.#editor.innerHTML = hl(code, this.#codeLang);
-        setValue(this.outputSignal, {value: code});
+        if( updateHistory )
+            this.#history.push({code, cursor});
     }
 
     // init events.
@@ -100,7 +98,7 @@ export default class CodeEditor extends LISSBase
 
         // code content has been changed
         this.#editor.addEventListener("input", () => {
-            this.onCodeChange(this.#editor.textContent)
+            this.updateState(this.#editor.textContent)
         });
 
         // special keys
@@ -123,9 +121,7 @@ export default class CodeEditor extends LISSBase
                             return;
                     }
                     let {code, cursor} = this.#history.currentState;
-                    
-                    this.printCode(code); 
-                    setCursorPos(this.#editor, cursor ?? code.length );
+                    this.updateState(code, cursor ?? code.length, false);
                 }
 
                 return;
@@ -153,21 +149,13 @@ export default class CodeEditor extends LISSBase
 
                 text = text.slice(0, start) + char + text.slice(end);
 
-                this.onCodeChange(text, start+char.length);
+                this.updateState(text, start+char.length);
 
             }
         });
     }
 
     // reactif...
-
-    onInputChange() {
-        
-        const text = this.input.value ?? "";
-
-        this.#history.reset();
-        this.onCodeChange( text, null );
-    }
 
     static override observedAttributes = ["code-lang"];
 
