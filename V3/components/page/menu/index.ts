@@ -94,7 +94,7 @@ function buildPagesMenu(content: string) {
 }
 
 
-function buildPageMenu(parent: PageMenuNode|null = null) {
+function buildPageMenu(_parent: PageMenuNode|null = null) {
     
     const h1 = document.querySelector('h1')!;
 

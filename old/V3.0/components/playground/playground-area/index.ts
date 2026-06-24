@@ -10,8 +10,7 @@ export type Resource = {
     file : string,
 }
 
-// @ts-ignore
-import css  from "!!raw-loader!./index.css";
+const css = __LOAD_FILE__("./index.css");
 
 export default class PlaygroundArea extends LISS({css}, LISSUpdate) {
 

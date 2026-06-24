@@ -29,8 +29,8 @@ export default function WithBare<T extends HTMLElement>(base : Cstr<T>,
 
         // defined for auto-completion.
         static observedAttributes: string[] = [];
-        attributeChangedCallback(name  : string,
-                                 oldval: string|null,
-                                 newval: string|null){}
+        attributeChangedCallback(_name  : string,
+                                 _oldval: string|null,
+                                 _newval: string|null){}
     }
 }

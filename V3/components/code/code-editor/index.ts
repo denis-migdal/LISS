@@ -3,12 +3,9 @@ import define from "@LISS/src/define";
 import { getCursorPos, hl, setCursorPos } from "../hl";
 
 
-// @ts-ignore
-import html from "!!raw-loader!./index.html";
-// @ts-ignore
-import css  from "!!raw-loader!./index.css";
-// @ts-ignore
-import theme from "!!raw-loader!../Tomorrow.css";
+const html = __LOAD_FILE__("./index.html");
+const css = __LOAD_FILE__("./index.css");
+const theme = __LOAD_FILE__("../Tomorrow.css");
 
 // Browsers APIs are broken...
 
